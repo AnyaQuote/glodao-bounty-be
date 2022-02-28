@@ -1,0 +1,48 @@
+{
+  "kind": "collectionType",
+  "collectionName": "hunters",
+  "info": {
+    "name": "hunter"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    },
+    "user": {
+      "plugin": "users-permissions",
+      "model": "user",
+      "via": "hunter"
+    },
+    "synapsSessionId": {
+      "type": "string"
+    },
+    "feeHash": {
+      "type": "string"
+    },
+    "data": {
+      "type": "json"
+    },
+    "metadata": {
+      "type": "json"
+    },
+    "twitter": {
+      "type": "json"
+    },
+    "synapsStates": {
+      "type": "json"
+    },
+    "applies": {
+      "via": "hunter",
+      "collection": "apply"
+    }
+  }
+}

@@ -1,0 +1,109 @@
+{
+  "kind": "collectionType",
+  "collectionName": "pools",
+  "info": {
+    "name": "pool"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "ownerLink": {
+      "type": "string"
+    },
+    "tradeToken": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    },
+    "address": {
+      "type": "string"
+    },
+    "minAllocation": {
+      "type": "string"
+    },
+    "maxAllocation": {
+      "type": "string"
+    },
+    "tokenName": {
+      "type": "string"
+    },
+    "tokenAddress": {
+      "type": "string"
+    },
+    "totalRaise": {
+      "type": "string"
+    },
+    "totalSupply": {
+      "type": "string"
+    },
+    "ratio": {
+      "type": "decimal"
+    },
+    "chainId": {
+      "type": "integer"
+    },
+    "amount": {
+      "type": "string"
+    },
+    "accessType": {
+      "type": "string"
+    },
+    "startDate": {
+      "type": "datetime"
+    },
+    "endDate": {
+      "type": "datetime"
+    },
+    "description": {
+      "type": "text"
+    },
+    "createdBy": {
+      "plugin": "users-permissions",
+      "model": "user"
+    },
+    "logs": {
+      "type": "json"
+    },
+    "data": {
+      "type": "json"
+    },
+    "file": {
+      "model": "file",
+      "via": "related",
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos"
+      ],
+      "plugin": "upload",
+      "required": false,
+      "pluginOptions": {}
+    },
+    "logoUrl": {
+      "type": "string"
+    },
+    "index": {
+      "type": "integer"
+    },
+    "tradeTokenAddress": {
+      "type": "string"
+    },
+    "ownerAddress": {
+      "type": "string"
+    },
+    "unicodeName": {
+      "type": "string"
+    }
+  }
+}

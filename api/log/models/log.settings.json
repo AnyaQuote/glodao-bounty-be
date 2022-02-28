@@ -1,0 +1,28 @@
+{
+  "kind": "collectionType",
+  "collectionName": "logs",
+  "info": {
+    "name": "log"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "hunter": {
+      "model": "hunter"
+    },
+    "user": {
+      "plugin": "users-permissions",
+      "model": "user"
+    },
+    "error": {
+      "type": "json"
+    },
+    "data": {
+      "type": "json"
+    }
+  }
+}

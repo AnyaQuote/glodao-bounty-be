@@ -1,0 +1,38 @@
+{
+  "kind": "collectionType",
+  "collectionName": "applies",
+  "info": {
+    "name": "Apply",
+    "description": ""
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "walletAddress": {
+      "type": "string"
+    },
+    "hunter": {
+      "model": "hunter",
+      "via": "applies"
+    },
+    "status": {
+      "type": "string"
+    },
+    "data": {
+      "type": "json"
+    },
+    "metadata": {
+      "type": "json"
+    },
+    "bounty": {
+      "type": "float"
+    },
+    "task": {
+      "model": "task"
+    }
+  }
+}

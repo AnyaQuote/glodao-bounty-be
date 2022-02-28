@@ -1,0 +1,36 @@
+{
+  "kind": "collectionType",
+  "collectionName": "tasks",
+  "info": {
+    "name": "task"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "chainId": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    },
+    "hunter": {
+      "model": "hunter"
+    },
+    "data": {
+      "type": "json"
+    },
+    "metadata": {
+      "type": "json"
+    },
+    "featured": {
+      "type": "boolean"
+    }
+  }
+}
