@@ -2,7 +2,8 @@
   "kind": "collectionType",
   "collectionName": "pool_regists",
   "info": {
-    "name": "poolRegist"
+    "name": "poolRegist",
+    "description": ""
   },
   "options": {
     "increments": true,
@@ -16,6 +17,9 @@
     },
     "amount": {
       "type": "float"
+    },
+    "pool": {
+      "model": "pool"
     },
     "data": {
       "type": "json"
