@@ -2,7 +2,8 @@
   "kind": "collectionType",
   "collectionName": "pools",
   "info": {
-    "name": "pool"
+    "name": "pool",
+    "description": ""
   },
   "options": {
     "increments": true,
@@ -81,11 +82,7 @@
     "file": {
       "model": "file",
       "via": "related",
-      "allowedTypes": [
-        "images",
-        "files",
-        "videos"
-      ],
+      "allowedTypes": ["images", "files", "videos"],
       "plugin": "upload",
       "required": false,
       "pluginOptions": {}
@@ -103,7 +100,8 @@
       "type": "string"
     },
     "unicodeName": {
-      "type": "string"
+      "type": "string",
+      "unique": true
     }
   }
 }

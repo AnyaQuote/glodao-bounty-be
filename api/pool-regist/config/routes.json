@@ -1,0 +1,52 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/pool-regists",
+      "handler": "pool-regist.find",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/pool-regists/count",
+      "handler": "pool-regist.count",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/pool-regists/:id",
+      "handler": "pool-regist.findOne",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/pool-regists",
+      "handler": "pool-regist.create",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/pool-regists/:id",
+      "handler": "pool-regist.update",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/pool-regists/:id",
+      "handler": "pool-regist.delete",
+      "config": {
+        "policies": []
+      }
+    }
+  ]
+}

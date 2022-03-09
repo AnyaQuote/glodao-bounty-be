@@ -1,0 +1,24 @@
+{
+  "kind": "collectionType",
+  "collectionName": "pool_regists",
+  "info": {
+    "name": "poolRegist"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "address": {
+      "type": "string"
+    },
+    "amount": {
+      "type": "float"
+    },
+    "data": {
+      "type": "json"
+    }
+  }
+}
