@@ -23,6 +23,9 @@
     },
     "data": {
       "type": "json"
+    },
+    "hunter": {
+      "model": "hunter"
     }
   }
 }

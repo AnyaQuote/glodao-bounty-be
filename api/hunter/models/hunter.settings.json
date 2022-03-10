@@ -2,7 +2,8 @@
   "kind": "collectionType",
   "collectionName": "hunters",
   "info": {
-    "name": "hunter"
+    "name": "hunter",
+    "description": ""
   },
   "options": {
     "increments": true,
@@ -18,6 +19,7 @@
       "type": "string"
     },
     "user": {
+      "unique": true,
       "plugin": "users-permissions",
       "model": "user",
       "via": "hunter"
@@ -43,6 +45,9 @@
     "applies": {
       "via": "hunter",
       "collection": "apply"
+    },
+    "address": {
+      "type": "string"
     }
   }
 }

@@ -12,12 +12,17 @@
   },
   "pluginOptions": {},
   "attributes": {
+    "ID": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
     "walletAddress": {
       "type": "string"
     },
     "hunter": {
-      "model": "hunter",
-      "via": "applies"
+      "via": "applies",
+      "model": "hunter"
     },
     "status": {
       "type": "string"
@@ -33,6 +38,9 @@
     },
     "task": {
       "model": "task"
+    },
+    "rejectedReason": {
+      "type": "json"
     }
   }
 }
