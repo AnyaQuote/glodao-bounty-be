@@ -31,6 +31,9 @@
     "endTime": {
       "type": "datetime"
     },
+    "maxParticipant": {
+      "type": "integer"
+    },
     "hunter": {
       "model": "hunter"
     },
