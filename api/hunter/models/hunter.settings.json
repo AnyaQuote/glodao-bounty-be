@@ -19,10 +19,9 @@
       "type": "string"
     },
     "user": {
-      "unique": true,
+      "via": "hunter",
       "plugin": "users-permissions",
-      "model": "user",
-      "via": "hunter"
+      "model": "user"
     },
     "synapsSessionId": {
       "type": "string"
