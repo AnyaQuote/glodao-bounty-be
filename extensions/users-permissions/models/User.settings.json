@@ -62,6 +62,9 @@
     "hunter": {
       "via": "user",
       "model": "hunter"
+    },
+    "avatar": {
+      "type": "string"
     }
   }
 }
