@@ -41,9 +41,6 @@
     },
     "rejectedReason": {
       "type": "json"
-    },
-    "avatar": {
-      "type": "string"
     }
   }
 }
