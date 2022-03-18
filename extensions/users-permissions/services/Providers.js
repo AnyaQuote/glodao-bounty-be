@@ -311,6 +311,7 @@ const getProfile = async (provider, query, callback) => {
               username: body.screen_name,
               email: body.email,
               avatar: body.profile_image_url,
+              twitterCreatedTime: body.created_at,
             });
           }
         });
