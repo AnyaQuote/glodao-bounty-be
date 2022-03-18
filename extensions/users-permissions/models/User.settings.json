@@ -65,6 +65,9 @@
     },
     "avatar": {
       "type": "string"
+    },
+    "twitterCreatedTime": {
+      "type": "datetime"
     }
   }
 }
