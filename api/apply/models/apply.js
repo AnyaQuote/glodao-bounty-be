@@ -70,6 +70,7 @@ const validateTweetData = (data, baseRequirement, type) => {
     const referencedTweets = data.referenced_tweets;
     if (!referencedTweets || referencedTweets.length === 0) return false;
     const baseTweetId = twitterHelper.getTweetIdFromLink(baseRequirement.link);
+    // Check if there were required tweet in referenced tweets list
     for (let index = 0; index < referencedTweets.length; index++) {
       const tweet = referencedTweets[index];
       if (tweet.id === baseTweetId) return true;
