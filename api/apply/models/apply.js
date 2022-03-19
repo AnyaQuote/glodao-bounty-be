@@ -13,7 +13,6 @@ module.exports = {
       try {
         const twitterStepData = data.data.twitter ?? [];
         const twitterTaskBaseData = data.task.data.twitter ?? [];
-
         const res = await validateTwitterLinks(
           twitterStepData,
           twitterTaskBaseData
@@ -26,6 +25,12 @@ module.exports = {
   },
 };
 
+/**
+ * Check if updated twitterStepData met task requirement
+ * @param {array} twitterStepData Apply data
+ * @param {array} twitterTaskBaseData Corresponding task requirement
+ * @returns {boolean} If updated twitterStepData met task requirement
+ */
 const validateTwitterLinks = async (twitterStepData, twitterTaskBaseData) => {
   for (let step = 0; step < twitterStepData.length; step++) {
     const currentStepObj = twitterStepData[step];
@@ -47,6 +52,13 @@ const validateTwitterLinks = async (twitterStepData, twitterTaskBaseData) => {
   return true;
 };
 
+/**
+ * Check if tweet data have met specific task requirement
+ * @param {object} data Tweet data
+ * @param {object} baseRequirement Task data
+ * @param {string} type Type of task
+ * @returns {boolean} if tweet data have finished task requirement
+ */
 const validateTweetData = (data, baseRequirement, type) => {
   if (type === "follow") return true;
   if (type === "tweet") {
