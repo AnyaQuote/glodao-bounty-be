@@ -9,33 +9,59 @@ const twitterHelper = require("../../../helpers/twitter-helper");
 module.exports = {
   lifecycles: {
     // Called before an entry is created
-     beforeUpdate(params, data) {
-      const twitterStepData = data.data.twitter ?? [];
-      const twitterTaskBaseData = data.task.data.twitter ?? [];
+    async beforeUpdate(params, data) {
+      try {
+        const twitterStepData = data.data.twitter ?? [];
+        const twitterTaskBaseData = data.task.data.twitter ?? [];
 
-      twitterStepData.forEach((step) => {
-        console.log(step.link);
-        // if (step.link) console.log(isTwitterHandle(step.link));
-        // console.log(twitterHelper.getTweetDataByTweetLink('https://mobile.twitter.com/CyberKDev/status/1503999125901090817'));
-        const id = twitterHelper.getTweetIdFromLink(
-          "https://mobile.twitter.com/CyberKDev/status/1503999125901090817"
+        const res = await validateTwitterLinks(
+          twitterStepData,
+          twitterTaskBaseData
         );
-        console.log(twitterHelper.getTweetDataByTweetId(id).then(res=>{
-					console.log(res.data.text);
-				}));
-      });
-      for (let step = 0; step < twitterStepData.length; step++) {
-        const currentStepObj = twitterStepData[step];
+        if (!res) throw strapi.errors.badRequest("Invalid link");
+      } catch (error) {
+        throw error;
       }
-
-      // throw strapi.errors.badRequest('Some message you want to show in the admin UI');
     },
   },
 };
 
-const validateTwitterLink = (twitterStepData, twitterTaskBaseData) => {
+const validateTwitterLinks = async (twitterStepData, twitterTaskBaseData) => {
   for (let step = 0; step < twitterStepData.length; step++) {
     const currentStepObj = twitterStepData[step];
     if (currentStepObj.type === "follow" || !currentStepObj.finished) continue;
+    const { link } = currentStepObj;
+    if (!twitterHelper.isTwitterStatusLink(link)) return false;
+    const tweetData = await twitterHelper.getTweetData(
+      twitterHelper.getTweetIdFromLink(link)
+    );
+    if (
+      !validateTweetData(
+        tweetData,
+        twitterTaskBaseData[step],
+        currentStepObj.type
+      )
+    )
+      return false;
+  }
+  return true;
+};
+
+const validateTweetData = (data, baseRequirement, type) => {
+  if (type === "follow") return true;
+  if (type === "tweet") {
+    const content = data.text;
+    if (content.includes(baseRequirement.hashtag)) return true;
+    return false;
+  }
+  if (type === "retweet") {
+    const referencedTweets = data.referenced_tweets;
+    if (!referencedTweets || referencedTweets.length === 0) return false;
+    const baseTweetId = twitterHelper.getTweetIdFromLink(baseRequirement.link);
+    for (let index = 0; index < referencedTweets.length; index++) {
+      const tweet = referencedTweets[index];
+      if (tweet.id === baseTweetId) return true;
+    }
+    return false;
   }
 };
