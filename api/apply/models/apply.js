@@ -19,7 +19,7 @@ module.exports = {
         );
         if (!res) throw strapi.errors.badRequest("Invalid link");
       } catch (error) {
-        throw error;
+        throw strapi.errors.badRequest("Invalid link");
       }
     },
   },
