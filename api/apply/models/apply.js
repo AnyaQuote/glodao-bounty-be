@@ -11,8 +11,8 @@ module.exports = {
     // Called before an entry is created
     async beforeUpdate(params, data) {
       try {
-        const twitterStepData = data.data.twitter ?? [];
-        const twitterTaskBaseData = data.task.data.twitter ?? [];
+        const twitterStepData = data.data.twitter || [];
+        const twitterTaskBaseData = data.task.data.twitter || [];
         const res = await validateTwitterLinks(
           twitterStepData,
           twitterTaskBaseData
