@@ -1,6 +1,6 @@
 "use strict";
 const twitterHelper = require("../../../helpers/twitter-helper");
-
+const { get, merge, isEqual } = require("lodash");
 /**
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#lifecycle-hooks)
  * to customize this model
@@ -9,72 +9,79 @@ const twitterHelper = require("../../../helpers/twitter-helper");
 module.exports = {
   lifecycles: {
     // Called before an entry is created
-    async beforeUpdate(params, data) {
-      try {
-        const twitterStepData = data.data.twitter || [];
-        const twitterTaskBaseData = data.task.data.twitter || [];
-        const res = await validateTwitterLinks(
-          twitterStepData,
-          twitterTaskBaseData
-        );
-        if (!res) throw strapi.errors.badRequest("Invalid link");
-      } catch (error) {
-        throw strapi.errors.badRequest("Invalid link");
-      }
+    async beforeUpdate(params, { data, task }) {
+      const res = await validateTwitterLinks(
+        merge(
+          get(data, "twitter", []).map((step) => {
+            return {
+              ...step,
+              submitedLink: step.link,
+            };
+          }),
+          get(task, "data.twitter", [])
+        )
+      );
+      if (res) throw strapi.errors.badRequest(res);
     },
   },
 };
 
-/**
- * Check if updated twitterStepData met task requirement
- * @param {array} twitterStepData Apply data
- * @param {array} twitterTaskBaseData Corresponding task requirement
- * @returns {boolean} If updated twitterStepData met task requirement
- */
-const validateTwitterLinks = async (twitterStepData, twitterTaskBaseData) => {
-  for (let step = 0; step < twitterStepData.length; step++) {
-    const currentStepObj = twitterStepData[step];
-    if (currentStepObj.type === "follow" || !currentStepObj.finished) continue;
-    const { link } = currentStepObj;
-    if (!twitterHelper.isTwitterStatusLink(link)) return false;
-    const tweetData = await twitterHelper.getTweetData(
-      twitterHelper.getTweetIdFromLink(link)
+const validateTwitterLinks = async (taskData) => {
+  for (const currentStepObj of taskData) {
+    if (!isNeedToValidate(currentStepObj)) continue;
+    if (!twitterHelper.isTwitterStatusLink(currentStepObj.submitedLink))
+      return "Invalid twitter link";
+    const tweetData = await extractTweetData(currentStepObj.submitedLink);
+    if (tweetData.errorMsg) return tweetData.errorMsg;
+    const errorMsg = validateTweetData(
+      tweetData,
+      currentStepObj,
+      currentStepObj.type
     );
-    if (
-      !validateTweetData(
-        tweetData,
-        twitterTaskBaseData[step],
-        currentStepObj.type
-      )
-    )
-      return false;
+    if (errorMsg) return errorMsg;
   }
+  return "";
+};
+
+const isNeedToValidate = (stepData) => {
+  if (stepData.type === "follow" || !stepData.finished) return false;
   return true;
 };
 
-/**
- * Check if tweet data have met specific task requirement
- * @param {object} data Tweet data
- * @param {object} baseRequirement Task data
- * @param {string} type Type of task
- * @returns {boolean} if tweet data have finished task requirement
- */
+const extractTweetData = async (link) => {
+  try {
+    return await twitterHelper.getTweetData(
+      twitterHelper.getTweetIdFromLink(link)
+    );
+  } catch (error) {
+    return { errorMsg: "Get tweet data error" };
+  }
+};
+
 const validateTweetData = (data, baseRequirement, type) => {
-  if (type === "follow") return true;
-  if (type === "tweet") {
-    const content = data.text;
-    if (content.includes(baseRequirement.hashtag)) return true;
-    return false;
+  if (type === "follow") return verifyTwitterFollow();
+  if (type === "tweet") return verifyTweetLink(data, baseRequirement);
+  if (type === "retweet") return verifyRetweetLink(data, baseRequirement);
+};
+
+const verifyTwitterFollow = () => {
+  return "";
+};
+
+const verifyTweetLink = (data, baseRequirement) => {
+  const content = get(data, "text", "");
+  if (content.includes(baseRequirement.hashtag)) return "";
+  return "Tweet link missing required hashtag";
+};
+
+const verifyRetweetLink = (data, baseRequirement) => {
+  const referencedTweets = get(data, "referenced_tweets", []);
+  if (!referencedTweets) return "Link missing required referenced tweet";
+  const baseTweetId = twitterHelper.getTweetIdFromLink(baseRequirement.link);
+  // Check if there were required tweet in referenced tweets list
+  for (let index = 0; index < referencedTweets.length; index++) {
+    const tweet = referencedTweets[index];
+    if (isEqual(tweet.id, baseTweetId)) return "";
   }
-  if (type === "retweet") {
-    const referencedTweets = data.referenced_tweets;
-    if (!referencedTweets || referencedTweets.length === 0) return false;
-    const baseTweetId = twitterHelper.getTweetIdFromLink(baseRequirement.link);
-    // Check if there were required tweet in referenced tweets list
-    for (let index = 0; index < referencedTweets.length; index++) {
-      const tweet = referencedTweets[index];
-      if (tweet.id === baseTweetId) return true;
-    }
-    return false;
-  }
+  return "Link missing required referenced tweet";
 };
