@@ -12,7 +12,9 @@
   },
   "devDependencies": {},
   "dependencies": {
+    "@metamask/eth-sig-util": "^4.0.0",
     "axios": "^0.26.1",
+    "ethereumjs-util": "^7.1.4",
     "strapi": "3.6.1",
     "strapi-admin": "3.6.1",
     "strapi-connector-mongoose": "3.6.1",
@@ -22,7 +24,8 @@
     "strapi-plugin-i18n": "3.6.1",
     "strapi-plugin-upload": "3.6.1",
     "strapi-plugin-users-permissions": "3.6.1",
-    "strapi-utils": "3.6.1"
+    "strapi-utils": "3.6.1",
+    "web3": "^1.7.1"
   },
   "author": {
     "name": "A Strapi developer"

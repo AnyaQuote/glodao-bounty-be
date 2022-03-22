@@ -47,6 +47,14 @@
       "config": {
         "policies": []
       }
+    },
+    {
+      "method": "POST",
+      "path": "/hunters/verifySignMessage",
+      "handler": "hunter.verifySignMessage",
+      "config": {
+        "policies": []
+      }
     }
   ]
 }
