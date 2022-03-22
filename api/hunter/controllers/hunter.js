@@ -26,11 +26,16 @@ module.exports = {
       id: id,
     });
 
-    return await verifySoliditySignature(
+    const isValidSignature = await verifySoliditySignature(
       walletAddress,
       signature,
       hunter.nonce
     );
+
+    if (isValidSignature)
+      return await strapi.services.hunter.updateHunterNonce(hunter);
+
+    return ctx.badRequest("Fail to verify sign message");
   },
   updateWalletAddress: async (ctx) => {
     const { walletAddress, signature, id, chain } = ctx.request.body;
