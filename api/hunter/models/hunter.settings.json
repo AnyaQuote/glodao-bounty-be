@@ -48,6 +48,9 @@
     },
     "address": {
       "type": "string"
+    },
+    "nonce": {
+      "type": "string"
     }
   }
 }
