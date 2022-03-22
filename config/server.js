@@ -7,7 +7,7 @@ module.exports = ({ env }) => ({
     },
   },
   url:
-    env("NODE_ENV") === "development"
-      ? "https://diversity-api.contracts.dev"
-      : "https://api.glodao.io",
+    env("NODE_ENV") === "production"
+      ? "https://api.glodao.io"
+      : "https://diversity-api.contracts.dev",
 });
