@@ -55,6 +55,14 @@
       "config": {
         "policies": []
       }
+    },
+    {
+      "method": "POST",
+      "path": "/hunters/updateWalletAddress",
+      "handler": "hunter.updateWalletAddress",
+      "config": {
+        "policies": []
+      }
     }
   ]
 }
