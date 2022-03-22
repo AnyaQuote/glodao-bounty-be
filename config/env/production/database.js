@@ -5,7 +5,7 @@ module.exports = ({ env }) => ({
       connector: "mongoose",
       settings: {
         client: "mongo",
-        uri: "mongodb+srv://anhdt:123qwert@dev.v8kyz.mongodb.net/diversity-server?retryWrites=true&w=majority",
+        uri: "mongodb+srv://anhdt:123qwert@dev.v8kyz.mongodb.net/diversity-prod?retryWrites=true&w=majority",
       },
       options: {
         ssl: true,
