@@ -41,6 +41,10 @@
     },
     "rejectedReason": {
       "type": "json"
+    },
+    "poolType": {
+      "type": "string",
+      "default": "community"
     }
   }
 }
