@@ -45,6 +45,18 @@
     },
     "featured": {
       "type": "boolean"
+    },
+    "totalParticipants": {
+      "type": "integer",
+      "default": 0
+    },
+    "maxPriorityParticipants": {
+      "type": "integer",
+      "default": 0
+    },
+    "priorityRewardAmount": {
+      "type": "integer",
+      "default": 0
     }
   }
 }
