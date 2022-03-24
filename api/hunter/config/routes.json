@@ -63,6 +63,14 @@
       "config": {
         "policies": []
       }
+    },
+    {
+      "method": "GET",
+      "path": "/checkUserStaked",
+      "handler": "hunter.checkUserStaked",
+      "config": {
+        "policies": []
+      }
     }
   ]
 }

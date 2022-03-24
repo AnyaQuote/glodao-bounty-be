@@ -1,9 +1,13 @@
 "use strict";
 const { isEqual } = require("lodash");
+const web3 = require("web3");
 const {
   isSolidityAddress,
   verifySoliditySignature,
 } = require("../../../helpers/wallet-helper");
+const {
+  checkUserStaked,
+} = require("../../../helpers/blockchainHelpers/farm-helper");
 
 /**
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-controllers)
@@ -65,5 +69,15 @@ module.exports = {
       );
 
     return ctx.badRequest("Fail to verify sign message");
+  },
+  checkUserStaked: async (ctx) => {
+    const { poolId, address } = ctx.query;
+    const isSolidityWallet = web3.utils.isAddress(address);
+    if (poolId !== null && poolId !== undefined && isSolidityWallet) {
+      const isStaked = await checkUserStaked(poolId, address);
+      return isStaked;
+    } else {
+      return false;
+    }
   },
 };
