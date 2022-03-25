@@ -67,7 +67,7 @@
       "type": "datetime"
     },
     "description": {
-      "type": "text"
+      "type": "richtext"
     },
     "createdBy": {
       "plugin": "users-permissions",
