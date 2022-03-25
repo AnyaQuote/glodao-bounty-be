@@ -1,5 +1,6 @@
 "use strict";
 const { generateRandomNonce } = require("../../../helpers/wallet-helper");
+const { isEqual, get } = require("lodash");
 
 /**
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-services)
@@ -36,7 +37,19 @@ const updateHunterWalletAddress = async (hunter, walletAddress) => {
   );
 };
 
+/**
+ * Check if a wallet address matched with the registered address of the hunter
+ * @param {string} hunterId Hunter id
+ * @param {string} walletAddress Wallet address
+ * @returns True if the wallet address matched with registered address of the hunter, else false
+ */
+const isPreRegisteredWalletMatched = async (hunterId, walletAddress) => {
+  const hunter = await strapi.services.hunter.findOne({ id: hunterId });
+  return isEqual(get(hunter, "address"), walletAddress);
+};
+
 module.exports = {
   updateHunterNonce,
   updateHunterWalletAddress,
+  isPreRegisteredWalletMatched,
 };
