@@ -8,7 +8,10 @@ const { get, merge, isEqual } = require("lodash");
 
 module.exports = {
   lifecycles: {
-    // Called before an entry is created
+    // Called after an entry is created
+    async afterCreate(params, { task: taskId }) {
+      await strapi.services.task.updateTaskTotalParticipantsById(taskId);
+    },
     async beforeUpdate(params, { data, task }) {
       const res = await validateTwitterLinks(
         merge(
