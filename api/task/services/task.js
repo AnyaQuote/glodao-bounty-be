@@ -61,7 +61,6 @@ const updateTaskTotalParticipantsById = async (id) => {
  */
 const isPriorityPoolFullById = async (taskId) => {
   const task = await strapi.services.task.findOne({ id: taskId });
-	console.log(task.totalParticipants,task.maxPriorityParticipants);
   return gte(
     get(task, "totalParticipants", 0),
     get(task, "maxPriorityParticipants", 0)
