@@ -14,7 +14,6 @@ module.exports = {
     const { walletAddress, applyId, hunterId, taskId, poolId } =
       ctx.request.body;
     const strapiServices = strapi.services;
-    console.log(walletAddress, applyId, hunterId, taskId, poolId);
     if (!walletAddress || !applyId || !hunterId || !taskId || isNil(poolId))
       return ctx.badRequest("Invalid request body: missing fields");
 
