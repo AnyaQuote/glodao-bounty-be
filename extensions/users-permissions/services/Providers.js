@@ -312,6 +312,7 @@ const getProfile = async (provider, query, callback) => {
               email: body.email,
               avatar: body.profile_image_url,
               twitterCreatedTime: body.created_at,
+              twitterId: body.id,
             });
           }
         });

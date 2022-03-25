@@ -68,6 +68,10 @@
     },
     "twitterCreatedTime": {
       "type": "datetime"
+    },
+    "twitterId": {
+      "type": "string",
+      "required": true
     }
   }
 }
