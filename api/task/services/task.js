@@ -1,5 +1,7 @@
 "use strict";
 
+const { get, gte } = require("lodash");
+
 /**
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-services)
  * to customize this service
@@ -52,8 +54,23 @@ const updateTaskTotalParticipantsById = async (id) => {
   );
 };
 
+/**
+ * Check if a task's priority pool with specific id is full
+ * @param {string} taskId task id
+ * @returns true if task's priority pool is full, else false
+ */
+const isPriorityPoolFullById = async (taskId) => {
+  const task = await strapi.services.task.findOne({ id: taskId });
+	console.log(task.totalParticipants,task.maxPriorityParticipants);
+  return gte(
+    get(task, "totalParticipants", 0),
+    get(task, "maxPriorityParticipants", 0)
+  );
+};
+
 module.exports = {
   increaseTaskTotalParticipants,
   increaseTaskTotalParticipantsById,
   updateTaskTotalParticipantsById,
+  isPriorityPoolFullById,
 };
