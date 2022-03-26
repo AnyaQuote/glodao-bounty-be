@@ -74,9 +74,10 @@
       "required": true
     },
     "referralCode": {
-      "type": "string"
+      "type": "string",
+      "unique": true
     },
-    "referenceId": {
+    "referrerCode": {
       "type": "string",
       "default": "######"
     },
