@@ -13,6 +13,7 @@ const purest = require("purest")({ request });
 const purestConfig = require("@purest/providers");
 const { getAbsoluteServerUrl } = require("strapi-utils");
 const jwt = require("jsonwebtoken");
+const { generateRandomNonce } = require("../../../helpers/wallet-helper");
 
 /**
  * Connect thanks to a third-party provider.
@@ -92,6 +93,7 @@ const connect = (provider, query) => {
           provider: provider,
           role: defaultRole.id,
           confirmed: true,
+          referralCode: generateReferralCode(profile.username),
         });
 
         const createdUser = await strapi
@@ -595,6 +597,15 @@ const getProfile = async (provider, query, callback) => {
       callback(new Error("Unknown provider."));
       break;
   }
+};
+
+/**
+ * Generate referral code by combine username and a random nonce
+ * @param {string} username Username
+ * @returns Referral code generated from the username
+ */
+const generateReferralCode = (username) => {
+  return `${username}${generateRandomNonce()}`;
 };
 
 const buildRedirectUri = (provider = "") =>
