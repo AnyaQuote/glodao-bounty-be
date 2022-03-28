@@ -7,9 +7,9 @@ const {
 } = require("../../helpers/wallet-helper");
 
 module.exports = async (ctx, next) => {
-  const { walletAddress, signature, id, chain } = ctx.request.body;
+  const { walletAddress, signature, hunterId, chain } = ctx.request.body;
 
-  if (!walletAddress || !signature || !id || !chain)
+  if (!walletAddress || !signature || !hunterId || !chain)
     return ctx.badRequest(
       "Invalid request body: missing fields for sign message verification"
     );
@@ -20,7 +20,7 @@ module.exports = async (ctx, next) => {
     );
 
   const hunter = await strapi.services.hunter.findOne({
-    id: id,
+    id: hunterId,
   });
 
   if (await verifySoliditySignature(walletAddress, signature, hunter.nonce))
