@@ -57,11 +57,11 @@
       }
     },
     {
-      "method": "POST",
+      "method": "PATCH",
       "path": "/hunters/updateWalletAddress",
       "handler": "hunter.updateWalletAddress",
       "config": {
-        "policies": []
+        "policies": ["global::is-owner"]
       }
     },
     {

@@ -49,11 +49,11 @@
       }
     },
     {
-      "method": "POST",
+      "method": "PATCH",
       "path": "/applies/applyForPriority",
       "handler": "apply.applyForPriorityPool",
       "config": {
-        "policies": []
+        "policies": ["global::is-owner"]
       }
     }
   ]
