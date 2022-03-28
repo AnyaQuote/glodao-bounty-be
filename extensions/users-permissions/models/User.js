@@ -10,26 +10,16 @@ module.exports = {
   lifecycles: {
     // Called after an entry is created
     async afterCreate(result) {
-      const { referrerCode, id, username } = result;
+      const { referrerCode, id, username, referralCode } = result;
 
       await strapi.services.hunter.create({
         name: username,
         status: "active",
         user: id,
         nonce: generateRandomNonce(),
+        referralCode,
+        referrerCode,
       });
-
-      if (_.isEqual(referrerCode, "######")) return;
-
-      const referrer = await strapi.plugins[
-        "users-permissions"
-      ].services.user.getUserByReferralCode(referrerCode);
-
-      if (!referrer) return;
-
-      await strapi.plugins[
-        "users-permissions"
-      ].services.user.addToUserReferralList(referrer, id);
     },
   },
 };

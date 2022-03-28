@@ -51,6 +51,14 @@
     },
     "nonce": {
       "type": "string"
+    },
+    "referralCode": {
+      "type": "string",
+      "unique": true
+    },
+    "referrerCode": {
+      "type": "string",
+      "default": "######"
     }
   }
 }
