@@ -53,7 +53,7 @@
       "path": "/applies/applyForPriority",
       "handler": "apply.applyForPriorityPool",
       "config": {
-        "policies": ["global::is-owner"]
+        "policies": ["global::is-owner", "global::sign-message"]
       }
     }
   ]
