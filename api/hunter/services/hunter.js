@@ -32,7 +32,6 @@ const updateHunterWalletAddress = async (hunter, walletAddress) => {
     { id: hunter.id },
     {
       address: walletAddress,
-      nonce: generateRandomNonce(),
     }
   );
 };
