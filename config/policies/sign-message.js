@@ -23,8 +23,10 @@ module.exports = async (ctx, next) => {
     id: hunterId,
   });
 
-  if (await verifySoliditySignature(walletAddress, signature, hunter.nonce))
+  if (await verifySoliditySignature(walletAddress, signature, hunter.nonce)) {
+    await strapi.services.hunter.updateHunterNonce(hunter);
     return await next();
+  }
 
   return ctx.badRequest("Fail to verify sign message");
 };
