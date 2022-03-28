@@ -18,13 +18,25 @@ module.exports = async (ctx, next) => {
   if (!recordId)
     return ctx.badRequest("Missing id of the record for validation");
 
-  const [content] = await strapi.services[collection].find({
-    id: recordId,
-    "user.id": ctx.state.user.id,
-  });
-
-  if (!content) {
-    return ctx.forbidden(`You can not update this entry`);
+  if (_.isEqual(collection, "hunter")) {
+    const [content] = await strapi.services[collection].find({
+      id: recordId,
+      "user.id": ctx.state.user.id,
+    });
+    if (!content) {
+      return ctx.forbidden(`You can not update this entry`);
+    }
+  } else {
+    const hunter = await strapi.services.hunter.findOne({
+      "user.id": ctx.state.user.id,
+    });
+    const [content] = await strapi.services[collection].find({
+      id: recordId,
+      "hunter.id": hunter.id,
+    });
+    if (!content) {
+      return ctx.forbidden(`You can not update this entry`);
+    }
   }
 
   return await next();
