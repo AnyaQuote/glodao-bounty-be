@@ -27,7 +27,7 @@ module.exports = {
         "Invalid request: Wallet not matched with the pre-registered one"
       );
 
-    if (await !checkUserStaked(walletAddress, poolId))
+    if (await !checkUserStaked(poolId, walletAddress))
       return ctx.unauthorized("Invalid request: This wallet has not staked");
 
     if (await strapiServices.task.isPriorityPoolFullById(taskId))
