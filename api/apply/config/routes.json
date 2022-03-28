@@ -55,6 +55,14 @@
       "config": {
         "policies": ["global::is-owner", "global::sign-message"]
       }
+    },
+    {
+      "method": "PUT",
+      "path": "/applies/:id/task",
+      "handler": "apply.updateTaskProcess",
+      "config": {
+        "policies": ["global::is-owner"]
+      }
     }
   ]
 }
