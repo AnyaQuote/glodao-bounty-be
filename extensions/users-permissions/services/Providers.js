@@ -27,6 +27,7 @@ const { generateRandomNonce } = require("../../../helpers/wallet-helper");
 
 const connect = (provider, query) => {
   const access_token = query.access_token || query.code || query.oauth_token;
+  const referrerCode = _.get(query, "referrerCode", "######");
 
   return new Promise((resolve, reject) => {
     if (!access_token) {
@@ -94,13 +95,18 @@ const connect = (provider, query) => {
           role: defaultRole.id,
           confirmed: true,
           referralCode: generateReferralCode(profile.username),
+          referrerCode,
         });
 
-        const createdUser = await strapi
+        const { id: userId } = await strapi
           .query("user", "users-permissions")
           .create(params);
 
-        return resolve([createdUser, null]);
+        const afterCreatedUser = await strapi
+          .query("user", "users-permissions")
+          .findOne({ id: userId });
+
+        return resolve([afterCreatedUser, null]);
       } catch (err) {
         reject([null, err]);
       }
