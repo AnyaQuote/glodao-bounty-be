@@ -7,9 +7,13 @@ const CONFIG = {
     farmAddress: "0x071f6ee2BFa32740dC95e0593579d814c2e60630",
     chainId: 97,
   },
+  // prod: {
+  //   farmAddress: "",
+  //   chainId: 56,
+  // },
   prod: {
-    farmAddress: "",
-    chainId: 56,
+    farmAddress: "0x071f6ee2BFa32740dC95e0593579d814c2e60630",
+    chainId: 97,
   },
 };
 
