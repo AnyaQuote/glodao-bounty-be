@@ -49,11 +49,19 @@
       }
     },
     {
-      "method": "POST",
+      "method": "PATCH",
       "path": "/applies/applyForPriority",
       "handler": "apply.applyForPriorityPool",
       "config": {
-        "policies": []
+        "policies": ["global::is-owner", "global::sign-message"]
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/applies/:id/task",
+      "handler": "apply.updateTaskProcess",
+      "config": {
+        "policies": ["global::is-owner"]
       }
     }
   ]

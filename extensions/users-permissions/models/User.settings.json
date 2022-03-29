@@ -72,6 +72,17 @@
     "twitterId": {
       "type": "string",
       "required": true
+    },
+    "referralCode": {
+      "type": "string",
+      "unique": true
+    },
+    "referrerCode": {
+      "type": "string",
+      "default": "######"
+    },
+    "referralList": {
+      "type": "json"
     }
   }
 }

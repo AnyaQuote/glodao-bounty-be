@@ -42,33 +42,16 @@ module.exports = {
     return ctx.badRequest("Fail to verify sign message");
   },
   updateWalletAddress: async (ctx) => {
-    const { walletAddress, signature, id, chain } = ctx.request.body;
-
-    if (!walletAddress || !signature || !id || !chain)
-      return ctx.badRequest("Invalid request body: missing fields");
-
-    if (!isEqual(chain, "sol") && !isSolidityAddress(walletAddress))
-      return ctx.badRequest(
-        "Invalid wallet address: wallet address is not ETH chain"
-      );
+    const { walletAddress, id } = ctx.request.body;
 
     const hunter = await strapi.services.hunter.findOne({
       id: id,
     });
 
-    const isValidSignature = await verifySoliditySignature(
-      walletAddress,
-      signature,
-      hunter.nonce
+    return await strapi.services.hunter.updateHunterWalletAddress(
+      hunter,
+      walletAddress
     );
-
-    if (isValidSignature)
-      return await strapi.services.hunter.updateHunterWalletAddress(
-        hunter,
-        walletAddress
-      );
-
-    return ctx.badRequest("Fail to verify sign message");
   },
   checkUserStaked: async (ctx) => {
     const { poolId, address } = ctx.query;

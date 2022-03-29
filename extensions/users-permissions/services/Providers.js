@@ -13,6 +13,7 @@ const purest = require("purest")({ request });
 const purestConfig = require("@purest/providers");
 const { getAbsoluteServerUrl } = require("strapi-utils");
 const jwt = require("jsonwebtoken");
+const { generateRandomNonce } = require("../../../helpers/wallet-helper");
 
 /**
  * Connect thanks to a third-party provider.
@@ -26,6 +27,7 @@ const jwt = require("jsonwebtoken");
 
 const connect = (provider, query) => {
   const access_token = query.access_token || query.code || query.oauth_token;
+  const referrerCode = _.get(query, "referrerCode", "######");
 
   return new Promise((resolve, reject) => {
     if (!access_token) {
@@ -92,13 +94,19 @@ const connect = (provider, query) => {
           provider: provider,
           role: defaultRole.id,
           confirmed: true,
+          referralCode: generateReferralCode(profile.username),
+          referrerCode,
         });
 
-        const createdUser = await strapi
+        const { id: userId } = await strapi
           .query("user", "users-permissions")
           .create(params);
 
-        return resolve([createdUser, null]);
+        const afterCreatedUser = await strapi
+          .query("user", "users-permissions")
+          .findOne({ id: userId });
+
+        return resolve([afterCreatedUser, null]);
       } catch (err) {
         reject([null, err]);
       }
@@ -595,6 +603,15 @@ const getProfile = async (provider, query, callback) => {
       callback(new Error("Unknown provider."));
       break;
   }
+};
+
+/**
+ * Generate referral code by combine username and a random nonce
+ * @param {string} username Username
+ * @returns Referral code generated from the username
+ */
+const generateReferralCode = (username) => {
+  return `${username}${generateRandomNonce()}`;
 };
 
 const buildRedirectUri = (provider = "") =>

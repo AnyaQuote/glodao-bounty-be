@@ -32,7 +32,6 @@ const updateHunterWalletAddress = async (hunter, walletAddress) => {
     { id: hunter.id },
     {
       address: walletAddress,
-      nonce: generateRandomNonce(),
     }
   );
 };
@@ -45,7 +44,7 @@ const updateHunterWalletAddress = async (hunter, walletAddress) => {
  */
 const isPreRegisteredWalletMatched = async (hunterId, walletAddress) => {
   const hunter = await strapi.services.hunter.findOne({ id: hunterId });
-  return isEqual(get(hunter, "address"), walletAddress);
+  return isEqual(get(hunter, "address", ""), walletAddress);
 };
 
 module.exports = {

@@ -23,6 +23,49 @@ const updateApplyPoolType = async (id, poolType) => {
 };
 
 /**
+ * Update task data of an apply
+ * @param {string} id Apply id
+ * @param {object} taskData Apply's task data
+ * @returns {Promise}
+ */
+const updateApplyTaskDataById = async (id, taskData) => {
+  return await strapi.services.apply.update(
+    {
+      id,
+    },
+    {
+      data: taskData,
+    }
+  );
+};
+
+/**
+ * Update apply status to new status
+ * @param {string} id Apply id
+ * @param {string} status new status
+ * @returns {Promise} Updated apply
+ */
+const changeApplyStatus = async (id, status) => {
+  return await strapi.services.apply.update(
+    {
+      id,
+    },
+    {
+      status,
+    }
+  );
+};
+
+/**
+ * Change apply status to complete
+ * @param {string} id Apply id
+ * @returns {Promise} Updated apply
+ */
+const changeApplyStatusToCompleted = async (id) => {
+  return await changeApplyStatus(id, "completed");
+};
+
+/**
  * Update pool type of an apply to 'priority'
  * @param {string} id Apply id
  * @returns Updated apply
@@ -41,7 +84,8 @@ const moveApplyToCommunityPool = async (id) => {
 };
 
 module.exports = {
-  updateApplyPoolType,
   moveApplyToPriorityPool,
   moveApplyToCommunityPool,
+  updateApplyTaskDataById,
+  changeApplyStatusToCompleted,
 };
