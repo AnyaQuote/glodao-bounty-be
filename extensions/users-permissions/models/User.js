@@ -10,7 +10,7 @@ module.exports = {
   lifecycles: {
     // Called after an entry is created
     async afterCreate(result) {
-      const { referrerCode, id, username, referralCode } = result;
+      const { referrerCode, id, username, referralCode, avatar } = result;
 
       await strapi.services.hunter.create({
         name: username,
@@ -19,6 +19,9 @@ module.exports = {
         nonce: generateRandomNonce(),
         referralCode,
         referrerCode,
+        metadata: {
+          avatar,
+        },
       });
     },
   },
