@@ -41,12 +41,19 @@ module.exports = {
 
   updateTaskProcess: async (ctx) => {
     const { id } = ctx.params;
-    const { taskData, type } = ctx.request.body;
+    const { taskData, type, optional } = ctx.request.body;
     const apply = await strapi.services.apply.findOne({ id });
     if (!apply) return ctx.badRequest("Invalid request id");
 
-    if (isEqual(type, "finish"))
-      return strapi.services.apply.changeApplyStatusToCompleted(id);
+    if (isEqual(type, "finish")) {
+      const walletAddress = get(optional, "walletAddress", "");
+      if (!walletAddress)
+        return ctx.badRequest("Missing wallet address to earn reward");
+      return strapi.services.apply.update(
+        { id },
+        { walletAddress, status: "completed" }
+      );
+    }
 
     const res = await validateTwitterLinks(
       merge(
