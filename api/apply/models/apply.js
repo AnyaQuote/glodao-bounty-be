@@ -13,7 +13,7 @@ module.exports = {
       event.ID = `${event.hunter}_${event.task}`;
       event.poolType = "community";
       event.data = initEmptyStepData(task);
-      delete event.bounty;
+      event.bounty = 0;
       delete event.rejectedReason;
       delete event.metadata;
       delete event.walletAddress;
