@@ -27,7 +27,7 @@ const { generateRandomNonce } = require("../../../helpers/wallet-helper");
 
 const connect = (provider, query) => {
   const access_token = query.access_token || query.code || query.oauth_token;
-  const referrerCode = _.get(query, "referrerCode", "######");
+  let referrerCode = _.get(query, "referrerCode", "######");
 
   return new Promise((resolve, reject) => {
     if (!access_token) {
@@ -46,6 +46,13 @@ const connect = (provider, query) => {
       }
 
       try {
+        if (
+          !(await strapi.plugins["users-permissions"].services.user.isRefExist(
+            referrerCode
+          ))
+        )
+          referrerCode = "######";
+
         const users = await strapi.query("user", "users-permissions").find({
           email: profile.email,
         });
