@@ -24,14 +24,23 @@ module.exports = {
     );
   },
 
-	/**
-	 * Find user by referral code
-	 * @param {string} referralCode User's referral code
-	 * @returns {user}
-	 */
+  /**
+   * Find user by referral code
+   * @param {string} referralCode User's referral code
+   * @returns {user}
+   */
   async getUserByReferralCode(referralCode) {
     return await strapi.query("user", "users-permissions").findOne({
       referralCode,
     });
+  },
+
+  /**
+   * Check if a referral code is valid
+   * @param {string} ref referral code
+   * @returns {Promise} True if ref is exist, else false
+   */
+  async isRefExist(ref) {
+    return (await strapi.services.hunter.count({ referralCode: ref })) > 0;
   },
 };
