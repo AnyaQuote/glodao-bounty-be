@@ -6,7 +6,7 @@ const {
   verifySoliditySignature,
 } = require("../../../helpers/wallet-helper");
 const {
-  checkUserStaked,
+  getWalletStakeAmount,
 } = require("../../../helpers/blockchainHelpers/farm-helper");
 
 /**
@@ -57,10 +57,9 @@ module.exports = {
     const { poolId, address } = ctx.query;
     const isSolidityWallet = web3.utils.isAddress(address);
     if (poolId !== null && poolId !== undefined && isSolidityWallet) {
-      const isStaked = await checkUserStaked(poolId, address);
-      return isStaked;
+      return (await getWalletStakeAmount(address, poolId)).toString();
     } else {
-      return false;
+      return 0;
     }
   },
 };

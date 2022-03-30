@@ -1,7 +1,7 @@
 "use strict";
 
 const {
-  checkUserStaked,
+  isValidStaker,
 } = require("../../../helpers/blockchainHelpers/farm-helper");
 const { isNil, get, merge, isEqual } = require("lodash");
 const twitterHelper = require("../../../helpers/twitter-helper");
@@ -19,17 +19,19 @@ module.exports = {
       return ctx.badRequest("Invalid request body: missing fields");
 
     if (
-      await !strapiServices.hunter.isPreRegisteredWalletMatched(
+      !(await strapiServices.hunter.isPreRegisteredWalletMatched(
         hunterId,
         walletAddress
-      )
+      ))
     )
       return ctx.unauthorized(
         "Invalid request: Wallet not matched with the pre-registered one"
       );
 
-    if (await !checkUserStaked(poolId, walletAddress))
-      return ctx.unauthorized("Invalid request: This wallet has not staked");
+    if (!(await isValidStaker(walletAddress, 1000)))
+      return ctx.unauthorized(
+        "Invalid request: This wallet has not stake enough"
+      );
 
     if (await strapiServices.task.isPriorityPoolFullById(taskId))
       return ctx.conflict(

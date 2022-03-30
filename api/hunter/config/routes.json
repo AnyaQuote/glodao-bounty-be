@@ -69,7 +69,7 @@
       "path": "/checkUserStaked",
       "handler": "hunter.checkUserStaked",
       "config": {
-        "policies": []
+        "policies": ["global::is-owner"]
       }
     }
   ]
