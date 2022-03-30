@@ -13,7 +13,9 @@ module.exports = async (ctx, next) => {
     return ctx.notFound(`Collection ${collection} not found`);
 
   const recordId =
-    _.get(ctx, "params.id", "") || _.get(ctx, "request.body.id", "");
+    _.get(ctx, "query.id", "") ||
+    _.get(ctx, "request.body.id", "") ||
+    _.get(ctx, "params.id", "");
 
   if (!recordId)
     return ctx.badRequest("Missing id of the record for validation");
