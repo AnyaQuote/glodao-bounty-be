@@ -5,7 +5,7 @@
       "path": "/hunters",
       "handler": "hunter.find",
       "config": {
-        "policies": []
+        "policies": ["isRelated"]
       }
     },
     {
@@ -13,7 +13,7 @@
       "path": "/hunters/count",
       "handler": "hunter.count",
       "config": {
-        "policies": []
+        "policies": ["isRelated"]
       }
     },
     {
