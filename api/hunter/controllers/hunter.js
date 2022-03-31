@@ -45,6 +45,14 @@ module.exports = {
   updateWalletAddress: async (ctx) => {
     const { walletAddress, id } = ctx.request.body;
 
+    const anotherHunterWithAddressCount = await strapi.services.hunter.count({
+      id_ne: id,
+      address: walletAddress,
+    });
+
+    if (anotherHunterWithAddressCount > 0)
+      return ctx.badRequest("This wallet has been used by another user");
+
     const hunter = await strapi.services.hunter.findOne({
       id: id,
     });
