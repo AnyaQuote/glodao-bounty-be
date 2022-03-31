@@ -6,8 +6,9 @@ const {
   verifySoliditySignature,
 } = require("../../../helpers/wallet-helper");
 const {
-  checkUserStaked,
+  getWalletStakeAmount,
 } = require("../../../helpers/blockchainHelpers/farm-helper");
+const { FixedNumber } = require("@ethersproject/bignumber");
 
 /**
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-controllers)
@@ -57,10 +58,9 @@ module.exports = {
     const { poolId, address } = ctx.query;
     const isSolidityWallet = web3.utils.isAddress(address);
     if (poolId !== null && poolId !== undefined && isSolidityWallet) {
-      const isStaked = await checkUserStaked(poolId, address);
-      return isStaked;
+      return await getWalletStakeAmount(address, poolId);
     } else {
-      return false;
+      return FixedNumber.from("0");
     }
   },
 };

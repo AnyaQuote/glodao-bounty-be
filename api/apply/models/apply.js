@@ -1,4 +1,9 @@
 "use strict";
+
+const {
+  isValidStaker,
+} = require("../../../helpers/blockchainHelpers/farm-helper");
+
 /**
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#lifecycle-hooks)
  * to customize this model
@@ -11,7 +16,12 @@ module.exports = {
       const task = await strapi.services.task.findOne({ id: event.task });
       event.status = "processing";
       event.ID = `${event.hunter}_${event.task}`;
-      event.poolType = "community";
+
+      const hunter = await strapi.services.hunter.findOne({ id: event.hunter });
+      if (await isValidStaker(hunter.address, 1000))
+        event.poolType = "priority";
+      else event.poolType = "community";
+
       event.data = initEmptyStepData(task);
       event.bounty = 0;
       delete event.rejectedReason;
