@@ -1,7 +1,7 @@
 const axios = require("axios");
 
 const TWITTER_API_BEARER_TOKEN =
-  "AAAAAAAAAAAAAAAAAAAAALuUaQEAAAAAI7IuqJFxrj4iWWQHxJA5rTIKWRM%3D7vpzpWFdqpjuhKqdCm0Jr1BSVhnfc8mIKjPTkvWUmLjOqHBwEw";
+  "AAAAAAAAAAAAAAAAAAAAAHx6bAEAAAAAEZ6IHXM8mjVUgQwu38ZgrKRZoiE%3D4YqyeD6OXVsETqStKaN5XLYo4SJBfZ5GK9QMSRUNZrped2eHsZ";
 const TWEET_API_URL = "https://api.twitter.com/2/tweets";
 
 const axiosInstance = axios.create({
