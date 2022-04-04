@@ -61,13 +61,13 @@ const getWalletStakeAmount = async (address, poolId = 0) => {
 /**
  * Check if the wallet with wallet address have stake more than min stake amount
  * @param {string} address wallet address
- * @param {number} minStakeAmount min stake amount
+ * @param {number} minStakeValue min stake amount
  * @param {number} poolId pool id
  * @returns {Promise}
  */
 const isValidStaker = async (
   address,
-  minStakeAmount = 0,
+  minStakeValue = 0,
   tokenBasePrice = 1,
   poolId = 0
 ) => {
@@ -87,7 +87,7 @@ const isValidStaker = async (
     bigNumberHelper
       .fromDecimals(amount)
       .mulUnsafe(FixedNumber.from(tokenBasePrice)),
-    FixedNumber.from(minStakeAmount)
+    FixedNumber.from(minStakeValue)
   );
 };
 
