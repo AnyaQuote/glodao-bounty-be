@@ -61,11 +61,16 @@ const getWalletStakeAmount = async (address, poolId = 0) => {
 /**
  * Check if the wallet with wallet address have stake more than min stake amount
  * @param {string} address wallet address
- * @param {number} minStakeAmount min stake amount
+ * @param {number} minStakeValue min stake amount
  * @param {number} poolId pool id
  * @returns {Promise}
  */
-const isValidStaker = async (address, minStakeAmount = 0, poolId = 0) => {
+const isValidStaker = async (
+  address,
+  minStakeValue = 0,
+  tokenBasePrice = 1,
+  poolId = 0
+) => {
   const { farmAddress, chainId } =
     process.env.NODE_ENV === "production" ? CONFIG.prod : CONFIG.dev;
 
@@ -79,8 +84,10 @@ const isValidStaker = async (address, minStakeAmount = 0, poolId = 0) => {
     .call();
 
   return bigNumberHelper.gte(
-    bigNumberHelper.fromDecimals(amount),
-    FixedNumber.from(minStakeAmount)
+    bigNumberHelper
+      .fromDecimals(amount)
+      .mulUnsafe(FixedNumber.from(tokenBasePrice)),
+    FixedNumber.from(minStakeValue)
   );
 };
 

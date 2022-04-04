@@ -28,9 +28,17 @@ module.exports = {
         "Invalid request: Wallet not matched with the pre-registered one"
       );
 
-    if (!(await isValidStaker(walletAddress, 1000)))
+    const taskDetail = await strapi.services.task.findOne({ id: taskId });
+
+    if (
+      !(await isValidStaker(
+        walletAddress,
+        1000,
+        get(taskDetail, "tokenBasePrice", 1)
+      ))
+    )
       return ctx.unauthorized(
-        "Invalid request: This wallet has not stake enough"
+        "Invalid request: This wallet has not stake enough to participate in the priority pool"
       );
 
     if (await strapiServices.task.isPriorityPoolFullById(taskId))
