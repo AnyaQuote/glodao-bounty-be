@@ -166,14 +166,17 @@ const verifyTwitterFollow = () => {
 
 const verifyTweetLink = (data, baseRequirement) => {
   const content = _.get(data, "text", "");
-  if (content.includes(baseRequirement.hashtag)) return "";
+  if (_.toLower(content).includes(_.toLower(`#${baseRequirement.hashtag}`)))
+    return "";
   return "Tweet link missing required hashtag";
 };
 
 const verifyRetweetLink = (data, baseRequirement) => {
   if (
     !_.isEmpty(_.get(baseRequirement, "hashtag", "")) &&
-    !_.get(data, "text", "").includes(baseRequirement.hashtag)
+    !_.toLower(_.get(data, "text", "")).includes(
+      _.toLower(`#${baseRequirement.hashtag}`)
+    )
   )
     return "Tweet link missing required hashtag";
   const referencedTweets = _.get(data, "referenced_tweets", []);
