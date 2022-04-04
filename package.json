@@ -16,7 +16,11 @@
   "dependencies": {
     "@metamask/eth-sig-util": "^4.0.0",
     "axios": "^0.26.1",
+    "chai": "^4.3.6",
     "ethereumjs-util": "^7.1.4",
+    "lodash": "^4.17.21",
+    "mocha": "^9.2.2",
+    "moment": "^2.29.1",
     "strapi": "3.6.1",
     "strapi-admin": "3.6.1",
     "strapi-connector-mongoose": "3.6.1",
@@ -27,8 +31,7 @@
     "strapi-plugin-upload": "3.6.1",
     "strapi-plugin-users-permissions": "3.6.1",
     "strapi-utils": "3.6.1",
-    "web3": "^1.7.1",
-    "lodash": "^4.17.21"
+    "web3": "^1.7.1"
   },
   "author": {
     "name": "A Strapi developer"
