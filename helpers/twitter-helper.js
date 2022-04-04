@@ -52,7 +52,7 @@ const getTweetDataByTweetId = async (id) => {
 const getTweetData = async (
   id,
   tweetFields = "attachments,author_id,created_at,public_metrics,source,referenced_tweets",
-  expansions = "",
+  expansions = "author_id",
   params = {}
 ) => {
   try {
@@ -64,7 +64,7 @@ const getTweetData = async (
         ...params,
       },
     });
-    return data.data[0];
+    return data;
   } catch (error) {
     throw error;
   }
