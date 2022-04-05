@@ -12,7 +12,7 @@ module.exports = {
     async afterCreate(result) {
       const { referrerCode, id, username, referralCode, avatar } = result;
 
-      await strapi.services.hunter.create({
+      const res = await strapi.services.hunter.create({
         name: username,
         status: "active",
         user: id,
@@ -23,6 +23,7 @@ module.exports = {
           avatar,
         },
       });
+      console.log(res);
     },
   },
 };
