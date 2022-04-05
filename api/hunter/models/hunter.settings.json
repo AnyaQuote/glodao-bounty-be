@@ -47,8 +47,7 @@
       "collection": "apply"
     },
     "address": {
-      "type": "string",
-      "unique": false
+      "type": "string"
     },
     "nonce": {
       "type": "string"
