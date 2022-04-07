@@ -29,8 +29,9 @@ module.exports = {
       delete event.walletAddress;
     },
     // Called after an entry is created
-    async afterCreate(params, { task: taskId }) {
+    async afterCreate(params, { task: taskId, hunter: hunterId }) {
       await strapi.services.task.updateTaskTotalParticipantsById(taskId);
+      await strapi.services.hunter.updateHunterStatusToNewbie(hunterId);
     },
   },
 };
