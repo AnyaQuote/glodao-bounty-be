@@ -37,6 +37,28 @@ const updateHunterWalletAddress = async (hunter, walletAddress) => {
 };
 
 /**
+ * Update hunter's participationStatus with hunter id to new status
+ * @param {string} id hunter id
+ * @param {string} status new status
+ * @returns {Promise} updated hunter
+ */
+const updateHunterParticipationStatus = async (id, status) => {
+  return await strapi.services.hunter.update(
+    { id },
+    { participationStatus: status }
+  );
+};
+
+/**
+ * Update hunter's participationStatus with id to newbie status
+ * @param {string} id hunter id
+ * @returns {Promise} updated hunter
+ */
+const updateHunterStatusToNewbie = async (id) => {
+  return await updateHunterParticipationStatus(id, "newbie");
+};
+
+/**
  * Check if a wallet address matched with the registered address of the hunter
  * @param {string} hunterId Hunter id
  * @param {string} walletAddress Wallet address
@@ -51,4 +73,5 @@ module.exports = {
   updateHunterNonce,
   updateHunterWalletAddress,
   isPreRegisteredWalletMatched,
+  updateHunterStatusToNewbie,
 };

@@ -59,6 +59,14 @@
     "referrerCode": {
       "type": "string",
       "default": "######"
+    },
+    "participationStatus": {
+      "type": "enumeration",
+      "enum": [
+        "guest",
+        "newbie"
+      ],
+      "default": "guest"
     }
   }
 }
