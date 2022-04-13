@@ -5,10 +5,24 @@ const { exportDataToCsv } = require("./csv-helper");
 const { orderBy } = require("lodash");
 
 const argv = yargs(hideBin(process.argv)).argv;
+const commissionerAddressMap = new Map();
 
 async function main(argv) {
   await initialize();
-  await exportApplyToCsv(await getRelatedCompleteApplies(argv.task));
+  const relatedApplies = [];
+  const tempApplies = await getRelatedCompleteApplies(argv.task);
+
+  for (let index = 0; index < tempApplies.length; index++) {
+    const apply = tempApplies[index];
+    const commissionerAddress = await getCommissionerAddress(
+      apply.hunter.referrerCode
+    );
+    relatedApplies.push({
+      ...apply,
+      commissionerAddress,
+    });
+  }
+  await exportApplyToCsv(relatedApplies);
 }
 
 initialize = async () => {
@@ -20,6 +34,22 @@ getRelatedCompleteApplies = async (task) => {
     task,
     status: "completed",
   });
+};
+
+getCommissionerAddress = async (referrerCode) => {
+  if (!referrerCode || referrerCode === "######") return "######";
+  if (!commissionerAddressMap.get(referrerCode)) {
+    try {
+      const hunter = await strapi.services.hunter.findOne({
+        referralCode: referrerCode,
+      });
+      commissionerAddressMap.set(referrerCode, hunter.address);
+      return hunter.address;
+    } catch (error) {
+      console.log(error);
+      return "######";
+    }
+  } else return commissionerAddressMap.get(referrerCode);
 };
 
 exportApplyToCsv = async (applyData) => {
@@ -53,8 +83,12 @@ exportApplyToCsv = async (applyData) => {
       title: "HUNTER_ID",
     },
     {
+      id: "hunterName",
+      title: "HUNTER_NAME",
+    },
+    {
       id: "commission",
-      title: "COMMISSION_OWNER",
+      title: "COMMISSIONER_ADDRESS",
     },
     {
       id: "reward",
@@ -78,10 +112,11 @@ exportApplyToCsv = async (applyData) => {
         task: element.task.name,
         walletAddress: element.walletAddress,
         hunterId: element.hunter.id,
+        hunterName: element.hunter.name,
         status: element.status,
         poolType: element.poolType,
         completedTime: element.updatedAt,
-        commission: element.hunter.referrerCode,
+        commission: element.commissionerAddress,
         reward: 0,
         commissionRate: 0,
         rejectReason: "",
