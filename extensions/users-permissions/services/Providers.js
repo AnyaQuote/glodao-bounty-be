@@ -41,9 +41,9 @@ const connect = (provider, query) => {
       }
 
       // We need at least the mail.
-      if (!profile.email) {
-        return reject([null, { message: "Email was not available." }]);
-      }
+      // if (!profile.email) {
+      //   return reject([null, { message: "Email was not available." }]);
+      // }
 
       try {
         if (
