@@ -10,13 +10,15 @@
     "start:prod": "NODE_ENV=production strapi start",
     "build": "strapi build",
     "build:prod": "NODE_ENV=production strapi build",
-    "strapi": "strapi"
+    "strapi": "strapi",
+    "exportApply":"node ./helpers/exportApplyData.js "
   },
   "devDependencies": {},
   "dependencies": {
     "@metamask/eth-sig-util": "^4.0.0",
     "axios": "^0.26.1",
     "chai": "^4.3.6",
+    "csv-writer": "^1.6.0",
     "ethereumjs-util": "^7.1.4",
     "lodash": "^4.17.21",
     "mocha": "^9.2.2",
@@ -31,7 +33,8 @@
     "strapi-plugin-upload": "3.6.1",
     "strapi-plugin-users-permissions": "3.6.1",
     "strapi-utils": "3.6.1",
-    "web3": "^1.7.1"
+    "web3": "^1.7.1",
+    "yargs": "^17.4.1"
   },
   "author": {
     "name": "A Strapi developer"
