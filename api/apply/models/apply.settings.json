@@ -45,6 +45,12 @@
     "poolType": {
       "type": "string",
       "default": "community"
+    },
+    "referrerCode": {
+      "type": "string"
+    },
+    "commissionRate": {
+      "type": "float"
     }
   }
 }
