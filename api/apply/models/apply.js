@@ -24,6 +24,7 @@ module.exports = {
 
       event.data = initEmptyStepData(task);
       event.bounty = 0;
+      event.referrerCode = hunter.referrerCode;
       delete event.rejectedReason;
       delete event.metadata;
       delete event.walletAddress;
