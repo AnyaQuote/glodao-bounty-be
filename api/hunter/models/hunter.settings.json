@@ -43,6 +43,7 @@
       "type": "json"
     },
     "applies": {
+      "private": true,
       "via": "hunter",
       "collection": "apply"
     },
@@ -62,10 +63,7 @@
     },
     "participationStatus": {
       "type": "enumeration",
-      "enum": [
-        "guest",
-        "newbie"
-      ],
+      "enum": ["guest", "newbie"],
       "default": "guest"
     }
   }
