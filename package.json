@@ -11,7 +11,7 @@
     "build": "strapi build",
     "build:prod": "NODE_ENV=production strapi build",
     "strapi": "strapi",
-    "exportApply":"node ./helpers/exportApplyData.js "
+    "exportApply": "node ./helpers/exportApplyData.js "
   },
   "devDependencies": {},
   "dependencies": {
@@ -19,6 +19,7 @@
     "axios": "^0.26.1",
     "chai": "^4.3.6",
     "csv-writer": "^1.6.0",
+    "csvtojson": "^2.0.10",
     "ethereumjs-util": "^7.1.4",
     "lodash": "^4.17.21",
     "mocha": "^9.2.2",
