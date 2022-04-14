@@ -22,9 +22,6 @@
     "status": {
       "type": "string"
     },
-    "rewardAmount": {
-      "type": "float"
-    },
     "startTime": {
       "type": "datetime"
     },
@@ -54,13 +51,15 @@
       "type": "integer",
       "default": 0
     },
-    "priorityRewardAmount": {
-      "type": "integer",
-      "default": 0
-    },
     "tokenBasePrice": {
       "type": "string",
       "required": true
+    },
+    "rewardAmount": {
+      "type": "string"
+    },
+    "priorityRewardAmount": {
+      "type": "string"
     }
   }
 }
