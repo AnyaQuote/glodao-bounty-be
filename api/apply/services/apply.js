@@ -107,6 +107,11 @@ const validateTwitterLinks = async (
   for (let index = 0; index < taskData.length; index++) {
     const currentStepObj = taskData[index];
     if (!isNeedToValidate(currentStepObj)) continue;
+    if (isLinkNotRequired(currentStepObj)) {
+      const res = await validateLikeTask(currentStepObj, userTwitterId);
+      if (!_.isEmpty(res)) return res;
+      else continue;
+    }
     if (!twitterHelper.isTwitterStatusLink(currentStepObj.submitedLink))
       return "Invalid twitter link";
     const tweetData = await extractTweetData(currentStepObj.submitedLink);
@@ -130,6 +135,35 @@ const validateTwitterLinks = async (
 const isNeedToValidate = (stepData) => {
   if (stepData.type === "follow" || !stepData.finished) return false;
   return true;
+};
+
+const validateLikeTask = async (baseRequirement, userTwitterId) => {
+  const baseRequirementTweetId = twitterHelper.getTweetIdFromLink(
+    baseRequirement.link
+  );
+  try {
+    let likedTweets = await twitterHelper.getUserLikedTweets(userTwitterId);
+    while (true) {
+      const foundIndex = _.findIndex(likedTweets.data, (tweet) =>
+        _.isEqual(tweet.id, baseRequirementTweetId)
+      );
+      if (foundIndex > -1) return "";
+      if (!likedTweets.meta.next_token) break;
+      likedTweets = await twitterHelper.getUserLikedTweets(
+        userTwitterId,
+        likedTweets.meta.next_token
+      );
+    }
+  } catch (error) {
+    if (error.data.status === 429)
+      return "Too many requests. Please try again later";
+  }
+  return "The required tweet had not been liked by you";
+};
+
+const isLinkNotRequired = (stepData) => {
+  if (stepData.type === "like") return true;
+  return false;
 };
 
 const extractTweetData = async (link) => {
@@ -158,6 +192,7 @@ const validateTweetData = (
   if (type === "follow") return verifyTwitterFollow();
   if (type === "tweet") return verifyTweetLink(data, baseRequirement);
   if (type === "quote") return verifyRetweetLink(data, baseRequirement);
+  if (type === "comment") return verifyCommentLink(data, baseRequirement);
 };
 
 const verifyTwitterFollow = () => {
@@ -169,6 +204,20 @@ const verifyTweetLink = (data, baseRequirement) => {
   if (_.toLower(content).includes(_.toLower(`#${baseRequirement.hashtag}`)))
     return "";
   return "Tweet link missing required hashtag";
+};
+
+const verifyCommentLink = (data, baseRequirement) => {
+  const conversation_id = _.get(data, "conversation_id", "");
+  const id = _.get(data, "id", "");
+  if (
+    _.isEqual(
+      conversation_id,
+      twitterHelper.getTweetIdFromLink(baseRequirement.link)
+    ) &&
+    !_.isEqual(id, conversation_id)
+  )
+    return "";
+  return "Comment not found";
 };
 
 const verifyRetweetLink = (data, baseRequirement) => {
