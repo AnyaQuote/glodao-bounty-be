@@ -34,7 +34,7 @@
       "type": "json"
     },
     "bounty": {
-      "type": "float"
+      "type": "string"
     },
     "task": {
       "model": "task"
