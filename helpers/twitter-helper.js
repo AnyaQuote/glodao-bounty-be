@@ -3,6 +3,7 @@ const axios = require("axios");
 const TWITTER_API_BEARER_TOKEN =
   "AAAAAAAAAAAAAAAAAAAAAHx6bAEAAAAAEZ6IHXM8mjVUgQwu38ZgrKRZoiE%3D4YqyeD6OXVsETqStKaN5XLYo4SJBfZ5GK9QMSRUNZrped2eHsZ";
 const TWEET_API_URL = "https://api.twitter.com/2/tweets";
+const USER_API_URL = "https://api.twitter.com/2/users";
 
 const axiosInstance = axios.create({
   timeout: 1000,
@@ -51,7 +52,7 @@ const getTweetDataByTweetId = async (id) => {
  */
 const getTweetData = async (
   id,
-  tweetFields = "attachments,author_id,created_at,public_metrics,source,referenced_tweets",
+  tweetFields = "attachments,author_id,created_at,public_metrics,source,referenced_tweets,conversation_id",
   expansions = "author_id",
   params = {}
 ) => {
@@ -81,9 +82,45 @@ const getTweetIdFromLink = (link) => {
   return splitedArr[splitedArr.length - 1].split("?")[0];
 };
 
+/**
+ * Get 100 liked tweets from user with userId
+ * @param {string} userId userid
+ * @param {string} pagination_token pagination indicator
+ * @param {string} expansions fields need to get more data
+ * @param {object} params optional params
+ * @returns {Promise}
+ */
+const getUserLikedTweets = async (
+  userId,
+  pagination_token = "",
+  expansions = "",
+  params = {}
+) => {
+  console.log(pagination_token);
+  try {
+    const { data } = await axiosInstance.get(
+      `${USER_API_URL}/${userId}/liked_tweets`,
+      {
+        params: {
+          max_results: 100,
+          pagination_token: pagination_token ? pagination_token : undefined,
+          expansions: expansions ? expansions : undefined,
+          // ...params,
+        },
+      }
+    );
+    return data;
+  } catch (error) {
+    console.log(error);
+    console.log(error.response.data.errors);
+    throw error;
+  }
+};
+
 module.exports = {
   isTwitterStatusLink,
   getTweetDataByTweetId,
   getTweetIdFromLink,
   getTweetData,
+  getUserLikedTweets,
 };
