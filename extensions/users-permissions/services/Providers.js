@@ -54,7 +54,7 @@ const connect = (provider, query) => {
           referrerCode = "######";
 
         const users = await strapi.query("user", "users-permissions").find({
-          email: profile.email,
+          twitterId: profile.twitterId,
         });
 
         const advanced = await strapi
