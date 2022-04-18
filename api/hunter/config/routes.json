@@ -18,6 +18,14 @@
     },
     {
       "method": "GET",
+      "path": "/hunters/referrals",
+      "handler": "hunter.getReferrals",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
       "path": "/hunters/:id",
       "handler": "hunter.findOne",
       "config": {
