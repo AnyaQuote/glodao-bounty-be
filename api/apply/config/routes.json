@@ -63,6 +63,14 @@
       "config": {
         "policies": ["global::is-owner"]
       }
+    },
+    {
+      "method": "GET",
+      "path": "/applies/test",
+      "handler": "apply.test",
+      "config": {
+        "policies": []
+      }
     }
   ]
 }
