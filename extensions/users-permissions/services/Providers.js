@@ -115,7 +115,9 @@ const connect = (provider, query) => {
 
         return resolve([afterCreatedUser, null]);
       } catch (err) {
-        reject([null, err]);
+        if (err.message.includes("[INFO]")) {
+          reject([null, err.message.match(/[^(\[INFO\])]+/)[0]]);
+        } else reject([null, err]);
       }
     });
   });
