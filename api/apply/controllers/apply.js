@@ -104,8 +104,4 @@ module.exports = {
 
     return await strapi.services.apply.updateApplyTaskDataById(id, taskData);
   },
-
-  test: async (ctx) => {
-    //
-  },
 };
