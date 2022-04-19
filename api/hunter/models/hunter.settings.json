@@ -74,7 +74,6 @@
       "type": "enumeration",
       "enum": [
         "company",
-        "KOL",
         "user"
       ]
     },
