@@ -70,7 +70,7 @@ module.exports = {
     const hunter = await strapi.services.hunter.findOne({ id });
     const relatedApplies = await strapi.services.apply.find({
       referrerCode: hunter.referralCode,
-      // status: "completed",
+      status: "completed",
     });
     const referralMap = new Map();
     const groupByHunterId = _.groupBy(relatedApplies, "hunter.id");
