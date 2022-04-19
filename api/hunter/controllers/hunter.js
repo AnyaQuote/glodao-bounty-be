@@ -115,9 +115,9 @@ module.exports = {
       if (!_.isEmpty(val)) {
         return {
           ...r,
-          commission: val.commission._value,
           totalEarn: val.totalEarn._value,
-          totalEarnToday: val.commissionToday._value,
+          commission: val.commission._value,
+          commissionToday: val.commissionToday._value,
         };
       } else return r;
     });
