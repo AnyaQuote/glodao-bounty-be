@@ -51,6 +51,7 @@ module.exports = {
 
   updateTaskProcess: async (ctx) => {
     const { id } = ctx.params;
+    const user = get(ctx, "state.user", {});
     const { taskData, type, optional } = ctx.request.body;
     const apply = await strapi.services.apply.findOne({ id });
     if (!apply) return ctx.badRequest("Invalid request id");
@@ -76,7 +77,7 @@ module.exports = {
         get(apply, ["task", "data", type], [])
       ),
       apply.task.createdAt,
-      get(ctx, "state.user.twitterId", "")
+      user
     );
     if (res || isNumber(res)) {
       if (isNumber(res)) {
