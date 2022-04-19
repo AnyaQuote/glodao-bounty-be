@@ -35,7 +35,6 @@ module.exports = {
             avatar,
           },
         });
-        return res;
       } catch (error) {
         const res = await strapi
           .query("user", "users-permissions")
