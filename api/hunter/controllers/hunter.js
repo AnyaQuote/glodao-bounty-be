@@ -10,6 +10,7 @@ const {
 } = require("../../../helpers/blockchainHelpers/farm-helper");
 const { FixedNumber } = require("@ethersproject/bignumber");
 const { FIXED_NUMBER } = require("../../../constants");
+const moment = require("moment");
 
 /**
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-controllers)
@@ -76,31 +77,49 @@ module.exports = {
     for (const key in groupByHunterId) {
       if (Object.hasOwnProperty.call(groupByHunterId, key)) {
         const element = groupByHunterId[key];
-        // console.log(_.sumBy(element,function(o){return _.multiply()}));
         const sumWithInitial = element.reduce(
-          (previousValue, currentValue) => ({
-            totalEarn: previousValue.totalEarn.addUnsafe(
-              FixedNumber.from(currentValue.bounty)
+          (prev, current) => ({
+            totalEarn: prev.totalEarn.addUnsafe(
+              FixedNumber.from(current.bounty)
             ),
-            commission: previousValue.commission.addUnsafe(
-              FixedNumber.from(currentValue.bounty)
-                .mulUnsafe(FixedNumber.from(`${currentValue.commissionRate}`))
+            commission: prev.commission.addUnsafe(
+              FixedNumber.from(current.bounty)
+                .mulUnsafe(FixedNumber.from(`${current.commissionRate}`))
                 .divUnsafe(FIXED_NUMBER.HUNDRED)
             ),
+            commissionToday:
+              moment().diff(moment(current.updatedAt), "hours") <= 24
+                ? prev.commissionToday.addUnsafe(
+                    FixedNumber.from(current.bounty)
+                      .mulUnsafe(FixedNumber.from(`${current.commissionRate}`))
+                      .divUnsafe(FIXED_NUMBER.HUNDRED)
+                  )
+                : prev.commissionToday,
           }),
           {
             totalEarn: FIXED_NUMBER.ZERO,
             commission: FIXED_NUMBER.ZERO,
+            commissionToday: FIXED_NUMBER.ZERO,
           }
         );
         referralMap.set(key, sumWithInitial);
       }
     }
-    console.log(referralMap);
+
     const referrals = await strapi.services.hunter.find({
       referrerCode: hunter.referralCode,
     });
-    return referrals;
-    return "ohno here we go again";
+
+    return referrals.map((r) => {
+      const val = referralMap.get(r.id);
+      if (!_.isEmpty(val)) {
+        return {
+          ...r,
+          commission: val.commission._value,
+          totalEarn: val.totalEarn._value,
+          totalEarnToday: val.commissionToday._value,
+        };
+      } else return r;
+    });
   },
 };
