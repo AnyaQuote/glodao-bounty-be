@@ -82,6 +82,16 @@
     },
     "referralList": {
       "type": "json"
+    },
+    "accessToken": {
+      "type": "string",
+      "required": false,
+      "private": true
+    },
+    "accessTokenSecret": {
+      "type": "string",
+      "private": true,
+      "required": false
     }
   }
 }

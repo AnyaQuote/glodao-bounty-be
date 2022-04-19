@@ -1,5 +1,6 @@
 "use strict";
 const twitterHelper = require("../../../helpers/twitter-helper");
+const twitterHelperV1 = require("../../../helpers/twitter-helper-v1");
 const _ = require("lodash");
 const moment = require("moment");
 
@@ -86,42 +87,36 @@ const moveApplyToCommunityPool = async (id) => {
   return await updateApplyPoolType(id, "community");
 };
 
-const validateTwitterTask = async (
-  taskData,
-  taskCreatedTime,
-  userTwitterId
-) => {
+const validateTwitterTask = async (taskData, taskCreatedTime, user) => {
   const groupByStepLink = _.groupBy(taskData, "submitedLink");
   for (const [key, value] of Object.entries(groupByStepLink)) {
     if (_.isEmpty(key)) continue;
     if (value.length > 1) return "This twitter link had been used before";
   }
-  return await validateTwitterLinks(taskData, taskCreatedTime, userTwitterId);
+
+  return await validateTwitterLinks(taskData, taskCreatedTime, user);
 };
 
-const validateTwitterLinks = async (
-  taskData,
-  taskCreatedTime,
-  userTwitterId
-) => {
+const validateTwitterLinks = async (taskData, taskCreatedTime, user) => {
   for (let index = 0; index < taskData.length; index++) {
     const currentStepObj = taskData[index];
     if (!isNeedToValidate(currentStepObj)) continue;
-    if (isLinkNotRequired(currentStepObj)) {
-      const res = await validateLikeTask(currentStepObj, userTwitterId);
-      if (!_.isEmpty(res)) return res;
-      else continue;
-    }
-    if (!twitterHelper.isTwitterStatusLink(currentStepObj.submitedLink))
+    const dataLink = isLinkNotRequired(currentStepObj)
+      ? currentStepObj.link
+      : currentStepObj.submitedLink;
+    if (!twitterHelper.isTwitterStatusLink(dataLink))
       return "Invalid twitter link";
-    const tweetData = await extractTweetData(currentStepObj.submitedLink);
+
+    const tweetData = await extractTweetData(dataLink, user);
+
     if (tweetData.errorMsg) return tweetData.errorMsg;
+
     const errorMsg = validateTweetData(
       tweetData,
       currentStepObj,
       currentStepObj.type,
       taskCreatedTime,
-      userTwitterId
+      user.twitterId
     );
     if (errorMsg) {
       if (_.isEqual(errorMsg, "Empty data")) return index;
@@ -133,43 +128,28 @@ const validateTwitterLinks = async (
 };
 
 const isNeedToValidate = (stepData) => {
-  if (stepData.type === "follow" || !stepData.finished) return false;
+  if (
+    stepData.type === "follow" ||
+    // stepData.type === "like" ||
+    !stepData.finished
+  )
+    return false;
   return true;
 };
 
-const validateLikeTask = async (baseRequirement, userTwitterId) => {
-  const baseRequirementTweetId = twitterHelper.getTweetIdFromLink(
-    baseRequirement.link
-  );
-  try {
-    let likedTweets = await twitterHelper.getUserLikedTweets(userTwitterId);
-    while (true) {
-      const foundIndex = _.findIndex(likedTweets.data, (tweet) =>
-        _.isEqual(tweet.id, baseRequirementTweetId)
-      );
-      if (foundIndex > -1) return "";
-      if (!likedTweets.meta.next_token) break;
-      likedTweets = await twitterHelper.getUserLikedTweets(
-        userTwitterId,
-        likedTweets.meta.next_token
-      );
-    }
-  } catch (error) {
-    if (error.data.status === 429)
-      return "Too many requests. Please try again later";
-  }
-  return "The required tweet had not been liked by you";
-};
-
 const isLinkNotRequired = (stepData) => {
-  if (stepData.type === "like") return true;
+  if (stepData.type === "like" || stepData.type === "follow") return true;
   return false;
 };
 
-const extractTweetData = async (link) => {
+const extractTweetData = async (link, user) => {
+  const { accessToken, accessTokenSecret } = user;
+
   try {
-    return await twitterHelper.getTweetData(
-      twitterHelper.getTweetIdFromLink(link)
+    return await twitterHelperV1.getTweetData(
+      twitterHelper.getTweetIdFromLink(link),
+      accessToken,
+      accessTokenSecret
     );
   } catch (error) {
     return { errorMsg: "Get tweet data error" };
@@ -183,32 +163,45 @@ const validateTweetData = (
   taskCreatedTime,
   userTwitterId
 ) => {
-  const data = _.get(tweetData, "data[0]", {});
-  if (_.isEmpty(data)) return "Empty data";
-  if (!moment(data.created_at).isAfter(moment(taskCreatedTime)))
-    return "Tweet posted time is invalid - Tweet must be posted after the task started";
-  if (!_.isEqual(userTwitterId, data.author_id))
-    return "Author of the tweet is invalid";
-  if (type === "follow") return verifyTwitterFollow();
+  const data = tweetData;
+  if (type !== "like" && type !== "follow") {
+    if (_.isEmpty(data)) return "Empty data";
+    if (!moment(data.created_at).isAfter(moment(taskCreatedTime)))
+      return "Tweet posted time is invalid - Tweet must be posted after the task started";
+    if (!_.isEqual(userTwitterId, data.user.id_str))
+      return "Author of the tweet is invalid";
+  }
+  if (type === "follow") return verifyTwitterFollow(data);
+  if (type === "like") return verifyLikeTask(data);
   if (type === "tweet") return verifyTweetLink(data, baseRequirement);
   if (type === "quote") return verifyRetweetLink(data, baseRequirement);
   if (type === "comment") return verifyCommentLink(data, baseRequirement);
 };
 
-const verifyTwitterFollow = () => {
+const verifyTwitterFollow = (statusData) => {
+  if (!statusData.user.following) return "You have not completed this task yet";
+  return "";
+};
+
+const verifyLikeTask = (data) => {
+  if (!data.favorited) return "You have not liked the tweet yet";
   return "";
 };
 
 const verifyTweetLink = (data, baseRequirement) => {
-  const content = _.get(data, "text", "");
-  if (_.toLower(content).includes(_.toLower(`#${baseRequirement.hashtag}`)))
+  if (
+    isHashtagIncluded(
+      _.get(data, "entities.hashtags", []),
+      baseRequirement.hashtag
+    )
+  )
     return "";
   return "Tweet link missing required hashtag";
 };
 
 const verifyCommentLink = (data, baseRequirement) => {
-  const conversation_id = _.get(data, "conversation_id", "");
-  const id = _.get(data, "id", "");
+  const conversation_id = _.get(data, "in_reply_to_status_id_str", "");
+  const id = _.get(data, "id_str", "");
   if (
     _.isEqual(
       conversation_id,
@@ -223,20 +216,27 @@ const verifyCommentLink = (data, baseRequirement) => {
 const verifyRetweetLink = (data, baseRequirement) => {
   if (
     !_.isEmpty(_.get(baseRequirement, "hashtag", "")) &&
-    !_.toLower(_.get(data, "text", "")).includes(
-      _.toLower(`#${baseRequirement.hashtag}`)
-    )
+    !isHashtagIncluded(data.entities.hashtags, baseRequirement.hashtag)
   )
     return "Tweet link missing required hashtag";
-  const referencedTweets = _.get(data, "referenced_tweets", []);
-  if (!referencedTweets) return "Link missing required referenced tweet";
-  const baseTweetId = twitterHelper.getTweetIdFromLink(baseRequirement.link);
-  // Check if there were required tweet in referenced tweets list
-  for (let index = 0; index < referencedTweets.length; index++) {
-    const tweet = referencedTweets[index];
-    if (_.isEqual(tweet.id, baseTweetId)) return "";
-  }
+
+  if (!data.is_quote_status) return "Link missing required referenced tweet";
+  if (
+    _.isEqual(
+      data.quoted_status_id_str,
+      twitterHelper.getTweetIdFromLink(baseRequirement.link)
+    )
+  )
+    return "";
   return "Link missing required referenced tweet";
+};
+
+const isHashtagIncluded = (hashtags, requiredHashtag) => {
+  return (
+    _.findIndex(hashtags, (hashtag) =>
+      _.isEqual(_.toLower(hashtag.text), _.toLower(requiredHashtag))
+    ) > -1
+  );
 };
 
 module.exports = {
