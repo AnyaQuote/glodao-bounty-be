@@ -113,7 +113,11 @@ const connect = (provider, query) => {
           .query("user", "users-permissions")
           .findOne({ id: userId });
 
-        return resolve([afterCreatedUser, null]);
+        let afterRemovePrivateDataUser = afterCreatedUser;
+        delete afterRemovePrivateDataUser.accessToken;
+        delete afterRemovePrivateDataUser.accessTokenSecret;
+
+        return resolve([afterRemovePrivateDataUser, null]);
       } catch (err) {
         if (err.message.includes("[INFO]")) {
           reject([null, err.message.match(/[^(\[INFO\])]+/)[0]]);
@@ -324,12 +328,15 @@ const getProfile = async (provider, query, callback) => {
           if (err) {
             callback(err);
           } else {
+            console.log(body);
             callback(null, {
               username: body.screen_name,
               email: body.email,
               avatar: body.profile_image_url,
               twitterCreatedTime: body.created_at,
               twitterId: body.id_str,
+              accessToken: access_token,
+              accessTokenSecret: query.access_secret,
             });
           }
         });
