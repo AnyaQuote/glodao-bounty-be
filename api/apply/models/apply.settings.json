@@ -34,7 +34,8 @@
       "type": "json"
     },
     "bounty": {
-      "type": "float"
+      "type": "string",
+      "default": "0"
     },
     "task": {
       "model": "task"
@@ -50,7 +51,8 @@
       "type": "string"
     },
     "commissionRate": {
-      "type": "float"
+      "type": "float",
+      "default": 0
     }
   }
 }
