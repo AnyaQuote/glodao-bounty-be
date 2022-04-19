@@ -22,7 +22,7 @@ module.exports = {
             root = referrer.root;
           }
         }
-        const res = await strapi.services.hunter.create({
+        await strapi.services.hunter.create({
           name: username,
           status: "active",
           user: id,
