@@ -63,8 +63,23 @@
     },
     "participationStatus": {
       "type": "enumeration",
-      "enum": ["guest", "newbie"],
+      "enum": [
+        "guest",
+        "newbie"
+      ],
       "default": "guest"
+    },
+    "hunterRole": {
+      "default": "user",
+      "type": "enumeration",
+      "enum": [
+        "company",
+        "user"
+      ]
+    },
+    "root": {
+      "default": "######",
+      "type": "string"
     }
   }
 }
