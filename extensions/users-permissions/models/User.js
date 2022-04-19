@@ -14,13 +14,11 @@ module.exports = {
       const { referrerCode, id, username, referralCode, avatar } = result;
       try {
         let root = EMPTY_CODE;
-        let hunter_role = "user";
         if (referrerCode !== EMPTY_CODE) {
           const referrer = await strapi.services.hunter.findOne({
             referralCode: referrerCode,
           });
           if (!_.isEmpty(referrer)) {
-            hunter_role = referrer.hunterRole === "company" ? "KOL" : "user";
             root = referrer.root;
           }
         }
@@ -31,7 +29,7 @@ module.exports = {
           nonce: generateRandomNonce(),
           referralCode,
           referrerCode,
-          hunterRole: hunter_role,
+          hunterRole: "user",
           root: root,
           metadata: {
             avatar,
