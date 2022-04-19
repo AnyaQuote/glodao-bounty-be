@@ -36,9 +36,7 @@ module.exports = {
           },
         });
       } catch (error) {
-        const res = await strapi
-          .query("user", "users-permissions")
-          .delete({ id });
+        await strapi.query("user", "users-permissions").delete({ id });
         throw new Error(
           "[INFO]Cannot create user right now. Please try again!"
         );
