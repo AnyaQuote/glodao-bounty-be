@@ -2,31 +2,141 @@ const { setupStrapi } = require("./strapi-helper");
 const yargs = require("yargs/yargs");
 const { hideBin } = require("yargs/helpers");
 const { exportDataToCsv } = require("./csv-helper");
-const { orderBy } = require("lodash");
+const { FixedNumber } = require("@ethersproject/bignumber");
+const { FIXED_NUMBER } = require("../constants");
+const { isValidStaker } = require("../helpers/blockchainHelpers/farm-helper");
+
+const _ = require("lodash");
 
 const argv = yargs(hideBin(process.argv)).argv;
-const commissionerAddressMap = new Map();
+const glodaoAddress = "glodao-address";
+const rewardAddressMap = new Map();
+let basePriorityReward = FIXED_NUMBER.ZERO;
+let baseCommunityReward = FIXED_NUMBER.ZERO;
+let task = {};
 
 async function main(argv) {
   await initialize();
-  const relatedApplies = [];
   const tempApplies = await getRelatedCompleteApplies(argv.task);
-
+  await calculatePoolReward(argv.task, tempApplies);
+  let rewardCalculatedArr = [];
   for (let index = 0; index < tempApplies.length; index++) {
     const apply = tempApplies[index];
-    const commissionerAddress = await getCommissionerAddress(
-      apply.hunter.referrerCode
-    );
-    relatedApplies.push({
+    const hunter = apply.hunter;
+    let commissionRate = 3;
+    let rootCommissionRate = 2;
+    let commissionAddress = "######";
+    let rootAddress = "######";
+    let glodaoCommissionRate = 0;
+    const commissionerHunter = await getCommissionerHunter(hunter.referrerCode);
+    const rootHunter = await getRootHunter(hunter.root);
+    if (hunter.referrerCode === "######" || _.isEmpty(commissionerHunter)) {
+      commissionRate = 0;
+      glodaoCommissionRate = 5;
+      rootCommissionRate = 0;
+    } else {
+      commissionAddress = commissionerHunter.address;
+      commissionRate = (await isValidStaker(
+        commissionAddress,
+        1000,
+        task.tokenBasePrice
+      ))
+        ? 5
+        : 3;
+    }
+    if (hunter.root === "######" || _.isEmpty(rootHunter))
+      rootCommissionRate = 0;
+    else rootAddress = rootHunter.address;
+    if (
+      !_.isEmpty(commissionerHunter) &&
+      commissionerHunter.hunterRole === "company"
+    ) {
+      rootCommissionRate = 0;
+      commissionRate = 5;
+    }
+    rewardCalculatedArr.push({
       ...apply,
-      commissionerAddress,
+      bounty:
+        apply.poolType === "community"
+          ? baseCommunityReward
+          : basePriorityReward,
+      commissionRate,
+      commissionAddress,
+      rootAddress,
+      rootCommissionRate,
+      glodaoAddress,
+      glodaoCommissionRate,
     });
   }
-  await exportApplyToCsv(relatedApplies);
+  rewardAddressMap.set(glodaoAddress, FIXED_NUMBER.ZERO);
+  rewardCalculatedArr.forEach((apply) => {
+    const {
+      bounty,
+      walletAddress,
+      commissionAddress,
+      rootAddress,
+      commissionRate,
+      rootCommissionRate,
+      glodaoCommissionRate,
+    } = apply;
+    accumulateAddressReward(walletAddress, bounty, "100");
+    accumulateAddressReward(commissionAddress, bounty, commissionRate);
+    accumulateAddressReward(rootAddress, bounty, rootCommissionRate);
+    accumulateAddressReward(glodaoAddress, bounty, glodaoCommissionRate);
+  });
+  await exportMapToCsv(rewardAddressMap);
 }
 
 initialize = async () => {
   await setupStrapi();
+};
+
+accumulateAddressReward = (address, bounty, rate) => {
+  if (!address || _.isEqual(address, "######")) return;
+  const previousReward = rewardAddressMap.get(address)
+    ? rewardAddressMap.get(address)
+    : FIXED_NUMBER.ZERO;
+  rewardAddressMap.set(
+    address,
+    previousReward.addUnsafe(
+      bounty
+        .mulUnsafe(FixedNumber.from(`${rate}`))
+        .divUnsafe(FIXED_NUMBER.HUNDRED)
+    )
+  );
+};
+
+getHunterByReferrerCode = async (referrerCode) => {
+  return await strapi.services.hunter.findOne({ referralCode: referrerCode });
+};
+
+getCommissionerHunter = async (referrerCode) => {
+  return await getHunterByReferrerCode(referrerCode);
+};
+
+getRootHunter = async (referrerCode) => {
+  return await getHunterByReferrerCode(referrerCode);
+};
+
+calculatePoolReward = async (taskId, relatedCompleteApplies) => {
+  const task = await strapi.services.task.findOne({ id: taskId });
+  this.task = task;
+  basePriorityReward = FixedNumber.from(
+    _.get(task, "priorityRewardAmount", "0")
+  ).divUnsafe(FixedNumber.from(_.get(task, "maxPriorityParticipants", "1")));
+  const totalCommunityReward = FixedNumber.from(
+    _.get(task, "rewardAmount", "0")
+  )
+    .mulUnsafe(FixedNumber.from("93"))
+    .divUnsafe(FIXED_NUMBER.HUNDRED)
+    .subUnsafe(FixedNumber.from(_.get(task, "priorityRewardAmount", "0")));
+  const totalCommunityParticipants = _.filter(
+    relatedCompleteApplies,
+    (apply) => apply.poolType === "community"
+  ).length;
+  baseCommunityReward = totalCommunityReward.divUnsafe(
+    FixedNumber.from(`${totalCommunityParticipants}`)
+  );
 };
 
 getRelatedCompleteApplies = async (task) => {
@@ -36,93 +146,25 @@ getRelatedCompleteApplies = async (task) => {
   });
 };
 
-getCommissionerAddress = async (referrerCode) => {
-  if (!referrerCode || referrerCode === "######") return "######";
-  if (!commissionerAddressMap.get(referrerCode)) {
-    try {
-      const hunter = await strapi.services.hunter.findOne({
-        referralCode: referrerCode,
-      });
-      commissionerAddressMap.set(referrerCode, hunter.address);
-      return hunter.address;
-    } catch (error) {
-      console.log(error);
-      return "######";
-    }
-  } else return commissionerAddressMap.get(referrerCode);
-};
-
-exportApplyToCsv = async (applyData) => {
+exportMapToCsv = async (map) => {
   const header = [
     {
-      id: "id",
-      title: "APPLY_ID",
-    },
-    {
-      id: "task",
-      title: "TASK_NAME",
-    },
-    {
       id: "walletAddress",
-      title: "WALLET_ADDRESS",
+      title: "Wallet_Address",
     },
     {
-      id: "status",
-      title: "STATUS",
-    },
-    {
-      id: "poolType",
-      title: "POOL_TYPE",
-    },
-    {
-      id: "completedTime",
-      title: "COMPLETED_TIME",
-    },
-    {
-      id: "hunterId",
-      title: "HUNTER_ID",
-    },
-    {
-      id: "hunterName",
-      title: "HUNTER_NAME",
-    },
-    {
-      id: "commission",
-      title: "COMMISSIONER_ADDRESS",
-    },
-    {
-      id: "reward",
-      title: "REWARD_AMOUNT",
-    },
-    {
-      id: "commissionRate",
-      title: "COMMISSION_AMOUNT",
-    },
-    {
-      id: "rejectReason",
-      title: "REJECT_REASON",
+      id: "rewardAmount",
+      title: "Reward_Amount",
     },
   ];
 
   const data = [];
-  orderBy(applyData, ["status", "poolType"], ["asc", "desc"]).forEach(
-    (element) => {
-      data.push({
-        id: element.id,
-        task: element.task.name,
-        walletAddress: element.walletAddress,
-        hunterId: element.hunter.id,
-        hunterName: element.hunter.name,
-        status: element.status,
-        poolType: element.poolType,
-        completedTime: element.updatedAt,
-        commission: element.commissionerAddress,
-        reward: 0,
-        commissionRate: 0,
-        rejectReason: "",
-      });
-    }
-  );
+  for (const [key, value] of map) {
+    data.push({
+      walletAddress: key,
+      rewardAmount: value._value,
+    });
+  }
 
   await exportDataToCsv(data, header);
 };
