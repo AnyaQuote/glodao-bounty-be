@@ -27,6 +27,7 @@ const getTweetData = async (statusId, accessToken, accessTokenSecret) => {
         .auth(accessToken, accessTokenSecret)
         .request((err, res, body) => {
           if (err) {
+            console.log(err);
             return reject([null, err]);
           } else {
             return resolve(body);
