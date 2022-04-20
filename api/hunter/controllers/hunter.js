@@ -112,14 +112,12 @@ module.exports = {
 
     return referrals.map((r) => {
       const val = referralMap.get(r.id);
-      if (!_.isEmpty(val)) {
-        return {
-          ...r,
-          totalEarn: val.totalEarn._value,
-          commission: val.commission._value,
-          commissionToday: val.commissionToday._value,
-        };
-      } else return r;
+      return {
+        ...r,
+        totalEarn: _.get(val, "totalEarn._value", "0"),
+        commission: _.get(val, "commission._value", "0"),
+        commissionToday: _.get(val, "commissionToday._value", "0"),
+      };
     });
   },
 };
