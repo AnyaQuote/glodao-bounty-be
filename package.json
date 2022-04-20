@@ -16,6 +16,7 @@
   "devDependencies": {},
   "dependencies": {
     "@metamask/eth-sig-util": "^4.0.0",
+    "@sentry/node": "^6.19.6",
     "axios": "^0.26.1",
     "chai": "^4.3.6",
     "csv-writer": "^1.6.0",
