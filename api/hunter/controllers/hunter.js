@@ -80,12 +80,15 @@ module.exports = {
         const sumWithInitial = element.reduce(
           (prev, current) => ({
             totalEarn: prev.totalEarn.addUnsafe(
-              FixedNumber.from(current.bounty)
+              FixedNumber.from(current.bounty).mulUnsafe(
+                FixedNumber.from(current.task.tokenBasePrice)
+              )
             ),
             commission: prev.commission.addUnsafe(
               FixedNumber.from(current.bounty)
                 .mulUnsafe(FixedNumber.from(`${current.commissionRate}`))
                 .divUnsafe(FIXED_NUMBER.HUNDRED)
+                .mulUnsafe(FixedNumber.from(current.task.tokenBasePrice))
             ),
             commissionToday:
               moment().diff(moment(current.updatedAt), "hours") <= 24
@@ -93,6 +96,7 @@ module.exports = {
                     FixedNumber.from(current.bounty)
                       .mulUnsafe(FixedNumber.from(`${current.commissionRate}`))
                       .divUnsafe(FIXED_NUMBER.HUNDRED)
+                      .mulUnsafe(FixedNumber.from(current.task.tokenBasePrice))
                   )
                 : prev.commissionToday,
           }),
