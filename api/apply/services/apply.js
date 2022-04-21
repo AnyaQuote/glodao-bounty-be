@@ -10,6 +10,19 @@ const moment = require("moment");
  */
 
 /**
+ * Update an apply to completed status
+ * @param {string} id Apply id
+ * @param {string} walletAddress wallet address for apply 
+ * @returns Pool type updated apply
+ */
+const updateApplyStateToComplete = async (id, walletAddress) => {
+  return await strapi.services.apply.update(
+    { id },
+    { walletAddress, status: "completed", completeTime: moment().toISOString() }
+  );
+};
+
+/**
  * Update pool type of an apply
  * @param {string} id Apply id
  * @param {string} poolType New pool type
@@ -246,4 +259,5 @@ module.exports = {
   changeApplyStatusToCompleted,
   validateTwitterLinks,
   validateTwitterTask,
+  updateApplyStateToComplete,
 };
