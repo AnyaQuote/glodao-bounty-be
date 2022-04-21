@@ -43,8 +43,8 @@
       "type": "json"
     },
     "applies": {
-      "private": true,
       "via": "hunter",
+      "private": true,
       "collection": "apply"
     },
     "address": {
@@ -63,19 +63,13 @@
     },
     "participationStatus": {
       "type": "enumeration",
-      "enum": [
-        "guest",
-        "newbie"
-      ],
+      "enum": ["guest", "newbie"],
       "default": "guest"
     },
     "hunterRole": {
       "default": "user",
       "type": "enumeration",
-      "enum": [
-        "company",
-        "user"
-      ]
+      "enum": ["company", "user"]
     },
     "root": {
       "default": "######",

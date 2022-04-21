@@ -53,6 +53,9 @@
     "commissionRate": {
       "type": "float",
       "default": 0
+    },
+    "completeTime": {
+      "type": "datetime"
     }
   }
 }

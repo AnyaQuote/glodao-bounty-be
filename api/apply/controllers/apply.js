@@ -60,9 +60,9 @@ module.exports = {
       const walletAddress = get(optional, "walletAddress", "");
       if (!walletAddress)
         return ctx.badRequest("Missing wallet address to earn reward");
-      return strapi.services.apply.update(
-        { id },
-        { walletAddress, status: "completed" }
+      return await strapi.services.apply.updateApplyStateToComplete(
+        id,
+        walletAddress
       );
     }
 
