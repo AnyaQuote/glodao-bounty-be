@@ -36,13 +36,17 @@ async function main(argv) {
       rootCommissionRate = 0;
     } else {
       commissionAddress = commissionerHunter.address;
-      commissionRate = (await isValidStaker(
-        commissionAddress,
-        1000,
-        task.tokenBasePrice
-      ))
-        ? 5
-        : 3;
+      try {
+        commissionRate = (await isValidStaker(
+          commissionAddress,
+          1000,
+          task.tokenBasePrice
+        ))
+          ? 5
+          : 3;
+      } catch (error) {
+        console.log(error);
+      }
     }
     if (hunter.root === "######" || _.isEmpty(rootHunter))
       rootCommissionRate = 0;
@@ -84,7 +88,74 @@ async function main(argv) {
     accumulateAddressReward(rootAddress, bounty, rootCommissionRate);
     accumulateAddressReward(glodaoAddress, bounty, glodaoCommissionRate);
   });
-  await exportMapToCsv(rewardAddressMap);
+
+  const chunks = _.chunk(rewardCalculatedArr, 10);
+  switch (argv.option) {
+    case "updateBounty":
+      for (const subChunksOfApplies of chunks) {
+        try {
+          await Promise.all(
+            subChunksOfApplies.map((apply) => {
+              return strapi.services.apply.update(
+                {
+                  id: apply.id,
+                },
+                {
+                  bounty: apply.bounty._value,
+                  commissionRate: apply.commissionRate,
+                }
+              );
+            })
+          );
+        } catch (error) {
+          console.log("\x1b[31m", "Wasted");
+          console.log("\x1b[37m", error);
+          console.log("\x1b[31m", "Wasted");
+        }
+      }
+      console.log("\x1b[32m", "mission accomplished");
+      break;
+    case "reverify":
+      for (const subChunksOfApplies of chunks) {
+        try {
+          await Promise.all(
+            subChunksOfApplies.map((apply) => {
+              return new Promise((resolve, reject) => {
+                strapi.services.apply
+                  .findOne({
+                    id: apply.id,
+                  })
+                  .then((res) => {
+                    if (
+                      _.isEqual(res.bounty, apply.bounty._value) &&
+                      _.isEqual(res.walletAddress, apply.walletAddress)
+                    )
+                      return resolve(res);
+                    else
+                      return reject([
+                        "Something when wrong when update",
+                        `${res.id}`,
+                      ]);
+                  })
+                  .catch((err) => {
+                    return reject(err);
+                  });
+              });
+            })
+          );
+        } catch (error) {
+          console.log("\x1b[31m", "Wasted");
+          console.log("\x1b[37m", error);
+          console.log("\x1b[31m", "Wasted");
+        }
+      }
+      console.log("\x1b[32m", "mission accomplished");
+      break;
+    default:
+      await exportMapToCsv(rewardAddressMap);
+      console.log(rewardAddressMap);
+      break;
+  }
 }
 
 initialize = async () => {
