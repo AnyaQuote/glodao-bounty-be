@@ -66,19 +66,23 @@ module.exports = {
       );
     }
 
-    const res = await strapi.services.apply.validateTwitterTask(
-      merge(
-        get(taskData, [type], []).map((step) => {
-          return {
-            ...step,
-            submitedLink: step.link,
-          };
-        }),
-        get(apply, ["task", "data", type], [])
-      ),
-      apply.task.createdAt,
-      user
-    );
+    let res = "";
+    if (isEqual(type, "twitter")) {
+      res = await strapi.services.apply.validateTwitterTask(
+        merge(
+          get(taskData, [type], []).map((step) => {
+            return {
+              ...step,
+              submitedLink: step.link,
+            };
+          }),
+          get(apply, ["task", "data", type], [])
+        ),
+        apply.task.createdAt,
+        user
+      );
+    }
+
     if (res || isNumber(res)) {
       if (isNumber(res)) {
         const resetedTask = get(taskData, [type], []).map((task, index) => {
