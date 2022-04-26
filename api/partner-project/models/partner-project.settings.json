@@ -1,0 +1,18 @@
+{
+  "kind": "collectionType",
+  "collectionName": "partner_projects",
+  "info": {
+    "name": "PartnerProject"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string"
+    }
+  }
+}
