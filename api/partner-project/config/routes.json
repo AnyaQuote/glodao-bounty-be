@@ -1,0 +1,52 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/partner-projects",
+      "handler": "partner-project.find",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/partner-projects/count",
+      "handler": "partner-project.count",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/partner-projects/:id",
+      "handler": "partner-project.findOne",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/partner-projects",
+      "handler": "partner-project.create",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/partner-projects/:id",
+      "handler": "partner-project.update",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/partner-projects/:id",
+      "handler": "partner-project.delete",
+      "config": {
+        "policies": []
+      }
+    }
+  ]
+}
