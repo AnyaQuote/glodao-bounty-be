@@ -1,6 +1,7 @@
 "use strict";
 
 const { get, gte } = require("lodash");
+const moment = require("moment");
 
 /**
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-services)
@@ -67,9 +68,20 @@ const isPriorityPoolFullById = async (taskId) => {
   );
 };
 
+/**
+ * Check if it is the right time to do the task
+ * @param {task} task the task
+ * @returns true - task is processable, otherwise false
+ */
+const isTaskProcessable = (task) => {
+  if (!task) return false;
+  return moment().isBetween(moment(task.startTime), moment(task.endTime));
+};
+
 module.exports = {
   increaseTaskTotalParticipants,
   increaseTaskTotalParticipantsById,
   updateTaskTotalParticipantsById,
   isPriorityPoolFullById,
+  isTaskProcessable,
 };
