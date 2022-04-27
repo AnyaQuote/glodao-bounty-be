@@ -14,6 +14,10 @@ module.exports = {
     // Called after an entry is created
     async beforeCreate(event) {
       const task = await strapi.services.task.findOne({ id: event.task });
+      if (!strapi.services.task.isTaskProcessable(task))
+        throw strapi.errors.conflict(
+          "Now is not the right time to do this task"
+        );
       event.status = "processing";
       event.ID = `${event.hunter}_${event.task}`;
 
