@@ -55,7 +55,8 @@ module.exports = {
     const { taskData, type, optional } = ctx.request.body;
     const apply = await strapi.services.apply.findOne({ id });
     if (!apply) return ctx.badRequest("Invalid request id");
-
+    if (!strapi.services.task.isTaskProcessable(apply.task))
+      return ctx.conflict("Now is not the right time to do this task");
     if (isEqual(type, "finish")) {
       const walletAddress = get(optional, "walletAddress", "");
       if (!walletAddress)
