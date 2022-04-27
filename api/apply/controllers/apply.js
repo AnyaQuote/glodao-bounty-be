@@ -29,6 +29,8 @@ module.exports = {
       );
 
     const taskDetail = await strapi.services.task.findOne({ id: taskId });
+    if (!strapi.services.task.isTaskProcessable(taskDetail))
+      return ctx.conflict("Now is not the right time to do this task");
 
     if (
       !(await isValidStaker(
