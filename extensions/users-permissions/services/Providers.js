@@ -13,7 +13,7 @@ const purest = require("purest")({ request });
 const purestConfig = require("@purest/providers");
 const { getAbsoluteServerUrl } = require("strapi-utils");
 const jwt = require("jsonwebtoken");
-const { generateRandomNonce } = require("../../../helpers/wallet-helper");
+const { generateRandomString } = require("../../../helpers");
 
 /**
  * Connect thanks to a third-party provider.
@@ -627,7 +627,7 @@ const getProfile = async (provider, query, callback) => {
  * @returns Referral code generated from the username
  */
 const generateReferralCode = (username) => {
-  return `${username}${generateRandomNonce()}`;
+  return generateRandomString();
 };
 
 const buildRedirectUri = (provider = "") =>
