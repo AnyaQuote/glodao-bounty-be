@@ -12,7 +12,7 @@ const moment = require("moment");
 /**
  * Update an apply to completed status
  * @param {string} id Apply id
- * @param {string} walletAddress wallet address for apply 
+ * @param {string} walletAddress wallet address for apply
  * @returns Pool type updated apply
  */
 const updateApplyStateToComplete = async (id, walletAddress) => {
@@ -114,6 +114,15 @@ const validateTwitterLinks = async (taskData, taskCreatedTime, user) => {
   for (let index = 0; index < taskData.length; index++) {
     const currentStepObj = taskData[index];
     if (!isNeedToValidate(currentStepObj)) continue;
+    if (_.get(taskData[index + 1], "finished", false)) continue;
+    if (currentStepObj.type === "follow") {
+      const followErrorMsg = await validateFollowTwitterTask(
+        currentStepObj,
+        user
+      );
+      if (followErrorMsg) return followErrorMsg;
+      else continue;
+    }
     const dataLink = isLinkNotRequired(currentStepObj)
       ? currentStepObj.link
       : currentStepObj.submitedLink;
@@ -140,9 +149,29 @@ const validateTwitterLinks = async (taskData, taskCreatedTime, user) => {
   return "";
 };
 
+const validateFollowTwitterTask = async (baseRequirement, user) => {
+  const { accessToken, accessTokenSecret } = user;
+  console.log(baseRequirement);
+  const splitedArr = baseRequirement.link.split("/");
+  const screenName = splitedArr[splitedArr.length - 1].split("?")[0];
+  try {
+    console.log(screenName);
+    const res = await twitterHelperV1.getUserByScreenName(
+      screenName,
+      accessToken,
+      accessTokenSecret
+    );
+    console.log(res);
+    if (!res.following) return "You have not completed this follow task yet";
+  } catch (error) {
+    return "Can not check follow status";
+  }
+  return "";
+};
+
 const isNeedToValidate = (stepData) => {
   if (
-    stepData.type === "follow" ||
+    // stepData.type === "follow" ||
     // stepData.type === "like" ||
     !stepData.finished
   )
@@ -165,7 +194,7 @@ const extractTweetData = async (link, user) => {
       accessTokenSecret
     );
   } catch (error) {
-    return { errorMsg: "Get tweet data error" };
+    return { errorMsg: "Error: Can not get tweet data" };
   }
 };
 
@@ -179,8 +208,8 @@ const validateTweetData = (
   const data = tweetData;
   if (type !== "like" && type !== "follow") {
     if (_.isEmpty(data)) return "Empty data";
-    if (!moment(data.created_at).isAfter(moment(taskCreatedTime)))
-      return "Tweet posted time is invalid - Tweet must be posted after the task started";
+    // if (!moment(data.created_at).isAfter(moment(taskCreatedTime)))
+    //   return "Tweet posted time is invalid - Tweet must be posted after the task started";
     if (!_.isEqual(userTwitterId, data.user.id_str))
       return "Author of the tweet is invalid";
   }
