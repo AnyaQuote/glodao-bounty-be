@@ -40,6 +40,34 @@ const getTweetData = async (statusId, accessToken, accessTokenSecret) => {
   }
 };
 
+const getUserByScreenName = async (
+  screenName,
+  accessToken,
+  accessTokenSecret
+) => {
+  try {
+    return new Promise((resolve, reject) => {
+      twitter
+        .query()
+        .get("users/show")
+        .qs({ screen_name: screenName })
+        .auth(accessToken, accessTokenSecret)
+        .request((err, res, body) => {
+          if (err) {
+            console.log(err);
+            return reject([null, err]);
+          } else {
+            return resolve(body);
+          }
+        });
+    });
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
 module.exports = {
   getTweetData,
+  getUserByScreenName,
 };
