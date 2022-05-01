@@ -9,7 +9,7 @@ const { isValidStaker } = require("../helpers/blockchainHelpers/farm-helper");
 const _ = require("lodash");
 
 const argv = yargs(hideBin(process.argv)).argv;
-const glodaoAddress = "glodao-address";
+const glodaoAddress = "0x7a05CE29a44cA8dD49D967367F98D3F07E204faC";
 const rewardAddressMap = new Map();
 let basePriorityReward = FIXED_NUMBER.ZERO;
 let baseCommunityReward = FIXED_NUMBER.ZERO;
@@ -103,10 +103,13 @@ async function main(argv) {
                 {
                   bounty: apply.bounty._value,
                   commissionRate: apply.commissionRate,
+                  status: "awarded",
                 }
               );
             })
-          );
+          ).then(() => {
+            console.log("batch completed");
+          });
         } catch (error) {
           console.log("\x1b[31m", "Wasted");
           console.log("\x1b[37m", error);
@@ -153,7 +156,7 @@ async function main(argv) {
       break;
     default:
       await exportMapToCsv(rewardAddressMap);
-      console.log(rewardAddressMap);
+      // console.log(rewardAddressMap);
       break;
   }
 }
@@ -191,10 +194,13 @@ getRootHunter = async (referrerCode) => {
 
 calculatePoolReward = async (taskId, relatedCompleteApplies) => {
   const task = await strapi.services.task.findOne({ id: taskId });
+  console.log(relatedCompleteApplies.length);
   this.task = task;
-  basePriorityReward = FixedNumber.from(
-    _.get(task, "priorityRewardAmount", "0")
-  ).divUnsafe(FixedNumber.from(_.get(task, "maxPriorityParticipants", "1")));
+  if (task.maxPriorityParticipants === 0) basePriorityReward = 0;
+  else
+    basePriorityReward = FixedNumber.from(
+      _.get(task, "priorityRewardAmount", "0")
+    ).divUnsafe(FixedNumber.from(_.get(task, "maxPriorityParticipants", "1")));
   const totalCommunityReward = FixedNumber.from(
     _.get(task, "rewardAmount", "0")
   )
@@ -205,6 +211,7 @@ calculatePoolReward = async (taskId, relatedCompleteApplies) => {
     relatedCompleteApplies,
     (apply) => apply.poolType === "community"
   ).length;
+  console.log(totalCommunityParticipants);
   baseCommunityReward = totalCommunityReward.divUnsafe(
     FixedNumber.from(`${totalCommunityParticipants}`)
   );
@@ -214,6 +221,7 @@ getRelatedCompleteApplies = async (task) => {
   return await strapi.services.apply.find({
     task,
     status: "completed",
+    _limit: -1,
   });
 };
 
@@ -237,7 +245,7 @@ exportMapToCsv = async (map) => {
     });
   }
 
-  await exportDataToCsv(data, header);
+  await exportDataToCsv(data, header, "zone9.csv");
 };
 
 main(argv)
