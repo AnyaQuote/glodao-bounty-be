@@ -95,6 +95,10 @@ module.exports = {
             flag = index;
             continue;
           }
+          if (element.finished) {
+            flag = index;
+            continue;
+          }
           if (element.type === "follow") {
             const followErrorMsg =
               await strapi.services.apply.validateFollowTwitterTask(
@@ -104,7 +108,10 @@ module.exports = {
             if (followErrorMsg) break;
             twitterTaskData[index].finished = true;
             flag = index;
+            console.log("success");
+            continue;
           }
+          break;
           if (flag < index - 1) break;
         }
       }
