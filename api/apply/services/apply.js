@@ -242,6 +242,11 @@ const verifyTweetLink = (data, baseRequirement) => {
 };
 
 const verifyCommentLink = (data, baseRequirement) => {
+  if (
+    !_.isEmpty(_.get(baseRequirement, "hashtag", "")) &&
+    !isHashtagIncluded(data.entities.hashtags, baseRequirement.hashtag)
+  )
+    return "Tweet link missing required hashtag";
   const conversation_id = _.get(data, "in_reply_to_status_id_str", "");
   const id = _.get(data, "id_str", "");
   if (
@@ -288,5 +293,6 @@ module.exports = {
   changeApplyStatusToCompleted,
   validateTwitterLinks,
   validateTwitterTask,
+  validateFollowTwitterTask,
   updateApplyStateToComplete,
 };

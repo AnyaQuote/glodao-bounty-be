@@ -70,20 +70,52 @@ module.exports = {
     }
 
     let res = "";
+    let updatedTaskData = taskData;
     if (isEqual(type, "twitter")) {
+      let twitterTaskData = get(taskData, [type], []);
+      const mergedTwitterTask = merge(
+        twitterTaskData.map((step) => {
+          return {
+            ...step,
+            submitedLink: step.link,
+          };
+        }),
+        get(apply, ["task", "data", type], [])
+      );
       res = await strapi.services.apply.validateTwitterTask(
-        merge(
-          get(taskData, [type], []).map((step) => {
-            return {
-              ...step,
-              submitedLink: step.link,
-            };
-          }),
-          get(apply, ["task", "data", type], [])
-        ),
+        mergedTwitterTask,
         apply.task.createdAt,
         user
       );
+      if (!res) {
+        let flag = 0;
+        for (let index = 0; index < mergedTwitterTask.length; index++) {
+          const element = mergedTwitterTask[index];
+          if (get(mergedTwitterTask[index + 1], "finished", false)) {
+            flag = index;
+            continue;
+          }
+          if (element.finished) {
+            flag = index;
+            continue;
+          }
+          if (element.type === "follow") {
+            const followErrorMsg =
+              await strapi.services.apply.validateFollowTwitterTask(
+                element,
+                user
+              );
+            if (followErrorMsg) break;
+            twitterTaskData[index].finished = true;
+            flag = index;
+            console.log("success");
+            continue;
+          }
+          break;
+          if (flag < index - 1) break;
+        }
+      }
+      updatedTaskData["twitter"] = twitterTaskData;
     }
 
     if (res || isNumber(res)) {
@@ -109,6 +141,9 @@ module.exports = {
       } else return ctx.badRequest(res);
     }
 
-    return await strapi.services.apply.updateApplyTaskDataById(id, taskData);
+    return await strapi.services.apply.updateApplyTaskDataById(
+      id,
+      updatedTaskData
+    );
   },
 };

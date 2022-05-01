@@ -5,6 +5,7 @@ const { exportDataToCsv } = require("./csv-helper");
 const { FixedNumber } = require("@ethersproject/bignumber");
 const { FIXED_NUMBER } = require("../constants");
 const { isValidStaker } = require("../helpers/blockchainHelpers/farm-helper");
+const moment = require("moment");
 
 const _ = require("lodash");
 
@@ -14,10 +15,12 @@ const rewardAddressMap = new Map();
 let basePriorityReward = FIXED_NUMBER.ZERO;
 let baseCommunityReward = FIXED_NUMBER.ZERO;
 let task = {};
+let relatedApplies = [];
 
 async function main(argv) {
   await initialize();
   const tempApplies = await getRelatedCompleteApplies(argv.task);
+  relatedApplies = tempApplies;
   await calculatePoolReward(argv.task, tempApplies);
   let rewardCalculatedArr = [];
   for (let index = 0; index < tempApplies.length; index++) {
@@ -71,6 +74,7 @@ async function main(argv) {
       glodaoAddress,
       glodaoCommissionRate,
     });
+    await sleep(100);
   }
   rewardAddressMap.set(glodaoAddress, FIXED_NUMBER.ZERO);
   rewardCalculatedArr.forEach((apply) => {
@@ -103,13 +107,10 @@ async function main(argv) {
                 {
                   bounty: apply.bounty._value,
                   commissionRate: apply.commissionRate,
-                  status: "awarded",
                 }
               );
             })
-          ).then(() => {
-            console.log("batch completed");
-          });
+          );
         } catch (error) {
           console.log("\x1b[31m", "Wasted");
           console.log("\x1b[37m", error);
@@ -160,6 +161,9 @@ async function main(argv) {
       break;
   }
 }
+const sleep = async (ms) => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+};
 
 initialize = async () => {
   await setupStrapi();
@@ -225,27 +229,57 @@ getRelatedCompleteApplies = async (task) => {
   });
 };
 
+exportToCsv = async (dataArr) => {
+  const header = [
+    {
+      id: "userTwitter",
+      title: "Twitter_Username",
+    },
+    {
+      id: "address",
+      title: "Wallet_Address",
+    },
+    {
+      id: "taskStatus",
+      title: "Task_Status",
+    },
+    {},
+  ];
+};
+
 exportMapToCsv = async (map) => {
   const header = [
+    {
+      id: "twitterName",
+      title: "Twitter_Username",
+    },
     {
       id: "walletAddress",
       title: "Wallet_Address",
     },
     {
-      id: "rewardAmount",
-      title: "Reward_Amount",
+      id: "completedTime",
+      title: "Completed_Time",
     },
   ];
 
   const data = [];
-  for (const [key, value] of map) {
+  // for (const [key, value] of map) {
+  //   data.push({
+  //     walletAddress: key,
+  //     rewardAmount: value._value,
+  //   });
+  // }
+  for (let index = 0; index < relatedApplies.length; index++) {
+    const element = relatedApplies[index];
     data.push({
-      walletAddress: key,
-      rewardAmount: value._value,
+      twitterName: element.hunter.name,
+      walletAddress: element.hunter.address,
+      completedTime: moment(element.completeTime).toISOString(),
     });
   }
 
-  await exportDataToCsv(data, header, "zone9.csv");
+  await exportDataToCsv(data, header, "zone9-completed-user.csv");
 };
 
 main(argv)
