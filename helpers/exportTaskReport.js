@@ -40,13 +40,14 @@ async function main(argv) {
     } else {
       commissionAddress = commissionerHunter.address;
       try {
-        commissionRate = (await isValidStaker(
-          commissionAddress,
-          1000,
-          task.tokenBasePrice
-        ))
-          ? 5
-          : 3;
+        // commissionRate = (await isValidStaker(
+        //   commissionAddress,
+        //   1000,
+        //   task.tokenBasePrice
+        // ))
+        //   ? 5
+        //   : 3;
+        commissionRate = 3;
       } catch (error) {
         console.log(error);
       }
@@ -198,6 +199,7 @@ getRootHunter = async (referrerCode) => {
 
 calculatePoolReward = async (taskId, relatedCompleteApplies) => {
   const task = await strapi.services.task.findOne({ id: taskId });
+  console.log(task.name);
   console.log(relatedCompleteApplies.length);
   this.task = task;
   if (task.maxPriorityParticipants === 0) basePriorityReward = 0;
@@ -279,7 +281,7 @@ exportMapToCsv = async (map) => {
     });
   }
 
-  await exportDataToCsv(data, header, "zone9-completed-user.csv");
+  await exportDataToCsv(data, header, "zone9-completed-user-30-01.csv");
 };
 
 main(argv)

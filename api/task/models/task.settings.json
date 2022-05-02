@@ -60,6 +60,9 @@
     },
     "priorityRewardAmount": {
       "type": "string"
+    },
+    "missionIndex": {
+      "type": "integer"
     }
   }
 }
