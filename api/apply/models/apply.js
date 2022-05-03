@@ -22,8 +22,11 @@ module.exports = {
       event.ID = `${event.hunter}_${event.task}`;
 
       const hunter = await strapi.services.hunter.findOne({ id: event.hunter });
+      const isPriorityFull = await strapi.services.task.isPriorityPoolFullById(
+        task.id
+      );
       const { user } = hunter;
-      if (await isValidStaker(hunter.address, 1000))
+      if (!isPriorityFull && (await isValidStaker(hunter.address, 1000)))
         event.poolType = "priority";
       else event.poolType = "community";
 

@@ -102,7 +102,7 @@ async function main(argv) {
                   id: apply.id,
                 },
                 {
-                  bounty: apply.bounty._value,
+                  bounty: `${apply.bounty._value}`.substring(0, 8),
                   commissionRate: apply.commissionRate,
                   status: "awarded",
                 }
@@ -195,6 +195,7 @@ getRootHunter = async (referrerCode) => {
 
 calculatePoolReward = async (taskId, relatedCompleteApplies) => {
   const task = await strapi.services.task.findOne({ id: taskId });
+  console.log(task);
   console.log(task.name);
   console.log(relatedCompleteApplies.length);
   this.task = task;
@@ -222,7 +223,7 @@ calculatePoolReward = async (taskId, relatedCompleteApplies) => {
 getRelatedCompleteApplies = async (task) => {
   return await strapi.services.apply.find({
     task,
-    status: "awarded",
+    status: "completed",
     _limit: -1,
   });
 };
@@ -243,11 +244,11 @@ exportMapToCsv = async (map) => {
   for (const [key, value] of map) {
     data.push({
       walletAddress: key,
-      rewardAmount: value._value,
+      rewardAmount: `${value._value}`.substring(0, 8),
     });
   }
 
-  await exportDataToCsv(data, header, "zone9-30-01.csv");
+  await exportDataToCsv(data, header, "glodao-01-02.csv");
 };
 
 main(argv)
