@@ -281,7 +281,7 @@ exportMapToCsv = async (map) => {
     });
   }
 
-  await exportDataToCsv(data, header, "zone9-completed-user-30-01.csv");
+  await exportDataToCsv(data, header, "glodao-completed-user-01-02.csv");
 };
 
 main(argv)
