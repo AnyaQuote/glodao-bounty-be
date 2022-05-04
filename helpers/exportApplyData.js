@@ -14,6 +14,7 @@ const rewardAddressMap = new Map();
 let basePriorityReward = FIXED_NUMBER.ZERO;
 let baseCommunityReward = FIXED_NUMBER.ZERO;
 let task = {};
+let filename = "data";
 
 async function main(argv) {
   await initialize();
@@ -197,6 +198,7 @@ calculatePoolReward = async (taskId, relatedCompleteApplies) => {
   const task = await strapi.services.task.findOne({ id: taskId });
   console.log(task);
   console.log(task.name);
+  filename = task.name + argv.date;
   console.log(relatedCompleteApplies.length);
   this.task = task;
   if (task.maxPriorityParticipants === 0) basePriorityReward = 0;
@@ -248,7 +250,7 @@ exportMapToCsv = async (map) => {
     });
   }
 
-  await exportDataToCsv(data, header, "glodao-01-02.csv");
+  await exportDataToCsv(data, header, `${filename}.csv`);
 };
 
 main(argv)

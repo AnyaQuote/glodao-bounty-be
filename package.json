@@ -11,7 +11,8 @@
     "build": "strapi build",
     "build:prod": "NODE_ENV=production strapi build",
     "strapi": "strapi",
-    "exportApply": "node ./helpers/exportApplyData.js "
+    "exportApply": "node ./helpers/exportApplyData.js ",
+    "exportApply2": "node ./helpers/exportTaskReport.js "
   },
   "devDependencies": {},
   "dependencies": {

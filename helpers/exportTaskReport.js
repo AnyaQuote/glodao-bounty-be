@@ -16,6 +16,7 @@ let basePriorityReward = FIXED_NUMBER.ZERO;
 let baseCommunityReward = FIXED_NUMBER.ZERO;
 let task = {};
 let relatedApplies = [];
+let filename = "";
 
 async function main(argv) {
   await initialize();
@@ -200,6 +201,7 @@ getRootHunter = async (referrerCode) => {
 calculatePoolReward = async (taskId, relatedCompleteApplies) => {
   const task = await strapi.services.task.findOne({ id: taskId });
   console.log(task.name);
+  filename = task.name;
   console.log(relatedCompleteApplies.length);
   this.task = task;
   if (task.maxPriorityParticipants === 0) basePriorityReward = 0;
@@ -281,7 +283,11 @@ exportMapToCsv = async (map) => {
     });
   }
 
-  await exportDataToCsv(data, header, "glodao-completed-user-01-02.csv");
+  await exportDataToCsv(
+    data,
+    header,
+    `${filename}-completed-user${argv.date}.csv`
+  );
 };
 
 main(argv)
