@@ -27,7 +27,6 @@ const getTweetData = async (statusId, accessToken, accessTokenSecret) => {
         .auth(accessToken, accessTokenSecret)
         .request((err, res, body) => {
           if (err) {
-            console.log(err);
             return reject([null, err]);
           } else {
             return resolve(body);
@@ -35,7 +34,6 @@ const getTweetData = async (statusId, accessToken, accessTokenSecret) => {
         });
     });
   } catch (error) {
-    console.log(error);
     throw error;
   }
 };
@@ -54,7 +52,6 @@ const getUserByScreenName = async (
         .auth(accessToken, accessTokenSecret)
         .request((err, res, body) => {
           if (err) {
-            console.log(err);
             return reject([null, err]);
           } else {
             return resolve(body);
@@ -62,7 +59,6 @@ const getUserByScreenName = async (
         });
     });
   } catch (error) {
-    console.log(error);
     throw error;
   }
 };

@@ -96,7 +96,6 @@ const getUserLikedTweets = async (
   expansions = "",
   params = {}
 ) => {
-  console.log(pagination_token);
   try {
     const { data } = await axiosInstance.get(
       `${USER_API_URL}/${userId}/liked_tweets`,
@@ -111,8 +110,6 @@ const getUserLikedTweets = async (
     );
     return data;
   } catch (error) {
-    console.log(error);
-    console.log(error.response.data.errors);
     throw error;
   }
 };

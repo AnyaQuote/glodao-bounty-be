@@ -108,7 +108,6 @@ module.exports = {
             if (followErrorMsg) break;
             twitterTaskData[index].finished = true;
             flag = index;
-            console.log("success");
             continue;
           }
           break;
