@@ -74,6 +74,9 @@
     "root": {
       "default": "######",
       "type": "string"
+    },
+    "campaignCode": {
+      "type": "string"
     }
   }
 }
