@@ -71,6 +71,7 @@ module.exports = {
     const relatedApplies = await strapi.services.apply.find({
       referrerCode: hunter.referralCode,
       status: "awarded",
+      _limit: -1,
     });
     const referralMap = new Map();
     const groupByHunterId = _.groupBy(relatedApplies, "hunter.id");
@@ -112,6 +113,7 @@ module.exports = {
 
     const referrals = await strapi.services.hunter.find({
       referrerCode: hunter.referralCode,
+      _limit: -1,
     });
 
     return referrals.map((r) => {
