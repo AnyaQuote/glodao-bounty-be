@@ -150,13 +150,11 @@ module.exports = {
 };
 
 const isTaskCompleted = (taskData) => {
-  console.log(taskData);
   for (const key in taskData) {
     if (Object.hasOwnProperty.call(taskData, key)) {
       const taskMiniDataArr = taskData[key];
       for (let index = 0; index < taskMiniDataArr.length; index++) {
         const element = taskMiniDataArr[index];
-        console.log(key, element);
         if (!element.finished) return false;
       }
     }
