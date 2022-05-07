@@ -60,6 +60,8 @@ module.exports = {
     if (!strapi.services.task.isTaskProcessable(apply.task))
       return ctx.conflict("Now is not the right time to do this task");
     if (isEqual(type, "finish")) {
+      if (!isTaskCompleted(apply.data))
+        return ctx.badRequest("Unfinished task");
       const walletAddress = get(optional, "walletAddress", "");
       if (!walletAddress)
         return ctx.badRequest("Missing wallet address to earn reward");
@@ -145,4 +147,17 @@ module.exports = {
       updatedTaskData
     );
   },
+};
+
+const isTaskCompleted = (taskData) => {
+  for (const key in taskData) {
+    if (Object.hasOwnProperty.call(taskData, key)) {
+      const taskMiniDataArr = taskData[key];
+      for (let index = 0; index < taskMiniDataArr.length; index++) {
+        const element = taskMiniDataArr[index];
+        if (!element.finished) return false;
+      }
+    }
+  }
+  return true;
 };

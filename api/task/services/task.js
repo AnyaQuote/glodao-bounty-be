@@ -45,7 +45,7 @@ const increaseTaskTotalParticipants = async (task, increment) => {
  */
 const updateTaskTotalParticipantsById = async (id) => {
   const totalParticipants = await strapi.services.apply.count({
-    "task.id": id,
+    task: id,
   });
   return await strapi.services.task.update(
     { id },
