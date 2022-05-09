@@ -23,7 +23,7 @@ const getTweetData = async (statusId, accessToken, accessTokenSecret) => {
       twitter
         .query()
         .get("statuses/show")
-        .qs({ id: statusId })
+        .qs({ id: statusId, tweet_mode: "extended" })
         .auth(accessToken, accessTokenSecret)
         .request((err, res, body) => {
           if (err) {
