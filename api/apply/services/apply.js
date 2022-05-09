@@ -239,6 +239,8 @@ const verifyTweetLink = (data, baseRequirement) => {
 };
 
 const verifyCommentLink = (data, baseRequirement) => {
+  if (!twitterHelper.isTweetLengthValid(data, 50))
+    return "The length of the submitted tweet is not valid";
   if (
     !_.isEmpty(_.get(baseRequirement, "hashtag", "")) &&
     !isHashtagIncluded(data.entities.hashtags, baseRequirement.hashtag)
@@ -258,6 +260,8 @@ const verifyCommentLink = (data, baseRequirement) => {
 };
 
 const verifyRetweetLink = (data, baseRequirement) => {
+  if (!twitterHelper.isTweetLengthValid(data, 50))
+    return "The length of the submitted tweet is not valid";
   if (
     !_.isEmpty(_.get(baseRequirement, "hashtag", "")) &&
     !isHashtagIncluded(data.entities.hashtags, baseRequirement.hashtag)
