@@ -3,6 +3,8 @@ const twitterHelper = require("../../../helpers/twitter-helper");
 const twitterHelperV1 = require("../../../helpers/twitter-helper-v1");
 const _ = require("lodash");
 const moment = require("moment");
+const { TWEET_MIN_WORDS_COUNT } = require("../../../constants");
+const { getWordsCount } = require("../../../helpers/index");
 
 /**
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-services)
@@ -228,6 +230,9 @@ const verifyLikeTask = (data) => {
 };
 
 const verifyTweetLink = (data, baseRequirement) => {
+  const text = _.get(data, "full_text", "") || _.get(data, "text", "");
+  if (_.lt(getWordsCount(text), TWEET_MIN_WORDS_COUNT))
+    return "The length of the submitted tweet is not valid";
   if (
     isHashtagIncluded(
       _.get(data, "entities.hashtags", []),
@@ -239,7 +244,8 @@ const verifyTweetLink = (data, baseRequirement) => {
 };
 
 const verifyCommentLink = (data, baseRequirement) => {
-  if (!twitterHelper.isTweetLengthValid(data, 50))
+  const text = _.get(data, "full_text", "") || _.get(data, "text", "");
+  if (_.lt(getWordsCount(text), TWEET_MIN_WORDS_COUNT))
     return "The length of the submitted tweet is not valid";
   if (
     !_.isEmpty(_.get(baseRequirement, "hashtag", "")) &&
@@ -260,7 +266,8 @@ const verifyCommentLink = (data, baseRequirement) => {
 };
 
 const verifyRetweetLink = (data, baseRequirement) => {
-  if (!twitterHelper.isTweetLengthValid(data, 50))
+  const text = _.get(data, "full_text", "") || _.get(data, "text", "");
+  if (_.lt(getWordsCount(text), TWEET_MIN_WORDS_COUNT))
     return "The length of the submitted tweet is not valid";
   if (
     !_.isEmpty(_.get(baseRequirement, "hashtag", "")) &&
