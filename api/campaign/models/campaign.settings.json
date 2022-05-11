@@ -17,6 +17,21 @@
     },
     "code": {
       "type": "string"
+    },
+    "owner": {
+      "model": "hunter"
+    },
+    "data": {
+      "type": "json"
+    },
+    "metadata": {
+      "type": "json"
+    },
+    "startTime": {
+      "type": "datetime"
+    },
+    "endTime": {
+      "type": "datetime"
     }
   }
 }
