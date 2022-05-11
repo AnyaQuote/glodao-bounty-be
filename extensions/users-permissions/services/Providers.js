@@ -328,7 +328,6 @@ const getProfile = async (provider, query, callback) => {
           if (err) {
             callback(err);
           } else {
-            console.log(body);
             callback(null, {
               username: body.screen_name,
               email: body.email,

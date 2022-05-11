@@ -12,6 +12,8 @@ const axiosInstance = axios.create({
   },
 });
 
+const { get, size } = require("lodash");
+
 /**
  * Check if link is a valid twitter link
  * @param {string} link Base link
@@ -96,7 +98,6 @@ const getUserLikedTweets = async (
   expansions = "",
   params = {}
 ) => {
-  console.log(pagination_token);
   try {
     const { data } = await axiosInstance.get(
       `${USER_API_URL}/${userId}/liked_tweets`,
@@ -111,10 +112,13 @@ const getUserLikedTweets = async (
     );
     return data;
   } catch (error) {
-    console.log(error);
-    console.log(error.response.data.errors);
     throw error;
   }
+};
+
+const isTweetLengthValid = (data, min = 0, max = 350) => {
+  const text = get(data, "full_text", "") || get(data, "text", "");
+  return size(text) >= min && size(text) <= max;
 };
 
 module.exports = {
@@ -123,4 +127,5 @@ module.exports = {
   getTweetIdFromLink,
   getTweetData,
   getUserLikedTweets,
+  isTweetLengthValid,
 };

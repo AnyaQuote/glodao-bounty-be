@@ -23,18 +23,18 @@ module.exports = async (ctx, next) => {
   if (_.isEqual(collection, "hunter")) {
     const [content] = await strapi.services[collection].find({
       id: recordId,
-      "user.id": ctx.state.user.id,
+      user: ctx.state.user.id,
     });
     if (!content) {
       return ctx.forbidden(`You can not update this entry`);
     }
   } else {
     const hunter = await strapi.services.hunter.findOne({
-      "user.id": ctx.state.user.id,
+      user: ctx.state.user.id,
     });
     const [content] = await strapi.services[collection].find({
       id: recordId,
-      "hunter.id": hunter.id,
+      hunter: hunter.id,
     });
     if (!content) {
       return ctx.forbidden(`You can not update this entry`);

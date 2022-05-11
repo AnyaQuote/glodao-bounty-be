@@ -1,3 +1,5 @@
+const CONNECTION_URI = process.env.DB_CONNECTION;
+
 module.exports = ({ env }) => ({
   defaultConnection: "default",
   connections: {
@@ -5,7 +7,7 @@ module.exports = ({ env }) => ({
       connector: "mongoose",
       settings: {
         client: "mongo",
-        uri: "mongodb+srv://admin:123qwert@glodaodb.lenil.mongodb.net/prod?retryWrites=true&w=majority",
+        uri: CONNECTION_URI,
       },
       options: {
         ssl: true,
