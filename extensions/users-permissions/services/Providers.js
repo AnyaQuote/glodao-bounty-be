@@ -120,7 +120,6 @@ const connect = (provider, query) => {
 
         return resolve([afterRemovePrivateDataUser, null]);
       } catch (err) {
-        console.log(err);
         if (err.message.includes("[INFO]")) {
           reject([null, err.message.match(/[^(\[INFO\])]+/)[0]]);
         } else reject([null, err]);
