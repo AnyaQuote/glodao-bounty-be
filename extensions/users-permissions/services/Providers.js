@@ -49,7 +49,8 @@ const connect = (provider, query) => {
         if (
           !(await strapi.plugins["users-permissions"].services.user.isRefExist(
             referrerCode
-          ))
+          )) &&
+          (await strapi.services.campaign.count({ code: referrerCode })) === 0
         )
           referrerCode = "######";
 

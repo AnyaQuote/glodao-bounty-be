@@ -56,6 +56,16 @@
     },
     "completeTime": {
       "type": "datetime"
+    },
+    "root": {
+      "type": "string"
+    },
+    "campaignCode": {
+      "type": "string",
+      "default": "######"
+    },
+    "rewardTime": {
+      "type": "datetime"
     }
   }
 }

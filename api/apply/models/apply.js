@@ -40,6 +40,7 @@ module.exports = {
       event.data = taskData;
       event.bounty = 0;
       event.referrerCode = hunter.referrerCode;
+      event.campaignCode = hunter.campaignCode;
       delete event.rejectedReason;
       delete event.metadata;
       delete event.walletAddress;
