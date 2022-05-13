@@ -76,7 +76,8 @@
       "type": "string"
     },
     "campaignCode": {
-      "type": "string"
+      "type": "string",
+      "default": "######"
     }
   }
 }

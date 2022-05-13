@@ -61,7 +61,8 @@
       "type": "string"
     },
     "campaignCode": {
-      "type": "string"
+      "type": "string",
+      "default": "######"
     },
     "rewardTime": {
       "type": "datetime"
