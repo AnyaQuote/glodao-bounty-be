@@ -18,6 +18,7 @@ const CONFIG = {
 };
 
 const checkUserStaked = async (poolId, address) => {
+  return false;
   const { farmAddress, chainId } =
     process.env.NODE_ENV === "production" ? CONFIG.prod : CONFIG.dev;
 
@@ -42,6 +43,7 @@ const checkUserStaked = async (poolId, address) => {
  * @returns {Promise}
  */
 const getWalletStakeAmount = async (address, poolId = 0) => {
+  return FixedNumber.from("0");
   const { farmAddress, chainId } =
     process.env.NODE_ENV === "production" ? CONFIG.prod : CONFIG.dev;
 
@@ -71,6 +73,7 @@ const isValidStaker = async (
   tokenBasePrice = 1,
   poolId = 0
 ) => {
+  return false;
   const { farmAddress, chainId } =
     process.env.NODE_ENV === "production" ? CONFIG.prod : CONFIG.dev;
 
