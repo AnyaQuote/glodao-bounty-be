@@ -26,8 +26,8 @@ module.exports = {
         task.id
       );
       const { user } = hunter;
-      if (!isPriorityFull && (await isValidStaker(hunter.address, 1000)))
-        event.poolType = "priority";
+      // if (!isPriorityFull && (await isValidStaker(hunter.address, 1000)))
+      if (!isPriorityFull) event.poolType = "priority";
       else event.poolType = "community";
 
       let taskData = initEmptyStepData(task);

@@ -32,16 +32,16 @@ module.exports = {
     if (!strapi.services.task.isTaskProcessable(taskDetail))
       return ctx.conflict("Now is not the right time to do this task");
 
-    if (
-      !(await isValidStaker(
-        walletAddress,
-        1000,
-        get(taskDetail, "tokenBasePrice", 1)
-      ))
-    )
-      return ctx.unauthorized(
-        "Invalid request: This wallet has not stake enough to participate in the priority pool"
-      );
+    // if (
+    //   !(await isValidStaker(
+    //     walletAddress,
+    //     1000,
+    //     get(taskDetail, "tokenBasePrice", 1)
+    //   ))
+    // )
+    //   return ctx.unauthorized(
+    //     "Invalid request: This wallet has not stake enough to participate in the priority pool"
+    //   );
 
     if (await strapiServices.task.isPriorityPoolFullById(taskId))
       return ctx.conflict(
