@@ -49,7 +49,8 @@ const connect = (provider, query) => {
         if (
           !(await strapi.plugins["users-permissions"].services.user.isRefExist(
             referrerCode
-          ))
+          )) &&
+          (await strapi.services.campaign.count({ code: referrerCode })) === 0
         )
           referrerCode = "######";
 
@@ -119,6 +120,7 @@ const connect = (provider, query) => {
 
         return resolve([afterRemovePrivateDataUser, null]);
       } catch (err) {
+        console.log(err);
         if (err.message.includes("[INFO]")) {
           reject([null, err.message.match(/[^(\[INFO\])]+/)[0]]);
         } else reject([null, err]);
