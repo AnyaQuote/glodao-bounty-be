@@ -46,9 +46,21 @@ module.exports = {
       delete event.walletAddress;
     },
     // Called after an entry is created
-    async afterCreate(params, { task: taskId, hunter: hunterId }) {
+    async afterCreate(
+      params,
+      { task: taskId, hunter: hunterId, poolType, id }
+    ) {
       await strapi.services.task.updateTaskTotalParticipantsById(taskId);
       await strapi.services.hunter.updateHunterStatusToNewbie(hunterId);
+      const isPriorityFull = await strapi.services.task.isPriorityPoolFullById(
+        taskId
+      );
+      if (isPriorityFull && poolType === "priority") {
+        await strapi.services.apply.update(
+          { id: id },
+          { poolType: "community" }
+        );
+      }
     },
   },
 };
