@@ -1,0 +1,37 @@
+{
+  "kind": "collectionType",
+  "collectionName": "voting_pools",
+  "info": {
+    "name": "VotingPool",
+    "description": ""
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "ownerAddress": {
+      "type": "string"
+    },
+    "projectId": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string"
+    },
+    "startDate": {
+      "type": "datetime"
+    },
+    "endDate": {
+      "type": "datetime"
+    },
+    "rewardToken": {
+      "type": "string"
+    }
+  }
+}

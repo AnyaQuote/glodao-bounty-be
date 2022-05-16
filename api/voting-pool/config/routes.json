@@ -1,0 +1,52 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/voting-pools",
+      "handler": "voting-pool.find",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/voting-pools/count",
+      "handler": "voting-pool.count",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/voting-pools/:id",
+      "handler": "voting-pool.findOne",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/voting-pools",
+      "handler": "voting-pool.create",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/voting-pools/:id",
+      "handler": "voting-pool.update",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/voting-pools/:id",
+      "handler": "voting-pool.delete",
+      "config": {
+        "policies": []
+      }
+    }
+  ]
+}

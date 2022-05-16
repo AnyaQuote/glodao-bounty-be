@@ -8,6 +8,6 @@ module.exports = ({ env }) => ({
   },
   url:
     env("NODE_ENV") === "production"
-      ? "https://api.glodao.io"
-      : "https://diversity-api.contracts.dev",
+      ? "https://diversity-voting.contracts.dev"
+      : "https://diversity-voting.contracts.dev",
 });
