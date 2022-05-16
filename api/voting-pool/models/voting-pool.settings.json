@@ -32,6 +32,9 @@
     },
     "rewardToken": {
       "type": "string"
+    },
+    "data": {
+      "type": "json"
     }
   }
 }

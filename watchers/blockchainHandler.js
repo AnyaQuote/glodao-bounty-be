@@ -114,39 +114,39 @@ const getWeb3 = (chainId) => {
     return web3;
   } else return null;
 };
-const getMarketplaceContractCreation = (chainId) => {
+const getVotingContractCreation = (chainId) => {
   chainId = +chainId;
   switch (chainId) {
     case 56:
     case "56":
       return {
         transactionHash:
-          "0x24384cf51b13328c3d882dbb49e06e804fa0b7585ffdb2673fa0b627677581b5",
-        blockNumber: 13204978,
+          "0xe4d1640062f82845dbf18412e662207f18b6c30d8df844bad6b584fdf51cb218",
+        blockNumber: 19343516,
       };
     case 97:
     case "97":
       return {
         transactionHash:
-          "0x0034430c2e06c184116daeef0eabd3aeeb993fba6535f07fb7dd72eb888667cf",
-        blockNumber: 14683763,
+          "0xe4d1640062f82845dbf18412e662207f18b6c30d8df844bad6b584fdf51cb218",
+        blockNumber: 19343516,
       };
   }
 };
-const getMarketplaceContract = (chainId) => {
+const getVotingContract = (chainId) => {
   chainId = +chainId;
   switch (chainId) {
     case 101:
     case 103:
     case "101":
     case "103":
-      return "8SZCLQNjYhXtnxYTNP2sCQdTHDPjkgAHzBdFvgcdAX6k";
+      return "";
     case 56:
     case "56":
-      return "0x70eC8Cf0F4CFE68024CB59bEBe2f7Ada402B1fF0";
+      return "0x80f4Ce164db0970781d12D04C207E561345C218D";
     case 97:
     case "97":
-      return "0xac02EB9a591A942B0e6cfF7e7a2a126B4A287c0c";
+      return "0x80f4Ce164db0970781d12D04C207E561345C218D";
   }
   return null;
 };
@@ -156,6 +156,6 @@ module.exports = {
   getWeb3,
   getSolanaConfig,
   getSolanaMainNetRpc,
-  getMarketplaceContract,
-  getMarketplaceContractCreation,
+  getVotingContract,
+  getVotingContractCreation,
 };
