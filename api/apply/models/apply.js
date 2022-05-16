@@ -22,13 +22,14 @@ module.exports = {
       event.ID = `${event.hunter}_${event.task}`;
 
       const hunter = await strapi.services.hunter.findOne({ id: event.hunter });
-      const isPriorityFull = await strapi.services.task.isPriorityPoolFullById(
-        task.id
-      );
+      // const isPriorityFull = await strapi.services.task.isPriorityPoolFullById(
+      //   task.id
+      // );
       const { user } = hunter;
       // if (!isPriorityFull && (await isValidStaker(hunter.address, 1000)))
-      if (!isPriorityFull) event.poolType = "priority";
-      else event.poolType = "community";
+      // if (!isPriorityFull) event.poolType = "priority";
+      // else 
+      // event.poolType = "community";
 
       let taskData = initEmptyStepData(task);
       const validatedTwitterTaskData = await preValidateFollowTwitterTask(
@@ -52,15 +53,15 @@ module.exports = {
     ) {
       await strapi.services.task.updateTaskTotalParticipantsById(taskId);
       await strapi.services.hunter.updateHunterStatusToNewbie(hunterId);
-      const isPriorityFull = await strapi.services.task.isPriorityPoolFullById(
-        taskId
-      );
-      if (isPriorityFull && poolType === "priority") {
-        await strapi.services.apply.update(
-          { id: id },
-          { poolType: "community" }
-        );
-      }
+      // const isPriorityFull = await strapi.services.task.isPriorityPoolFullById(
+      //   taskId
+      // );
+      // if (isPriorityFull && poolType === "priority") {
+      //   await strapi.services.apply.update(
+      //     { id: id },
+      //     { poolType: "community" }
+      //   );
+      // }
     },
   },
 };
