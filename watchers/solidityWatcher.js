@@ -59,7 +59,7 @@ const processEvent = async (configs, data) => {
   const timestamp = await getBlockTimestamp(configs.web3, data.blockNumber);
   data.timestamp = timestamp;
   if (data.eventName === "PoolCreated") {
-    console.log("data.eventName: ", data.eventName, data.timestamp);
+    console.log("=== data.eventName: ", data.eventName, data.timestamp);
     // do something
   }
 };
@@ -91,7 +91,7 @@ const getEventListener = async (configs, eventName) => {
 };
 
 const startEventListener = (address, chainId, eventName) => {
-  console.log("startEventListener: ", address, chainId, eventName);
+  console.log("=== startEventListener: ", address, chainId, eventName);
   const configs = getConfigs(address, chainId);
   listenVotingContract(configs, eventName);
 };
