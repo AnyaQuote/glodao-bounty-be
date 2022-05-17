@@ -12,32 +12,30 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "name": {
+    "projectName": {
       "type": "string"
     },
-    "ownerAddress": {
-      "type": "string"
-    },
-    "projectId": {
-      "type": "string"
-    },
-    "type": {
-      "type": "string"
-    },
-    "startDate": {
-      "type": "datetime"
-    },
-    "endDate": {
-      "type": "datetime"
-    },
-    "rewardToken": {
-      "type": "string"
-    },
-    "data": {
+    "metadata": {
       "type": "json"
     },
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "bounty",
+        "launchpad"
+      ]
+    },
     "status": {
-      "type": "string"
+      "type": "enumeration",
+      "enum": [
+        "pending",
+        "voting",
+        "approved",
+        "rejected"
+      ]
+    },
+    "startTime": {
+      "type": "datetime"
     }
   }
 }
