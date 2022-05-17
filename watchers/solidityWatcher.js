@@ -58,8 +58,8 @@ const processEvent = async (configs, data) => {
   const eventData = data.returnValues;
   const timestamp = await getBlockTimestamp(configs.web3, data.blockNumber);
   data.timestamp = timestamp;
-  if (data.eventName === "PoolCreated") {
-    console.log("=== data.eventName: ", data.eventName, data.timestamp);
+  if (data.event === "PoolCreated") {
+    console.log("=== data.eventName: ", data.event, data.timestamp);
     // do something
   }
 };
