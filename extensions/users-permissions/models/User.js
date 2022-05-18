@@ -11,7 +11,10 @@ module.exports = {
   lifecycles: {
     // Called after an entry is created
     async afterCreate(result) {
-      const { referrerCode, id, username, referralCode, avatar } = result;
+      const { referrerCode, id, username, referralCode, avatar, userType } =
+        result;
+      if (userType === "voting") return;
+
       try {
         const campaign = await strapi.services.campaign.findOne({
           code: referrerCode,

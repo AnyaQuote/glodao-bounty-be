@@ -92,6 +92,15 @@
       "type": "string",
       "private": true,
       "required": false
+    },
+    "userType": {
+      "type": "string"
+    },
+    "nonce": {
+      "type": "string"
+    },
+    "walletType": {
+      "type": "string"
     }
   }
 }

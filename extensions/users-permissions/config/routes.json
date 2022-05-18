@@ -1,0 +1,13 @@
+{
+  "routes": [
+    {
+      "method": "POST",
+      "path": "/auth/signin",
+      "handler": "Auth.votingUserSignin",
+      "config": {
+        "policies": [],
+        "prefix": ""
+      }
+    }
+  ]
+}
