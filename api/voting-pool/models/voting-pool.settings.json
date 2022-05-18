@@ -15,7 +15,7 @@
     "projectName": {
       "type": "string"
     },
-    "metadata": {
+    "data": {
       "type": "json"
     },
     "type": {
@@ -34,8 +34,20 @@
         "rejected"
       ]
     },
-    "startTime": {
+    "startDate": {
       "type": "datetime"
+    },
+    "ownerAddress": {
+      "type": "string"
+    },
+    "endDate": {
+      "type": "datetime"
+    },
+    "rewardAddress": {
+      "type": "string"
+    },
+    "projectId": {
+      "type": "string"
     }
   }
 }
