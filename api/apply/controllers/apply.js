@@ -5,6 +5,7 @@ const {
 } = require("../../../helpers/blockchainHelpers/farm-helper");
 const { isNil, get, merge, isEqual, isNumber } = require("lodash");
 const twitterHelper = require("../../../helpers/twitter-helper");
+const { MIN_QUIZ_ANSWER_COUNT } = require("../../../constants");
 /**
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-controllers)
  * to customize this controller
@@ -73,6 +74,26 @@ module.exports = {
 
     let res = "";
     let updatedTaskData = taskData;
+
+    if (isEqual(type, "quiz")) {
+      const quizAnswer = get(optional, "answerList", []);
+      if (quizAnswer.length < MIN_QUIZ_ANSWER_COUNT)
+        return ctx.badRequest("Invalid number of answers");
+      const quizId = get(optional, "quizId", "");
+      const quiz = await strapi.services.quiz.findOne({ id: quizId });
+      if (!strapi.services.quiz.verifyQuizAnswer(quiz.answer, quizAnswer))
+        return ctx.badRequest("Wrong quiz answer");
+      const quizTaskData = get(apply, ["task", "data", type], []).map(
+        (task) => {
+          return {
+            type: "quiz",
+            finished: task.quizId === quizId,
+          };
+        }
+      );
+      updatedTaskData["quiz"] = quizTaskData;
+    }
+
     if (isEqual(type, "twitter")) {
       let twitterTaskData = get(taskData, [type], []);
       const mergedTwitterTask = merge(
