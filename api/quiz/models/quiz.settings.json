@@ -1,0 +1,35 @@
+{
+  "kind": "collectionType",
+  "collectionName": "quizzes",
+  "info": {
+    "name": "Quiz",
+    "description": ""
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "learningInformation": {
+      "type": "richtext"
+    },
+    "description": {
+      "type": "string"
+    },
+    "data": {
+      "type": "json"
+    },
+    "answer": {
+      "type": "json",
+      "private": true
+    },
+    "metadata": {
+      "type": "json"
+    }
+  }
+}
