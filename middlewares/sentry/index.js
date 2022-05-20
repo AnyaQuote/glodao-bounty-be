@@ -14,7 +14,7 @@ module.exports = (strapi) => {
           const { user } = ctx.state;
           const { query, params, request, response } = ctx;
           Sentry.configureScope(function (scope) {
-            scope.setUser({ ...user, ip_address: "{{auto}}" });
+            scope.setUser({ ...user, ip_address: ctx.request.ip });
             scope.setRequestSession(request);
             scope.setTransactionName(`${request.route.endpoint}`);
             scope.setContext("CLIENT SYSTEM", {

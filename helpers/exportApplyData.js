@@ -15,10 +15,16 @@ let basePriorityReward = FIXED_NUMBER.ZERO;
 let baseCommunityReward = FIXED_NUMBER.ZERO;
 let task = {};
 let filename = "data";
+const priorityPoolMap = new Map();
+let allHunterArr = [];
 
 async function main(argv) {
   await initialize();
-  const tempApplies = await getRelatedCompleteApplies(argv.task);
+  await getAllNeededData();
+  const tempApplies = _.sortBy(
+    await getRelatedCompleteApplies(argv.task),
+    "completeTime"
+  );
   await calculatePoolReward(argv.task, tempApplies);
   let rewardCalculatedArr = [];
   for (let index = 0; index < tempApplies.length; index++) {
@@ -29,8 +35,9 @@ async function main(argv) {
     let commissionAddress = "######";
     let rootAddress = "######";
     let glodaoCommissionRate = 0;
-    const commissionerHunter = await getCommissionerHunter(hunter.referrerCode);
-    const rootHunter = await getRootHunter(hunter.root);
+    const commissionerHunter = getCommissionerHunter(hunter.referrerCode);
+    const rootHunter = getRootHunter(hunter.root);
+    const isPriority = !_.isEmpty(priorityPoolMap.get(apply.id));
     if (hunter.referrerCode === "######" || _.isEmpty(commissionerHunter)) {
       commissionRate = 0;
       glodaoCommissionRate = 5;
@@ -62,10 +69,7 @@ async function main(argv) {
     }
     rewardCalculatedArr.push({
       ...apply,
-      bounty:
-        apply.poolType === "community"
-          ? baseCommunityReward
-          : basePriorityReward,
+      bounty: isPriority ? basePriorityReward : baseCommunityReward,
       commissionRate,
       commissionAddress,
       rootAddress,
@@ -98,6 +102,9 @@ async function main(argv) {
         try {
           await Promise.all(
             subChunksOfApplies.map((apply) => {
+              const isPriority = !_.isEmpty(priorityPoolMap.get(apply.id));
+              const newPoolType = isPriority ? "priority" : "community";
+              if (!newPoolType) console.log("oh shit toang doi");
               return strapi.services.apply.update(
                 {
                   id: apply.id,
@@ -106,6 +113,7 @@ async function main(argv) {
                   bounty: `${apply.bounty._value}`.substring(0, 8),
                   commissionRate: apply.commissionRate,
                   status: "awarded",
+                  poolType: newPoolType,
                 }
               );
             })
@@ -163,6 +171,10 @@ async function main(argv) {
   }
 }
 
+getAllNeededData = async () => {
+  allHunterArr = await strapi.services.hunter.find({ _limit: -1 });
+};
+
 initialize = async () => {
   await setupStrapi();
 };
@@ -182,26 +194,40 @@ accumulateAddressReward = (address, bounty, rate) => {
   );
 };
 
-getHunterByReferrerCode = async (referrerCode) => {
-  return await strapi.services.hunter.findOne({ referralCode: referrerCode });
+getHunterByReferrerCode = (referrerCode) => {
+  return allHunterArr.find((hunter) => hunter.referralCode === referrerCode);
+  // return await strapi.services.hunter.findOne({ referralCode: referrerCode });
 };
 
-getCommissionerHunter = async (referrerCode) => {
-  return await getHunterByReferrerCode(referrerCode);
+getCommissionerHunter = (referrerCode) => {
+  return getHunterByReferrerCode(referrerCode);
 };
 
-getRootHunter = async (referrerCode) => {
-  return await getHunterByReferrerCode(referrerCode);
+getRootHunter = (referrerCode) => {
+  return getHunterByReferrerCode(referrerCode);
 };
 
 calculatePoolReward = async (taskId, relatedCompleteApplies) => {
   const task = await strapi.services.task.findOne({ id: taskId });
-  console.log(task);
+  const countTotla = await strapi.services.apply.count({ task: taskId });
   console.log(task.name);
-  filename = task.name + argv.date;
+  console.log(task.missionIndex);
+  filename = task.name + "-" + task.missionIndex + "-" + argv.date;
+  console.log("total par:" + task.totalParticipants);
+  console.log("total par:" + countTotla);
+  const allPriorityPool = relatedCompleteApplies.slice(
+    0,
+    task.maxPriorityParticipants
+  );
+  allPriorityPool.forEach((apply) => {
+    priorityPoolMap.set(apply.id, apply);
+  });
+  let priorityCount = allPriorityPool.length;
+  console.log(priorityCount);
   console.log(relatedCompleteApplies.length);
   this.task = task;
-  if (task.maxPriorityParticipants === 0) basePriorityReward = 0;
+  if (task.maxPriorityParticipants === 0)
+    basePriorityReward = priorityCount = 0;
   else
     basePriorityReward = FixedNumber.from(
       _.get(task, "priorityRewardAmount", "0")
@@ -212,10 +238,8 @@ calculatePoolReward = async (taskId, relatedCompleteApplies) => {
     .mulUnsafe(FixedNumber.from("93"))
     .divUnsafe(FIXED_NUMBER.HUNDRED)
     .subUnsafe(FixedNumber.from(_.get(task, "priorityRewardAmount", "0")));
-  const totalCommunityParticipants = _.filter(
-    relatedCompleteApplies,
-    (apply) => apply.poolType === "community"
-  ).length;
+  const totalCommunityParticipants =
+    relatedCompleteApplies.length - priorityCount;
   console.log(totalCommunityParticipants);
   baseCommunityReward = totalCommunityReward.divUnsafe(
     FixedNumber.from(`${totalCommunityParticipants}`)
