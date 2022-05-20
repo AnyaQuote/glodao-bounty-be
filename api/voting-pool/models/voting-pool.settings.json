@@ -13,7 +13,8 @@
   "pluginOptions": {},
   "attributes": {
     "projectName": {
-      "type": "string"
+      "type": "string",
+      "unique": true
     },
     "data": {
       "type": "json"
@@ -47,7 +48,12 @@
       "type": "string"
     },
     "projectId": {
-      "type": "string"
+      "type": "string",
+      "unique": true
+    },
+    "unicode": {
+      "type": "string",
+      "unique": false
     }
   }
 }
