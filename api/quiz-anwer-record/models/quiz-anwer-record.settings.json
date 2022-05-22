@@ -1,8 +1,9 @@
 {
   "kind": "collectionType",
-  "collectionName": "quiz_anwer_records",
+  "collectionName": "quiz_answer_records",
   "info": {
-    "name": "QuizAnwerRecord"
+    "name": "QuizAnswerRecord",
+    "description": ""
   },
   "options": {
     "increments": true,
