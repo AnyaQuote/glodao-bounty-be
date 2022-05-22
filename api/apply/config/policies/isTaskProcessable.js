@@ -16,10 +16,9 @@ module.exports = async (ctx, next) => {
     _.get(ctx, "query.task", "") ||
     _.get(ctx, "request.body.task", "") ||
     _.get(ctx, "params.task", "");
-
   if (!_.isEmpty(task)) {
     const taskRecord = await strapi.services.task.findOne({ id: task });
-    const taskParticipantLimit = _.get(task, "maxParticipants", 0);
+    const taskParticipantLimit = _.get(taskRecord, "maxParticipants", 0);
     if (taskParticipantLimit < 1) return await next();
     else if (taskRecord.type === "learn") {
       const completedCount = await strapi.services.apply.count({
@@ -36,12 +35,12 @@ module.exports = async (ctx, next) => {
     const taskRecord = await strapi.services.task.findOne({
       id: taskId,
     });
-    const taskParticipantLimit = _.get(task, "maxParticipants", 0);
+    const taskParticipantLimit = _.get(taskRecord, "maxParticipants", 0);
     if (taskParticipantLimit < 1) return await next();
     else if (taskRecord.type === "learn") {
       const completedCount = await strapi.services.apply.count({
         status_ne: "processing",
-        task: task,
+        task: taskId,
       });
       if (completedCount >= taskParticipantLimit)
         return ctx.badRequest("The mission has fulled");
