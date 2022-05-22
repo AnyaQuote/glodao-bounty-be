@@ -46,7 +46,10 @@
     "rewardAddress": {
       "type": "string"
     },
-    "projectId": {
+    "poolId": {
+      "type": "string"
+    },
+    "unicodeName": {
       "type": "string"
     }
   }
