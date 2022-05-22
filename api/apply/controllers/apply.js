@@ -3,7 +3,7 @@
 const {
   isValidStaker,
 } = require("../../../helpers/blockchainHelpers/farm-helper");
-const { isNil, get, merge, isEqual, isNumber } = require("lodash");
+const { isNil, get, merge, isEqual, isNumber, isEmpty } = require("lodash");
 const twitterHelper = require("../../../helpers/twitter-helper");
 const { MIN_QUIZ_ANSWER_COUNT } = require("../../../constants");
 /**
@@ -62,7 +62,10 @@ module.exports = {
       return ctx.conflict("Now is not the right time to do this task");
 
     const walletAddress = get(optional, "walletAddress", "");
-    if (!isEqual(walletAddress, get(apply, "hunter.address", "")))
+    if (
+      !isEqual(type, "quiz") &&
+      !isEqual(walletAddress, get(apply, "hunter.address", ""))
+    )
       return ctx.unauthorized(
         "Invalid request: Wallet not matched with the pre-registered one"
       );
@@ -76,28 +79,106 @@ module.exports = {
         get(apply, "hunter.address", "")
       );
     }
-
+    console.log(type);
     let res = "";
     let updatedTaskData = taskData;
 
     if (isEqual(type, "quiz")) {
       const quizAnswer = get(optional, "answerList", []);
+      console.log(quizAnswer.length);
       if (quizAnswer.length < MIN_QUIZ_ANSWER_COUNT)
-        return ctx.badRequest("Invalid number of answers");
+      return ctx.badRequest("Invalid number of answers");
       const quizId = get(optional, "quizId", "");
       const quiz = await strapi.services.quiz.findOne({ id: quizId });
-      if (!strapi.services.quiz.verifyQuizAnswer(quiz.answer, quizAnswer))
-        return ctx.badRequest("Wrong quiz answer");
-      const quizTaskData = get(apply, ["task", "data", type], []).map(
-        (task) => {
-          return {
-            type: "quiz",
-            finished: task.quizId === quizId,
-          };
+      // const isQuizComplete
+      // if (!strapi.services.quiz.verifyQuizAnswer(quiz.answer, quizAnswer))
+      // return ctx.badRequest("Wrong quiz answer");\
+      let quizTaskData = [];
+      const tempQuizTaskData = get(apply, ["task", "data", type], []);
+      console.log(tempQuizTaskData);
+      for (let index = 0; index < tempQuizTaskData.length; index++) {
+        const task = tempQuizTaskData[index];
+        if (task.type !== "quiz") {
+          quizTaskData.push(task);
+          continue;
         }
-      );
+        console.log(task);
+        const recordId = await strapi.services["quiz-answer-record"].findOne({
+          ID: `${task.quizId}_${get(apply, "hunter.id")}`,
+        });
+        quizTaskData.push({
+          ...task,
+          finished: !isEmpty(recordId),
+          recordId: recordId.id,
+        });
+      }
+      console.log(quizTaskData);
+      console.log(updatedTaskData["quiz"]);
       updatedTaskData["quiz"] = quizTaskData;
     }
+    if (isEqual(type, "quizRevalidate")) {
+      const quizId = get(optional, "quizId", "");
+      const hunterId = get(user, "hunter", "");
+      console.log(get(user, "hunter"));
+      console.log(quizId, hunterId);
+      updatedTaskData = get(apply, "data");
+      const existedRecord = await strapi.services["quiz-answer-record"].findOne(
+        {
+          ID: `${quizId}_${hunterId}`,
+        }
+      );
+      if (isEmpty(existedRecord))
+        return ctx.badRequest("The quiz was not finished");
+      const tempQuizTaskData = get(apply, ["task", "data", "quiz"], []);
+
+      for (let index = 0; index < tempQuizTaskData.length; index++) {
+        const element = tempQuizTaskData[index];
+        if (isEqual(element.quizId, quizId) && isEqual(element.type, "quiz")) {
+          console.log(updatedTaskData["quiz"]);
+          updatedTaskData["quiz"][index].recordId = existedRecord.id;
+          updatedTaskData["quiz"][index].finished = true;
+          updatedTaskData["quiz"][index].quizId = quizId;
+        }
+      }
+    }
+
+    if (isEqual(type, "quizShare")) {
+      const quizId = get(optional, "quizId", "");
+      const hunterId = get(user, "hunter", "");
+      const link = get(optional, "link", "");
+
+      const existedRecord = await strapi.services["quiz-answer-record"].findOne(
+        {
+          ID: `${quizId}_${hunterId}`,
+        }
+      );
+      if (isEmpty(existedRecord))
+        return ctx.badRequest("The quiz was not finished");
+      const isValidLink =
+        await strapi.services.apply.validateQuizRecordShareTask(
+          link,
+          user,
+          existedRecord.id
+        );
+      console.log(isValidLink);
+      if (!isValidLink)
+        return ctx.badRequest("Invalid tweet link: missing quiz url");
+
+      updatedTaskData = get(apply, "data");
+      const tempQuizTaskData = get(apply, ["task", "data", "quiz"], []);
+
+      for (let index = 0; index < tempQuizTaskData.length; index++) {
+        const element = tempQuizTaskData[index];
+        if (isEqual(element.quizId, quizId) && isEqual(element.type, "share")) {
+          console.log(updatedTaskData["quiz"]);
+          updatedTaskData["quiz"][index].recordId = existedRecord.id;
+          updatedTaskData["quiz"][index].link = link;
+          updatedTaskData["quiz"][index].finished = true;
+          updatedTaskData["quiz"][index].quizId = quizId;
+        }
+      }
+    }
+    console.log(updatedTaskData);
 
     if (isEqual(type, "twitter")) {
       let twitterTaskData = get(taskData, [type], []);
