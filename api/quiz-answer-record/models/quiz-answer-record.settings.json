@@ -2,8 +2,7 @@
   "kind": "collectionType",
   "collectionName": "quiz_answer_records",
   "info": {
-    "name": "QuizAnswerRecord",
-    "description": ""
+    "name": "QuizAnswerRecord"
   },
   "options": {
     "increments": true,
@@ -12,22 +11,22 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "data": {
-      "type": "json"
+    "quiz": {
+      "model": "quiz"
     },
     "hunter": {
       "model": "hunter"
     },
-    "quiz": {
-      "model": "quiz"
+    "data": {
+      "type": "json"
+    },
+    "completeTime": {
+      "type": "datetime"
     },
     "ID": {
       "type": "string",
       "required": true,
       "unique": true
-    },
-    "completeTime": {
-      "type": "datetime"
     },
     "metadata": {
       "type": "json"

@@ -2,48 +2,48 @@
   "routes": [
     {
       "method": "GET",
-      "path": "/quiz-anwer-records",
-      "handler": "quiz-anwer-record.find",
+      "path": "/quiz-answer-records",
+      "handler": "quiz-answer-record.find",
       "config": {
         "policies": []
       }
     },
     {
       "method": "GET",
-      "path": "/quiz-anwer-records/count",
-      "handler": "quiz-anwer-record.count",
+      "path": "/quiz-answer-records/count",
+      "handler": "quiz-answer-record.count",
       "config": {
         "policies": []
       }
     },
     {
       "method": "GET",
-      "path": "/quiz-anwer-records/:id",
-      "handler": "quiz-anwer-record.findOne",
+      "path": "/quiz-answer-records/:id",
+      "handler": "quiz-answer-record.findOne",
       "config": {
         "policies": []
       }
     },
     {
       "method": "POST",
-      "path": "/quiz-anwer-records",
-      "handler": "quiz-anwer-record.create",
+      "path": "/quiz-answer-records",
+      "handler": "quiz-answer-record.create",
       "config": {
         "policies": []
       }
     },
     {
       "method": "PUT",
-      "path": "/quiz-anwer-records/:id",
-      "handler": "quiz-anwer-record.update",
+      "path": "/quiz-answer-records/:id",
+      "handler": "quiz-answer-record.update",
       "config": {
         "policies": []
       }
     },
     {
       "method": "DELETE",
-      "path": "/quiz-anwer-records/:id",
-      "handler": "quiz-anwer-record.delete",
+      "path": "/quiz-answer-records/:id",
+      "handler": "quiz-answer-record.delete",
       "config": {
         "policies": []
       }
