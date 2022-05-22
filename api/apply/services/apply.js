@@ -300,9 +300,6 @@ const validateQuizRecordShareTask = async (link, user, recordId) => {
 
     const text =
       _.get(tweetData, "full_text", "") || _.get(tweetData, "text", "");
-    console.log(text);
-    console.log(recordId);
-    console.log(tweetData.entities.urls);
     for (let index = 0; index < tweetData.entities.urls.length; index++) {
       const urlObj = tweetData.entities.urls[index];
       if (

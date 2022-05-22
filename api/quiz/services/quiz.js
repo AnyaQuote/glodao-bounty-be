@@ -12,7 +12,6 @@ const { isArrayIncluded, getArrDiff } = require("../../../helpers");
  * @returns true if all the submited answer is correct, false otherwise
  */
 const verifyQuizAnswer = (base, compare) => {
-  console.log(compare);
   return isArrayIncluded(compare, base);
 };
 const getWrongAnswerList = (base, compare) => {

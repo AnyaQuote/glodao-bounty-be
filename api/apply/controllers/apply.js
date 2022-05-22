@@ -79,15 +79,13 @@ module.exports = {
         get(apply, "hunter.address", "")
       );
     }
-    console.log(type);
     let res = "";
     let updatedTaskData = taskData;
 
     if (isEqual(type, "quiz")) {
       const quizAnswer = get(optional, "answerList", []);
-      console.log(quizAnswer.length);
       if (quizAnswer.length < MIN_QUIZ_ANSWER_COUNT)
-      return ctx.badRequest("Invalid number of answers");
+        return ctx.badRequest("Invalid number of answers");
       const quizId = get(optional, "quizId", "");
       const quiz = await strapi.services.quiz.findOne({ id: quizId });
       // const isQuizComplete
@@ -95,14 +93,12 @@ module.exports = {
       // return ctx.badRequest("Wrong quiz answer");\
       let quizTaskData = [];
       const tempQuizTaskData = get(apply, ["task", "data", type], []);
-      console.log(tempQuizTaskData);
       for (let index = 0; index < tempQuizTaskData.length; index++) {
         const task = tempQuizTaskData[index];
         if (task.type !== "quiz") {
           quizTaskData.push(task);
           continue;
         }
-        console.log(task);
         const recordId = await strapi.services["quiz-answer-record"].findOne({
           ID: `${task.quizId}_${get(apply, "hunter.id")}`,
         });
@@ -112,15 +108,11 @@ module.exports = {
           recordId: recordId.id,
         });
       }
-      console.log(quizTaskData);
-      console.log(updatedTaskData["quiz"]);
       updatedTaskData["quiz"] = quizTaskData;
     }
     if (isEqual(type, "quizRevalidate")) {
       const quizId = get(optional, "quizId", "");
       const hunterId = get(user, "hunter", "");
-      console.log(get(user, "hunter"));
-      console.log(quizId, hunterId);
       updatedTaskData = get(apply, "data");
       const existedRecord = await strapi.services["quiz-answer-record"].findOne(
         {
@@ -134,7 +126,6 @@ module.exports = {
       for (let index = 0; index < tempQuizTaskData.length; index++) {
         const element = tempQuizTaskData[index];
         if (isEqual(element.quizId, quizId) && isEqual(element.type, "quiz")) {
-          console.log(updatedTaskData["quiz"]);
           updatedTaskData["quiz"][index].recordId = existedRecord.id;
           updatedTaskData["quiz"][index].finished = true;
           updatedTaskData["quiz"][index].quizId = quizId;
@@ -160,7 +151,6 @@ module.exports = {
           user,
           existedRecord.id
         );
-      console.log(isValidLink);
       if (!isValidLink)
         return ctx.badRequest("Invalid tweet link: missing quiz url");
 
@@ -170,7 +160,6 @@ module.exports = {
       for (let index = 0; index < tempQuizTaskData.length; index++) {
         const element = tempQuizTaskData[index];
         if (isEqual(element.quizId, quizId) && isEqual(element.type, "share")) {
-          console.log(updatedTaskData["quiz"]);
           updatedTaskData["quiz"][index].recordId = existedRecord.id;
           updatedTaskData["quiz"][index].link = link;
           updatedTaskData["quiz"][index].finished = true;
@@ -178,7 +167,6 @@ module.exports = {
         }
       }
     }
-    console.log(updatedTaskData);
 
     if (isEqual(type, "twitter")) {
       let twitterTaskData = get(taskData, [type], []);
