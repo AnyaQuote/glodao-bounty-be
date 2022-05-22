@@ -28,7 +28,7 @@ module.exports = {
       const { user } = hunter;
       // if (!isPriorityFull && (await isValidStaker(hunter.address, 1000)))
       // if (!isPriorityFull) event.poolType = "priority";
-      // else 
+      // else
       // event.poolType = "community";
 
       let taskData = initEmptyStepData(task);
@@ -52,6 +52,7 @@ module.exports = {
       { task: taskId, hunter: hunterId, poolType, id }
     ) {
       await strapi.services.task.updateTaskTotalParticipantsById(taskId);
+      await strapi.services.task.updateTaskCompletedParticipantsById(taskId);
       await strapi.services.hunter.updateHunterStatusToNewbie(hunterId);
       // const isPriorityFull = await strapi.services.task.isPriorityPoolFullById(
       //   taskId
@@ -62,6 +63,12 @@ module.exports = {
       //     { poolType: "community" }
       //   );
       // }
+    },
+
+    async afterUpdate(params, event) {
+      await strapi.services.task.updateTaskCompletedParticipantsById(
+        event.values.task
+      );
     },
   },
 };
