@@ -53,7 +53,7 @@
       "path": "/quizzes/verify",
       "handler": "quiz.verify",
       "config": {
-        "policies": ["ratelimit"]
+        "policies": []
       }
     }
   ]
