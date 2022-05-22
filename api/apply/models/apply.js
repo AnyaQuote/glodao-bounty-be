@@ -66,9 +66,10 @@ module.exports = {
     },
 
     async afterUpdate(params, event) {
-      await strapi.services.task.updateTaskCompletedParticipantsById(
-        event.values.task
-      );
+      const taskId = _.get(params, "task.id", "");
+      const bountyStatus = _.get(params, "status");
+      if (taskId && bountyStatus === "completed")
+        await strapi.services.task.updateTaskCompletedParticipantsById(taskId);
     },
   },
 };
