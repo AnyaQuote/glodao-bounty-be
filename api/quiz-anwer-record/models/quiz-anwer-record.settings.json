@@ -1,0 +1,35 @@
+{
+  "kind": "collectionType",
+  "collectionName": "quiz_anwer_records",
+  "info": {
+    "name": "QuizAnwerRecord"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "data": {
+      "type": "json"
+    },
+    "hunter": {
+      "model": "hunter"
+    },
+    "quiz": {
+      "model": "quiz"
+    },
+    "ID": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "completeTime": {
+      "type": "datetime"
+    },
+    "metadata": {
+      "type": "json"
+    }
+  }
+}
