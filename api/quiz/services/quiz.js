@@ -1,5 +1,5 @@
 "use strict";
-const { isArrayIncluded } = require("../../../helpers");
+const { isArrayIncluded, getArrDiff } = require("../../../helpers");
 /**
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-services)
  * to customize this service
@@ -14,7 +14,10 @@ const { isArrayIncluded } = require("../../../helpers");
 const verifyQuizAnswer = (base, compare) => {
   return isArrayIncluded(compare, base);
 };
-
+const getWrongAnswerList = (base, compare) => {
+  return getArrDiff(compare, base);
+};
 module.exports = {
   verifyQuizAnswer,
+  getWrongAnswerList,
 };

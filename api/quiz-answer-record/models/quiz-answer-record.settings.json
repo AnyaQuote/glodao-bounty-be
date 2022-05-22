@@ -1,0 +1,35 @@
+{
+  "kind": "collectionType",
+  "collectionName": "quiz_answer_records",
+  "info": {
+    "name": "QuizAnswerRecord"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "quiz": {
+      "model": "quiz"
+    },
+    "hunter": {
+      "model": "hunter"
+    },
+    "data": {
+      "type": "json"
+    },
+    "completeTime": {
+      "type": "datetime"
+    },
+    "ID": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "metadata": {
+      "type": "json"
+    }
+  }
+}

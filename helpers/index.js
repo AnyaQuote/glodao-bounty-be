@@ -33,8 +33,13 @@ const isArrayIncluded = (base, includedIn) => {
   return _.isEmpty(_.differenceWith(base, includedIn, _.isEqual));
 };
 
+const getArrDiff = (base, compare) => {
+  return _.differenceWith(base, compare, _.isEqual);
+};
+
 module.exports = {
   generateRandomString,
   getWordsCount,
   isArrayIncluded,
+  getArrDiff,
 };
