@@ -1,0 +1,52 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/quiz-anwer-records",
+      "handler": "quiz-anwer-record.find",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/quiz-anwer-records/count",
+      "handler": "quiz-anwer-record.count",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/quiz-anwer-records/:id",
+      "handler": "quiz-anwer-record.findOne",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/quiz-anwer-records",
+      "handler": "quiz-anwer-record.create",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/quiz-anwer-records/:id",
+      "handler": "quiz-anwer-record.update",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/quiz-anwer-records/:id",
+      "handler": "quiz-anwer-record.delete",
+      "config": {
+        "policies": []
+      }
+    }
+  ]
+}
