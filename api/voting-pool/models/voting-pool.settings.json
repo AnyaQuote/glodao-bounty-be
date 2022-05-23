@@ -21,19 +21,11 @@
     },
     "type": {
       "type": "enumeration",
-      "enum": [
-        "bounty",
-        "launchpad"
-      ]
+      "enum": ["bounty", "launchpad"]
     },
     "status": {
       "type": "enumeration",
-      "enum": [
-        "pending",
-        "voting",
-        "approved",
-        "rejected"
-      ]
+      "enum": ["pending", "voting", "approved", "rejected"]
     },
     "startDate": {
       "type": "datetime"
@@ -44,16 +36,14 @@
     "endDate": {
       "type": "datetime"
     },
-    "rewardAddress": {
+    "tokenAddress": {
       "type": "string"
     },
-    "projectId": {
-      "type": "string",
-      "unique": true
+    "poolId": {
+      "type": "string"
     },
-    "unicode": {
-      "type": "string",
-      "unique": false
+    "unicodeName": {
+      "type": "string"
     }
   }
 }

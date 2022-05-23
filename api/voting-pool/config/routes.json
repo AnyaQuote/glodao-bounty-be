@@ -47,6 +47,14 @@
       "config": {
         "policies": []
       }
+    },
+    {
+      "method": "POST",
+      "path": "/createOrUpdateVotingPool",
+      "handler": "voting-pool.createOrUpdateVotingPool",
+      "config": {
+        "policies": []
+      }
     }
   ]
 }

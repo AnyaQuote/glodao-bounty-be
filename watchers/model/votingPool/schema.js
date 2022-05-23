@@ -8,10 +8,10 @@ let VotingPoolSchema = new Schema(
     startDate: Date,
     endDate: Date,
     ownerAddress: String,
-    name: String,
+    projectName: String,
     type: String,
-    projectId: String,
-    rewardToken: String,
+    poolId: String,
+    tokenAddress: String,
     data: Schema.Types.Mixed,
   },
   {
