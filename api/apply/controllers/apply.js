@@ -145,14 +145,14 @@ module.exports = {
       );
       if (isEmpty(existedRecord))
         return ctx.badRequest("The quiz was not finished");
-      const isValidLink =
+      const linkErrorMsg =
         await strapi.services.apply.validateQuizRecordShareTask(
           link,
           user,
           existedRecord.id
         );
-      if (!isValidLink)
-        return ctx.badRequest("Invalid tweet link: missing quiz url");
+
+      if (linkErrorMsg) return ctx.badRequest(linkErrorMsg);
 
       updatedTaskData = get(apply, "data");
       const tempQuizTaskData = get(apply, ["task", "data", "quiz"], []);
