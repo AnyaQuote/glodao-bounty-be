@@ -28,6 +28,16 @@ const startListenVotingEvent = async () => {
         chainId,
         "PoolCreated"
       );
+      solidityWatcher.startEventListener(
+        votingContractAddress,
+        chainId,
+        "PoolCancelled"
+      );
+      solidityWatcher.startEventListener(
+        votingContractAddress,
+        chainId,
+        "UserVoted"
+      );
       break;
     case 101:
     case 103:

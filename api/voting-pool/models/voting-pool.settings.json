@@ -31,7 +31,8 @@
         "pending",
         "voting",
         "approved",
-        "rejected"
+        "rejected",
+        "cancelled"
       ]
     },
     "startDate": {

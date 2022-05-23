@@ -4,7 +4,7 @@ const { FixedNumber } = require("@ethersproject/bignumber");
 
 const CONFIG = {
   dev: {
-    votingAddress: "0xAaf25d840e4b4934777A21F00EA31bB609fa324b",
+    votingAddress: "0xb51Bf8C508f775981bBD1876cd2Ef6f1f4cd03b2",
     chainId: 97,
   },
   prod: {
@@ -24,7 +24,7 @@ const getPoolInfo = async (poolId) => {
   );
 
   try {
-    const poolInfo = await farmContract.methods.poolInfos(poolId).call();
+    const poolInfo = await farmContract.methods.poolInfos(+poolId).call();
     return poolInfo;
   } catch (error) {
     // poolId not exist
