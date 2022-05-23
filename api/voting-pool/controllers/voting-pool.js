@@ -5,13 +5,12 @@
  * to customize this controller
  */
 
-const updateVotingPool = async (ctx) => {
-  const data = ctx.request.body;
-
-}
-
 module.exports = {
-  updateVotingPool,
+  updateVotingPoolInfo: async (ctx) => {
+    return await strapi.services["voting-pool"].updateVotingPoolInfo(
+      ctx.request.body
+    );
+  },
   createOrUpdateVotingPool: async (ctx) => {
     const votingPoolData = ctx.request.body;
     if (!votingPoolData.poolId || !votingPoolData.ownerAddress)
