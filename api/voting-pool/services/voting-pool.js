@@ -99,8 +99,33 @@ const cancelVotingPool = async (ctx, votingPoolData) => {
   }
 };
 
+/**
+ * Update pool project name, shortDescription and data information
+ * @param {Object} votingPoolData
+ * @returns updated pool
+ */
+const updateVotingPoolInfo = async (votingPoolData) => {
+  const { id, projectName, shortDescription, data } = votingPoolData;
+  try {
+    const pool = await starpi.services["voting-pool"].findOne({ id });
+
+    const updatedPool = await strapi.services["voting-pool"].update(id, {
+      projectName,
+      shortDescription,
+      data: {
+        ...pool.data,
+        ...data,
+      },
+    });
+    return updatedPool;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
 module.exports = {
   createOrUpdateVotingPool,
   updateStatusVotingPool,
   cancelVotingPool,
+  updateVotingPoolInfo,
 };
