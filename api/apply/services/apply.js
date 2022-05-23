@@ -309,11 +309,12 @@ const validateQuizRecordShareTask = async (link, user, recordId) => {
         ) ||
         _.isEqual(urlObj.expanded_url, `app.glodao.io/quiz-record/${recordId}`)
       )
-        return true;
+        return "";
     }
-    return false;
+    return "Invalid tweet link: missing quiz url";
   } catch (error) {
-    return false;
+    console.log(error);
+    return "Invalid tweet link";
   }
 };
 
