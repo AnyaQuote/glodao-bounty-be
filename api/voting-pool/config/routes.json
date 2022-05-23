@@ -55,6 +55,22 @@
       "config": {
         "policies": []
       }
+    },
+    {
+      "method": "PUT",
+      "path": "/updateStatusVotingPool",
+      "handler": "voting-pool.updateStatusVotingPool",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/cancelVotingPool",
+      "handler": "voting-pool.cancelVotingPool",
+      "config": {
+        "policies": []
+      }
     }
   ]
 }

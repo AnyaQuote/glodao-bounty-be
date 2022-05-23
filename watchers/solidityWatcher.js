@@ -7,7 +7,11 @@ const {
 } = require("./blockchainHandler");
 const { FixedNumber } = require("@ethersproject/bignumber");
 const { fromDecimals } = require("../helpers/bignumber-helper");
-const { createVotingPool } = require("./model/votingPool/services");
+const {
+  createVotingPool,
+  updateStatusVotingPool,
+  cancelVotingPool,
+} = require("./model/votingPool/services");
 
 const options = {
   timeout: 30000,
@@ -59,16 +63,36 @@ const getBlockTimestamp = async (web3, blockNumber) => {
 const processEvent = async (configs, data) => {
   const timestamp = await getBlockTimestamp(configs.web3, data.blockNumber);
   data.timestamp = timestamp;
+  console.log("data.event", data.event);
   if (data.event === "PoolCreated") {
-    console.log("=== data.eventName: ", data.event, data.timestamp);
     // create voting pool
     const eventData = data.returnValues;
     const params = {
       poolId: eventData.id,
       ownerAddress: eventData.owner,
+      poolType: eventData.poolType,
     };
     try {
       await createVotingPool(params);
+    } catch (error) {
+      console.error(error);
+    }
+  } else if (data.event === "UserVoted") {
+    const poolId = data.returnValues.id;
+    const completed = data.returnValues.completed;
+    if (completed) {
+      // update status to approved
+      try {
+        await updateStatusVotingPool(poolId);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  } else if (data.event === "PoolCancelled") {
+    const poolId = data.returnValues.id;
+    // update status to Cancelled
+    try {
+      await cancelVotingPool(poolId);
     } catch (error) {
       console.error(error);
     }

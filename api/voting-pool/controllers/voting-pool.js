@@ -22,4 +22,14 @@ module.exports = {
       votingPoolData
     );
   },
+  updateStatusVotingPool: async (ctx) => {
+    return await strapi.services["voting-pool"].updateStatusVotingPool(
+      ctx.request.body
+    );
+  },
+  cancelVotingPool: async (ctx) => {
+    return await strapi.services["voting-pool"].cancelVotingPool(
+      ctx.request.body
+    );
+  },
 };

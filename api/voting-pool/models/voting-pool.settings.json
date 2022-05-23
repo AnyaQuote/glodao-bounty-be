@@ -25,7 +25,13 @@
     },
     "status": {
       "type": "enumeration",
-      "enum": ["pending", "voting", "approved", "rejected"]
+      "enum": [
+        "pending",
+        "voting",
+        "approved",
+        "rejected",
+        "cancelled"
+      ]
     },
     "startDate": {
       "type": "datetime"
