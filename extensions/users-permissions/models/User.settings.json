@@ -74,7 +74,7 @@
     },
     "referralCode": {
       "type": "string",
-      "unique": true
+      "unique": false
     },
     "referrerCode": {
       "type": "string",

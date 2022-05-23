@@ -1,12 +1,14 @@
 const Web3 = require("web3");
 const moment = require("moment");
-const VOTING_ABI = require("./abis/voting.abi.json");
+const VOTING_ABI = require("../helpers/blockchainHelpers/abis/voting.abi.json");
 const {
   getChainConfig,
   getVotingContractCreation,
 } = require("./blockchainHandler");
 const { FixedNumber } = require("@ethersproject/bignumber");
 const { fromDecimals } = require("../helpers/bignumber-helper");
+const { createVotingPool } = require("./model/votingPool/services");
+
 const options = {
   timeout: 30000,
   clientConfig: {
@@ -55,12 +57,21 @@ const getBlockTimestamp = async (web3, blockNumber) => {
 };
 
 const processEvent = async (configs, data) => {
-  const eventData = data.returnValues;
   const timestamp = await getBlockTimestamp(configs.web3, data.blockNumber);
   data.timestamp = timestamp;
   if (data.event === "PoolCreated") {
     console.log("=== data.eventName: ", data.event, data.timestamp);
-    // do something
+    // create voting pool
+    const eventData = data.returnValues;
+    const params = {
+      poolId: eventData.id,
+      ownerAddress: eventData.owner,
+    };
+    try {
+      await createVotingPool(params);
+    } catch (error) {
+      console.error(error);
+    }
   }
 };
 
