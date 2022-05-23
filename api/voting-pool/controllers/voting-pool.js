@@ -5,7 +5,13 @@
  * to customize this controller
  */
 
+const updateVotingPool = async (ctx) => {
+  const data = ctx.request.body;
+
+}
+
 module.exports = {
+  updateVotingPool,
   createOrUpdateVotingPool: async (ctx) => {
     const votingPoolData = ctx.request.body;
     if (!votingPoolData.poolId || !votingPoolData.ownerAddress)
