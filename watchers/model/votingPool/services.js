@@ -14,11 +14,11 @@ const createVotingPool = async (params) => {
   }
 };
 
-const updateStatusVotingPool = async (poolId) => {
+const updateStatusToApproved = async (poolId) => {
   const votingPool = await VotingPoolModel.findOne({
     poolId,
   });
-  if (votingPool && votingPool.id) {
+  if (votingPool && votingPool.id && votingPool !== "approved") {
     try {
       await VotingPoolModel.update(
         { id: votingPool.id },
@@ -27,16 +27,17 @@ const updateStatusVotingPool = async (poolId) => {
         }
       );
     } catch (error) {
-      console.log("--- updateStatusVotingPool error: ", error);
+      console.log("--- updateStatusToApproved error: ", error);
     }
   }
 };
 
 const cancelVotingPool = async (poolId) => {
+  await sleep(1500);
   const votingPool = await VotingPoolModel.findOne({
     poolId,
   });
-  if (votingPool && votingPool.id) {
+  if (votingPool && votingPool.id && votingPool.status !== "cancelled") {
     try {
       await VotingPoolModel.update(
         { id: votingPool.id },
@@ -52,6 +53,6 @@ const cancelVotingPool = async (poolId) => {
 
 module.exports = {
   createVotingPool,
-  updateStatusVotingPool,
+  updateStatusToApproved,
   cancelVotingPool,
 };

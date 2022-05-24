@@ -16,14 +16,16 @@ module.exports = {
       votingPoolData
     );
   },
-  updateStatusVotingPool: async (ctx) => {
-    return await strapi.services["voting-pool"].updateStatusVotingPool(
+  updateStatusToApproved: async (ctx) => {
+    return await strapi.services["voting-pool"].updateStatusToApproved(
       ctx.request.body
     );
   },
   cancelVotingPool: async (ctx) => {
+    const votingPoolData = ctx.request.body;
     return await strapi.services["voting-pool"].cancelVotingPool(
-      ctx.request.body
+      ctx,
+      votingPoolData
     );
   },
 };
