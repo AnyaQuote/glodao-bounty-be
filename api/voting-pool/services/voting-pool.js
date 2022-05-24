@@ -64,7 +64,7 @@ const createOrUpdateVotingPool = async (ctx, votingPoolData) => {
   return pool;
 };
 
-const updateStatusVotingPool = async (votingPoolData) => {
+const updateStatusToApproved = async (votingPoolData) => {
   const poolInfo = await getPoolInfo(votingPoolData.poolId);
   if (poolInfo && poolInfo.completed && !poolInfo.cancelled) {
     // change status to approved
@@ -84,8 +84,9 @@ const updateStatusVotingPool = async (votingPoolData) => {
 const cancelVotingPool = async (ctx, votingPoolData) => {
   checkIsOwner(ctx, votingPoolData.ownerAddress);
 
-  try {
-    const pool = await strapi.services["voting-pool"].update(
+  const poolInfo = await getPoolInfo(votingPoolData.poolId);
+  if (poolInfo && poolInfo.cancelled) {
+    await strapi.services["voting-pool"].update(
       {
         id: votingPoolData.id,
       },
@@ -93,10 +94,8 @@ const cancelVotingPool = async (ctx, votingPoolData) => {
         status: "cancelled",
       }
     );
-    return pool;
-  } catch (error) {
-    throw new Error(error);
   }
+  return poolInfo;
 };
 
 /**
@@ -125,7 +124,7 @@ const updateVotingPoolInfo = async (votingPoolData) => {
 
 module.exports = {
   createOrUpdateVotingPool,
-  updateStatusVotingPool,
+  updateStatusToApproved,
   cancelVotingPool,
   updateVotingPoolInfo,
 };

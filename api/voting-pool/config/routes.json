@@ -58,8 +58,8 @@
     },
     {
       "method": "PUT",
-      "path": "/updateStatusVotingPool",
-      "handler": "voting-pool.updateStatusVotingPool",
+      "path": "/updateStatusToApproved",
+      "handler": "voting-pool.updateStatusToApproved",
       "config": {
         "policies": []
       }
