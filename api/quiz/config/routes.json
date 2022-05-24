@@ -55,6 +55,14 @@
       "config": {
         "policies": []
       }
+    },
+    {
+      "method": "GET",
+      "path": "/quizzes/getQuiz/:id",
+      "handler": "quiz.getQuiz",
+      "config": {
+        "policies": []
+      }
     }
   ]
 }
