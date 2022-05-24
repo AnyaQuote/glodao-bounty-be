@@ -29,7 +29,7 @@
       "path": "/applies",
       "handler": "apply.create",
       "config": {
-        "policies": []
+        "policies": ["isTaskProcessable"]
       }
     },
     {
@@ -61,7 +61,7 @@
       "path": "/applies/:id/task",
       "handler": "apply.updateTaskProcess",
       "config": {
-        "policies": ["global::is-owner"]
+        "policies": ["global::is-owner", "isTaskProcessable"]
       }
     }
   ]
