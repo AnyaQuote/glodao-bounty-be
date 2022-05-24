@@ -1,7 +1,7 @@
 "use strict";
 
 const { MIN_QUIZ_ANSWER_COUNT } = require("../../../constants");
-const { get } = require("lodash");
+const { get, sampleSize } = require("lodash");
 /**
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-controllers)
  * to customize this controller
@@ -22,6 +22,7 @@ module.exports = {
       return {
         status: false,
         wrongAnswerList,
+        newQuestion: sampleSize(quiz.data, 10),
       };
 
     const recordData = await strapi.services["quiz-answer-record"].create({
@@ -35,6 +36,20 @@ module.exports = {
       status: true,
       wrongAnswerList,
       data: recordData,
+      newQuestion: sampleSize(quiz.data, 10),
+    };
+  },
+  getQuiz: async (ctx) => {
+    const { id } = ctx.params;
+    const { description, learningInformation, name, metadata, data } =
+      await strapi.services.quiz.findOne({ id: id });
+    return {
+      data: sampleSize(data, 10),
+      description,
+      learningInformation,
+      name,
+      metadata,
+      id,
     };
   },
 };
