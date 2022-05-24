@@ -9,7 +9,7 @@ const { FixedNumber } = require("@ethersproject/bignumber");
 const { fromDecimals } = require("../helpers/bignumber-helper");
 const {
   createVotingPool,
-  updateStatusVotingPool,
+  updateStatusToApproved,
   cancelVotingPool,
 } = require("./model/votingPool/services");
 
@@ -83,7 +83,7 @@ const processEvent = async (configs, data) => {
     if (completed) {
       // update status to approved
       try {
-        await updateStatusVotingPool(poolId);
+        await updateStatusToApproved(poolId);
       } catch (error) {
         console.error(error);
       }
