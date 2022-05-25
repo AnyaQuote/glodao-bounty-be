@@ -3,7 +3,6 @@ const {
   getPoolInfo,
 } = require("../../../helpers/blockchainHelpers/voting-helper");
 
-const { isEqual, set } = require("lodash");
 const checkIsOwner = (ctx, ownerAddress) => {
   if (ctx.state.user.username !== ownerAddress)
     return ctx.forbidden(`You can not update this entry`);
