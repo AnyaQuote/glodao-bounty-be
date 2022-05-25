@@ -37,7 +37,18 @@ const updateVotingPool = async (votingPoolData, votingPooId) => {
       id: votingPooId,
     },
     {
-      ...votingPoolData,
+      projectName: votingPoolData.projectName,
+      type: votingPoolData.type,
+      tokenAddress: votingPoolData.tokenAddress,
+      rewardTokenSymbol: votingPoolData.rewardToken,
+      status: votingPoolData.status,
+      unicodeName: votingPoolData.unicodeName,
+      totalMission: votingPoolData.totalMissions,
+      // startDate:votingPoolData.startDate ,
+      // endDate: votingPoolData.endDate,
+      data: {
+        ...votingPoolData.data,
+      },
     }
   );
 
