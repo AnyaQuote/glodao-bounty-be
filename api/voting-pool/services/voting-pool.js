@@ -2,7 +2,8 @@
 const {
   getPoolInfo,
 } = require("../../../helpers/blockchainHelpers/voting-helper");
-const { get } = require("lodash");
+
+const { isEqual, set } = require("lodash");
 const checkIsOwner = (ctx, ownerAddress) => {
   if (ctx.state.user.username !== ownerAddress)
     return ctx.forbidden(`You can not update this entry`);
@@ -37,7 +38,18 @@ const updateVotingPool = async (votingPoolData, votingPooId) => {
       id: votingPooId,
     },
     {
-      ...votingPoolData,
+      projectName: votingPoolData.projectName,
+      type: votingPoolData.type,
+      tokenAddress: votingPoolData.tokenAddress,
+      rewardTokenSymbol: votingPoolData.rewardToken,
+      status: votingPoolData.status,
+      unicodeName: votingPoolData.unicodeName,
+      totalMission: votingPoolData.totalMissions,
+      // startDate:votingPoolData.startDate ,
+      // endDate: votingPoolData.endDate,
+      data: {
+        ...votingPoolData.data,
+      },
     }
   );
 
@@ -98,22 +110,38 @@ const cancelVotingPool = async (ctx, votingPoolData) => {
   return poolInfo;
 };
 
-/**
- * Update pool project name, shortDescription and data information
- * @param {Object} votingPoolData
- * @returns updated pool
- */
 const updateVotingPoolInfo = async (ctx, votingPoolData) => {
-  const { id, projectName, ownerAddress } = votingPoolData;
+  const { id, projectName, ownerAddress, data } = votingPoolData;
 
   checkIsOwner(ctx, ownerAddress);
 
+  const pool = await strapi.services["voting-pool"].findOne({ id });
+  let model = { ...pool };
+
+  if (!isEqual(projectName, pool.projectName)) {
+    set(model, "projectName", projectName);
+  }
+  if (!isEqual(data.shortDescription, pool.data.shortDescription)) {
+    set(model, "data.shortDescription", data.shortDescriptionName);
+  }
+  if (!isEqual(data.fields, pool.data.fields)) {
+    set(model, "data.fields", data.fields);
+  }
+  if (!isEqual(data.socialLinks, pool.data.socialLinks)) {
+    set(model, "data.socialLinks", data.socialLinks);
+  }
+  if (!isEqual(data.projectCover, pool.data.projectCover)) {
+    set(model, "data.projectCover", data.projectCover);
+  }
+  if (!isEqual(data.projectLogo, pool.data.projectLogo)) {
+    set(model, "data.projectLogo", data.projectLogo);
+  }
+
   const updatedPool = await strapi.services["voting-pool"].update(
     { id },
-    {
-      projectName,
-    }
+    model
   );
+  console.log(updatedPool);
   return updatedPool;
 };
 
