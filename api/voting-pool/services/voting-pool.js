@@ -111,37 +111,13 @@ const cancelVotingPool = async (ctx, votingPoolData) => {
 };
 
 const updateVotingPoolInfo = async (ctx, votingPoolData) => {
-  const { id, projectName, ownerAddress, data } = votingPoolData;
-
+  const { id, ownerAddress } = votingPoolData;
   checkIsOwner(ctx, ownerAddress);
-
-  const pool = await strapi.services["voting-pool"].findOne({ id });
-  let model = { ...pool };
-
-  if (!isEqual(projectName, pool.projectName)) {
-    set(model, "projectName", projectName);
-  }
-  if (!isEqual(data.shortDescription, pool.data.shortDescription)) {
-    set(model, "data.shortDescription", data.shortDescription);
-  }
-  if (!isEqual(data.fields, pool.data.fields)) {
-    set(model, "data.fields", data.fields);
-  }
-  if (!isEqual(data.socialLinks, pool.data.socialLinks)) {
-    set(model, "data.socialLinks", data.socialLinks);
-  }
-  if (!isEqual(data.projectCover, pool.data.projectCover)) {
-    set(model, "data.projectCover", data.projectCover);
-  }
-  if (!isEqual(data.projectLogo, pool.data.projectLogo)) {
-    set(model, "data.projectLogo", data.projectLogo);
-  }
-
   const updatedPool = await strapi.services["voting-pool"].update(
     { id },
-    model
+    votingPoolData
   );
-  console.log(updatedPool);
+  console.log("POOL: ", updatedPool);
   return updatedPool;
 };
 
