@@ -111,11 +111,20 @@ const cancelVotingPool = async (ctx, votingPoolData) => {
 };
 
 const updateVotingPoolInfo = async (ctx, votingPoolData) => {
-  const { id, ownerAddress } = votingPoolData;
+  const { id, projectName, ownerAddress, data } = votingPoolData;
   checkIsOwner(ctx, ownerAddress);
   const updatedPool = await strapi.services["voting-pool"].update(
     { id },
-    votingPoolData
+    {
+      projectName,
+      data: {
+        shortDescription: data.shortDescription,
+        fields: data.fields,
+        socialLinks: data.socialLinks,
+        projectLogo: data.projectLogo,
+        projectCover: data.projectCover,
+      },
+    }
   );
   return updatedPool;
 };
