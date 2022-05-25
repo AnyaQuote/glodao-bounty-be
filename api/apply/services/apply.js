@@ -286,6 +286,38 @@ const verifyRetweetLink = (data, baseRequirement) => {
   return "Link missing required referenced tweet";
 };
 
+const validateQuizRecordShareTask = async (link, user, recordId) => {
+  try {
+    const { accessToken, accessTokenSecret, twitterId } = user;
+    if (!twitterHelper.isTwitterStatusLink(link)) return "Invalid twitter link";
+
+    const tweetData = await extractTweetData(link, user);
+    if (_.isEmpty(tweetData)) return "Empty data";
+    // if (!moment(data.created_at).isAfter(moment(taskCreatedTime)))
+    //   return "Tweet posted time is invalid - Tweet must be posted after the task started";
+    if (!_.isEqual(twitterId, tweetData.user.id_str))
+      return "Author of the tweet is invalid";
+
+    const text =
+      _.get(tweetData, "full_text", "") || _.get(tweetData, "text", "");
+    for (let index = 0; index < tweetData.entities.urls.length; index++) {
+      const urlObj = tweetData.entities.urls[index];
+      if (
+        _.isEqual(
+          urlObj.expanded_url,
+          `https://app.glodao.io/quiz-record/${recordId}`
+        ) ||
+        _.isEqual(urlObj.expanded_url, `app.glodao.io/quiz-record/${recordId}`)
+      )
+        return "";
+    }
+    return "Invalid tweet link: missing quiz url";
+  } catch (error) {
+    console.log(error);
+    return "Invalid tweet link";
+  }
+};
+
 const isHashtagIncluded = (hashtags, requiredHashtag) => {
   return (
     _.findIndex(hashtags, (hashtag) =>
@@ -303,4 +335,5 @@ module.exports = {
   validateTwitterTask,
   validateFollowTwitterTask,
   updateApplyStateToComplete,
+  validateQuizRecordShareTask,
 };

@@ -56,6 +56,24 @@ const updateTaskTotalParticipantsById = async (id) => {
 };
 
 /**
+ * Update a task completed participants
+ * @param {string} id task id
+ * @returns updated task
+ */
+const updateTaskCompletedParticipantsById = async (id) => {
+  const completedParticipants = await strapi.services.apply.count({
+    task: id,
+    completeTime_null: false,
+  });
+  return await strapi.services.task.update(
+    { id },
+    {
+      completedParticipants,
+    }
+  );
+};
+
+/**
  * Check if a task's priority pool with specific id is full
  * @param {string} taskId task id
  * @returns true if task's priority pool is full, else false
@@ -88,4 +106,5 @@ module.exports = {
   updateTaskTotalParticipantsById,
   isPriorityPoolFullById,
   isTaskProcessable,
+  updateTaskCompletedParticipantsById,
 };

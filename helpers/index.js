@@ -1,7 +1,7 @@
 const crypto = require("crypto");
 const _ = require("lodash");
 
-generateRandomString = (
+const generateRandomString = (
   length = 6,
   wishlist = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 ) =>
@@ -9,7 +9,7 @@ generateRandomString = (
     .map((x) => wishlist[x % wishlist.length])
     .join("");
 
-getWordsCount = (str, withoutUrl = true) => {
+const getWordsCount = (str, withoutUrl = true) => {
   return _.size(
     _.words(
       withoutUrl
@@ -23,7 +23,23 @@ getWordsCount = (str, withoutUrl = true) => {
   );
 };
 
+/**
+ * Check if base array includes includedIn array
+ * @param {array} base the base array to compare
+ * @param {array} includedIn the compare array
+ * @returns {boolean} true if the base array includes all element in the includedIn array, false other wise
+ */
+const isArrayIncluded = (base, includedIn) => {
+  return _.isEmpty(_.differenceWith(base, includedIn, _.isEqual));
+};
+
+const getArrDiff = (base, compare) => {
+  return _.differenceWith(base, compare, _.isEqual);
+};
+
 module.exports = {
   generateRandomString,
   getWordsCount,
+  isArrayIncluded,
+  getArrDiff,
 };
