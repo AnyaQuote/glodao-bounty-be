@@ -122,7 +122,7 @@ const updateVotingPoolInfo = async (ctx, votingPoolData) => {
     set(model, "projectName", projectName);
   }
   if (!isEqual(data.shortDescription, pool.data.shortDescription)) {
-    set(model, "data.shortDescription", data.shortDescriptionName);
+    set(model, "data.shortDescription", data.shortDescription);
   }
   if (!isEqual(data.fields, pool.data.fields)) {
     set(model, "data.fields", data.fields);
