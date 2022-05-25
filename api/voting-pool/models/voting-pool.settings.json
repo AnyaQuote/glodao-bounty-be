@@ -50,6 +50,12 @@
     },
     "unicodeName": {
       "type": "string"
+    },
+    "rewardTokenSymbol": {
+      "type": "string"
+    },
+    "totalMission": {
+      "type": "string"
     }
   }
 }
