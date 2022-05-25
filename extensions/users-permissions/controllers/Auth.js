@@ -54,7 +54,6 @@ const votingUserSignin = async (ctx) => {
     name: "users-permissions",
   });
 
-  console.log("provider: ", provider);
   if (provider === "local") {
     if (!_.get(await store.get({ key: "grant" }), "email.enabled")) {
       return ctx.badRequest(null, "This provider is disabled.");
@@ -109,11 +108,6 @@ const votingUserSignin = async (ctx) => {
         jwt,
         user,
       });
-      console.log("jwt: ", jwt, user);
-      return {
-        jwt,
-        user,
-      };
     } catch (error) {
       ctx.badRequest(null, formatError(error));
     }

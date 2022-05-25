@@ -70,7 +70,8 @@ module.exports = {
     },
 
     async afterDelete(result) {
-      await strapi.services.hunter.delete({ id: result.hunter.id });
+      if (_.get(result, "hunter.id"))
+        await strapi.services.hunter.delete({ id: result.hunter.id });
     },
   },
 };
