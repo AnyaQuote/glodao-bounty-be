@@ -2,7 +2,7 @@
 const {
   getPoolInfo,
 } = require("../../../helpers/blockchainHelpers/voting-helper");
-
+const { get } = require("lodash");
 const checkIsOwner = (ctx, ownerAddress) => {
   if (ctx.state.user.username !== ownerAddress)
     return ctx.forbidden(`You can not update this entry`);
@@ -103,23 +103,18 @@ const cancelVotingPool = async (ctx, votingPoolData) => {
  * @param {Object} votingPoolData
  * @returns updated pool
  */
-const updateVotingPoolInfo = async (votingPoolData) => {
-  const { id, projectName, shortDescription, data } = votingPoolData;
-  try {
-    const pool = await starpi.services["voting-pool"].findOne({ id });
+const updateVotingPoolInfo = async (ctx, votingPoolData) => {
+  const { id, projectName, ownerAddress } = votingPoolData;
 
-    const updatedPool = await strapi.services["voting-pool"].update(id, {
+  checkIsOwner(ctx, ownerAddress);
+
+  const updatedPool = await strapi.services["voting-pool"].update(
+    { id },
+    {
       projectName,
-      shortDescription,
-      data: {
-        ...pool.data,
-        ...data,
-      },
-    });
-    return updatedPool;
-  } catch (error) {
-    throw new Error(error);
-  }
+    }
+  );
+  return updatedPool;
 };
 
 module.exports = {
