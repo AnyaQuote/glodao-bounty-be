@@ -117,7 +117,6 @@ const updateVotingPoolInfo = async (ctx, votingPoolData) => {
     { id },
     votingPoolData
   );
-  console.log("POOL: ", updatedPool);
   return updatedPool;
 };
 
