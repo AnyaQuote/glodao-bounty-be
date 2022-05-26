@@ -110,9 +110,49 @@ const isTaskProcessable = (task) => {
  * @returns task
  */
 const createTask = async (ctx, missionData) => {
-  const { ownerAddress, ...task } = missionData;
+  const {
+    ownerAddress,
+    poolId,
+    name,
+    type,
+    status,
+    tokenBasePrice,
+    rewardAmount,
+    startTime,
+    endTime,
+    maxParticipant,
+    priorityRewardAmount,
+    data,
+    metadata,
+  } = missionData;
+
   checkIsOwner(ctx, ownerAddress);
-  return await strapi.services.task.create(task);
+
+  const pool = await strapi.services["voting-pool"].findOne({
+    id: poolId,
+  });
+
+  const numberOfCreatedMissions = await strapi.services.task.count({ poolId });
+
+  if (numberOfCreatedMissions >= pool.totalMission) {
+    ctx.forbidden("You cannot create this entry");
+  }
+
+  return await strapi.services.task.create({
+    poolId,
+    name,
+    type,
+    status,
+    chainId: pool.chainId,
+    tokenBasePrice,
+    rewardAmount,
+    startTime,
+    endTime,
+    maxParticipant,
+    priorityRewardAmount,
+    data,
+    metadata,
+  });
 };
 
 module.exports = {
