@@ -2,7 +2,10 @@
 
 const { get, gte } = require("lodash");
 const moment = require("moment");
-
+const checkIsOwner = (ctx, ownerAddress) => {
+  if (ctx.state.user.username !== ownerAddress)
+    return ctx.forbidden(`You can not update this entry`);
+};
 /**
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-services)
  * to customize this service
@@ -100,6 +103,18 @@ const isTaskProcessable = (task) => {
   return moment().isBetween(moment(task.startTime), moment(task.endTime));
 };
 
+/**
+ * Check owner address and call create task services
+ * @param {any} ctx
+ * @param {task} missionData
+ * @returns task
+ */
+const createTask = async (ctx, missionData) => {
+  const { ownerAddress, ...task } = missionData;
+  checkIsOwner(ctx, ownerAddress);
+  return await strapi.services.task.create(task);
+};
+
 module.exports = {
   increaseTaskTotalParticipants,
   increaseTaskTotalParticipantsById,
@@ -107,4 +122,5 @@ module.exports = {
   isPriorityPoolFullById,
   isTaskProcessable,
   updateTaskCompletedParticipantsById,
+  createTask,
 };
