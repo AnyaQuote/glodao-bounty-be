@@ -9,6 +9,18 @@ const moment = require("moment");
 const csvToJson = require("csvtojson");
 
 const _ = require("lodash");
+const {
+  getChatMember,
+  isUserFollowChat,
+  getChatFromLink,
+} = require("./telegram-bot-helpers");
+const { getTweetIdFromLink } = require("./twitter-helper");
+const {
+  getGuildPreview,
+  changeBotNickname,
+  checkBotExistedInGuild,
+  searchGuildMember,
+} = require("./discord-bot-helper");
 
 const argv = yargs(hideBin(process.argv)).argv;
 const glodaoAddress = "0x7a05CE29a44cA8dD49D967367F98D3F07E204faC";
@@ -88,7 +100,7 @@ async function getAllPriorityBounty(taskId) {
 
 async function merge2Csv() {
   const supamap = new Map();
-  let arr = await csvToJson().fromFile("GloDAO-40-18-19.csv");
+  let arr = await csvToJson().fromFile("GloDAO-52-24-25.csv");
   console.log(arr.length);
   arr.forEach((wallet) => {
     const { Wallet_Address, Reward_Amount } = wallet;
@@ -100,7 +112,7 @@ async function merge2Csv() {
       previousReward.addUnsafe(FixedNumber.from(`${Reward_Amount}`))
     );
   });
-  arr = await csvToJson().fromFile("GloDAO-41-18-19.csv");
+  arr = await csvToJson().fromFile("GloDAO-53-24-25.csv");
   console.log(arr.length);
   arr.forEach((wallet) => {
     const { Wallet_Address, Reward_Amount } = wallet;
@@ -131,12 +143,55 @@ async function merge2Csv() {
     });
   }
 
-  await exportDataToCsv(data, header, `consolidate-18-19.csv`);
+  await exportDataToCsv(data, header, `consolidate-24-25.csv`);
+}
+async function revertApply() {
+  const applies = await strapi.services.apply.find({
+    task: argv.task,
+    status: "awarded",
+    _limit: -1,
+  });
+  const chunks = _.chunk(applies, 10);
+  for (const subChunksOfApplies of chunks) {
+    try {
+      await Promise.all(
+        subChunksOfApplies.map((apply) => {
+          return strapi.services.apply.update(
+            {
+              id: apply.id,
+            },
+            {
+              status: "completed",
+            }
+          );
+        })
+      ).then(() => {
+        console.log("batch completed");
+      });
+    } catch (error) {
+      console.log("\x1b[31m", "Wasted");
+      console.log("\x1b[37m", error);
+      console.log("\x1b[31m", "Wasted");
+    }
+  }
+}
+async function verifyTelegramFollow() {
+  try {
+    const a = getChatFromLink("https://t.me/bottoan2");
+    console.log(a);
+
+    const res = await getChatMember(a, 5192739643);
+    console.log(res);
+  } catch (error) {
+    console.log(erro);
+  }
 }
 async function main(argv) {
-  // await initialize();
-
-  // await getAllPriorityBounty(argv.task);
+  // await verifyTelegramFollow();
+  // await merge2Csv()
+  // await verifyTelegramFollow();
+  // const res = await searchGuildMember("979217140471169034");
+  // console.log(res);
   return;
 }
 const sleep = async (ms) => {
