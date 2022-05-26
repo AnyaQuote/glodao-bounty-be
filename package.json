@@ -10,7 +10,9 @@
     "start:prod": "NODE_ENV=production strapi start",
     "build": "strapi build",
     "build:prod": "NODE_ENV=production strapi build",
-    "strapi": "strapi"
+    "strapi": "strapi",
+    "exportApply": "node ./helpers/exportApplyData.js ",
+    "exportTask": "node ./helpers/exportTaskReport.js "
   },
   "devDependencies": {},
   "dependencies": {
