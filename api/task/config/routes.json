@@ -47,6 +47,14 @@
       "config": {
         "policies": []
       }
+    },
+    {
+      "method": "POST",
+      "path": "/createTask",
+      "handler": "task.createTask",
+      "config": {
+        "policies": []
+      }
     }
   ]
 }
