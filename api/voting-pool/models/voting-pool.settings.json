@@ -63,7 +63,7 @@
     "chain": {
       "type": "string"
     },
-    "chainID": {
+    "chainId": {
       "type": "string"
     }
   }
