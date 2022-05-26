@@ -20,20 +20,11 @@
     },
     "type": {
       "type": "enumeration",
-      "enum": [
-        "bounty",
-        "launchpad"
-      ]
+      "enum": ["bounty", "launchpad"]
     },
     "status": {
       "type": "enumeration",
-      "enum": [
-        "pending",
-        "voting",
-        "approved",
-        "rejected",
-        "cancelled"
-      ]
+      "enum": ["pending", "voting", "approved", "rejected", "cancelled"]
     },
     "startDate": {
       "type": "datetime"
@@ -48,15 +39,20 @@
       "type": "string"
     },
     "poolId": {
-      "type": "string"
+      "type": "string",
+      "unique": true
     },
     "unicodeName": {
-      "type": "string"
+      "type": "string",
+      "unique": true
     },
     "rewardTokenSymbol": {
       "type": "string"
     },
     "totalMission": {
+      "type": "string"
+    },
+    "rewardAmount": {
       "type": "string"
     }
   }
