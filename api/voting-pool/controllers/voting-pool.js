@@ -7,8 +7,10 @@
 
 module.exports = {
   updateVotingPoolInfo: async (ctx) => {
+    const votingPoolData = ctx.request.body
     return await strapi.services["voting-pool"].updateVotingPoolInfo(
-      ctx.request.body
+      ctx,
+      votingPoolData
     );
   },
   createOrUpdateVotingPool: async (ctx) => {
@@ -29,6 +31,13 @@ module.exports = {
   cancelVotingPool: async (ctx) => {
     const votingPoolData = ctx.request.body;
     return await strapi.services["voting-pool"].cancelVotingPool(
+      ctx,
+      votingPoolData
+    );
+  },
+  updateVotingPoolInfo: async (ctx) => {
+    const votingPoolData = ctx.request.body
+    return await strapi.services["voting-pool"].updateVotingPoolInfo(
       ctx,
       votingPoolData
     );

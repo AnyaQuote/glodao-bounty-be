@@ -37,7 +37,18 @@ const updateVotingPool = async (votingPoolData, votingPooId) => {
       id: votingPooId,
     },
     {
-      ...votingPoolData,
+      projectName: votingPoolData.projectName,
+      type: votingPoolData.type,
+      tokenAddress: votingPoolData.tokenAddress,
+      rewardTokenSymbol: votingPoolData.rewardToken,
+      status: votingPoolData.status,
+      unicodeName: votingPoolData.unicodeName,
+      totalMission: votingPoolData.totalMissions,
+      // startDate:votingPoolData.startDate ,
+      // endDate: votingPoolData.endDate,
+      data: {
+        ...votingPoolData.data,
+      },
     }
   );
 
@@ -98,28 +109,20 @@ const cancelVotingPool = async (ctx, votingPoolData) => {
   return poolInfo;
 };
 
-/**
- * Update pool project name, shortDescription and data information
- * @param {Object} votingPoolData
- * @returns updated pool
- */
-const updateVotingPoolInfo = async (votingPoolData) => {
-  const { id, projectName, shortDescription, data } = votingPoolData;
-  try {
-    const pool = await starpi.services["voting-pool"].findOne({ id });
-
-    const updatedPool = await strapi.services["voting-pool"].update(id, {
-      projectName,
-      shortDescription,
+const updateVotingPoolInfo = async (ctx, votingPoolData) => {
+  const { id, projectName, ownerAddress, unicodeName } = votingPoolData;
+  checkIsOwner(ctx, ownerAddress);
+  const updatedPool = await strapi.services["voting-pool"].update(
+    { id },
+    {
+      projectName: projectName,
+      unicodeName: unicodeName,
       data: {
-        ...pool.data,
-        ...data,
+        ...votingPoolData.data,
       },
-    });
-    return updatedPool;
-  } catch (error) {
-    throw new Error(error);
-  }
+    }
+  );
+  return updatedPool;
 };
 
 module.exports = {

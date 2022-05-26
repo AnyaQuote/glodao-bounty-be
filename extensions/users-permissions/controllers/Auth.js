@@ -220,7 +220,7 @@ const register = async (ctx) => {
     userParams.nonce = generateRandomNonce();
     userParams.provider = "local";
     userParams.confirmed = true;
-    userParams.role = role.id;
+    userParams.role = role && role.id;
     userParams.userType = "voting";
 
     const user = await strapi

@@ -42,11 +42,6 @@
     "synapsStates": {
       "type": "json"
     },
-    "applies": {
-      "via": "hunter",
-      "private": true,
-      "collection": "apply"
-    },
     "address": {
       "type": "string"
     },

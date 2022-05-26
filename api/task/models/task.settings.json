@@ -75,6 +75,9 @@
     "completedParticipants": {
       "type": "integer",
       "default": 0
+    },
+    "poolId": {
+      "type": "string"
     }
   }
 }

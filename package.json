@@ -12,7 +12,9 @@
     "build:prod": "NODE_ENV=production strapi build",
     "strapi": "strapi",
     "---": "---",
-    "listen:bsc-testnet:dev": "NODE_ENV=development CHAIN_ID=97 node watchers/startWatcher.js"
+    "listen:bsc-testnet:dev": "NODE_ENV=development CHAIN_ID=97 node watchers/startWatcher.js",
+    "exportApply": "node ./helpers/exportApplyData.js ",
+    "exportTask": "node ./helpers/exportTaskReport.js "
   },
   "devDependencies": {},
   "dependencies": {
@@ -43,8 +45,10 @@
     "mocha": "^9.2.2",
     "moment": "^2.29.1",
     "mongoose": "^5.10.14",
+    "pm2": "^4.5.5",
     "strapi": "3.6.1",
     "strapi-admin": "3.6.1",
+    "strapi-connector-bookshelf": "3.6.1",
     "strapi-connector-mongoose": "3.6.1",
     "strapi-plugin-content-manager": "3.6.1",
     "strapi-plugin-content-type-builder": "3.6.1",
@@ -52,8 +56,9 @@
     "strapi-plugin-i18n": "3.6.1",
     "strapi-plugin-upload": "3.6.1",
     "strapi-plugin-users-permissions": "3.6.1",
+    "strapi-provider-email-nodemailer": "3.6.1",
     "strapi-utils": "3.6.1",
-    "web3": "^1.7.1",
+    "web3": "^1.2.9",
     "yargs": "^17.4.1"
   },
   "author": {
