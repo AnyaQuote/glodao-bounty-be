@@ -21,7 +21,10 @@
     },
     "type": {
       "type": "enumeration",
-      "enum": ["bounty", "launchpad"]
+      "enum": [
+        "bounty",
+        "launchpad"
+      ]
     },
     "status": {
       "type": "enumeration",
@@ -55,6 +58,15 @@
       "type": "string"
     },
     "totalMission": {
+      "type": "string"
+    },
+    "tokenName": {
+      "type": "string"
+    },
+    "chain": {
+      "type": "string"
+    },
+    "chainID": {
       "type": "string"
     }
   }
