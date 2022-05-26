@@ -109,8 +109,25 @@ const cancelVotingPool = async (ctx, votingPoolData) => {
   return poolInfo;
 };
 
+const updateVotingPoolInfo = async (ctx, votingPoolData) => {
+  const { id, projectName, ownerAddress, unicodeName } = votingPoolData;
+  checkIsOwner(ctx, ownerAddress);
+  const updatedPool = await strapi.services["voting-pool"].update(
+    { id },
+    {
+      projectName: projectName,
+      unicodeName: unicodeName,
+      data: {
+        ...votingPoolData.data,
+      },
+    }
+  );
+  return updatedPool;
+};
+
 module.exports = {
   createOrUpdateVotingPool,
   updateStatusToApproved,
   cancelVotingPool,
+  updateVotingPoolInfo,
 };
