@@ -218,38 +218,38 @@ module.exports = {
       updatedTaskData["twitter"] = twitterTaskData;
     }
 
-    if (isEqual(type, "telegram")) {
-      let telegramTaskData = get(taskData, [type], []);
-      const mergedTelegramTask = merge(
-        telegramTaskData.map((step) => {
-          return {
-            ...step,
-            submitedId: step.link,
-          };
-        }),
-        get(apply, ["task", "data", type], [])
-      );
+    // if (isEqual(type, "telegram")) {
+    //   let telegramTaskData = get(taskData, [type], []);
+    //   const mergedTelegramTask = merge(
+    //     telegramTaskData.map((step) => {
+    //       return {
+    //         ...step,
+    //         submitedId: step.link,
+    //       };
+    //     }),
+    //     get(apply, ["task", "data", type], [])
+    //   );
 
-      for (let index = 0; index < mergedTelegramTask.length; index++) {
-        const element = mergedTelegramTask[index];
-        if (index === mergedTelegramTask.length - 1 && element.finished) {
-          const isUserFollow = await isUserFollowChat(
-            getChatFromLink(element.link),
-            element.submitedId
-          );
-          if (!isUserFollow) return ctx.badRequest("Can not find user in chat");
-        } else if (
-          element.finished &&
-          !mergedTelegramTask[index + 1].finished
-        ) {
-          const isUserFollow = await isUserFollowChat(
-            getChatFromLink(element.link),
-            element.submitedId
-          );
-          if (!isUserFollow) return ctx.badRequest("Can not find user in chat");
-        }
-      }
-    }
+    //   for (let index = 0; index < mergedTelegramTask.length; index++) {
+    //     const element = mergedTelegramTask[index];
+    //     if (index === mergedTelegramTask.length - 1 && element.finished) {
+    //       const isUserFollow = await isUserFollowChat(
+    //         getChatFromLink(element.link),
+    //         element.submitedId
+    //       );
+    //       if (!isUserFollow) return ctx.badRequest("Can not find user in chat");
+    //     } else if (
+    //       element.finished &&
+    //       !mergedTelegramTask[index + 1].finished
+    //     ) {
+    //       const isUserFollow = await isUserFollowChat(
+    //         getChatFromLink(element.link),
+    //         element.submitedId
+    //       );
+    //       if (!isUserFollow) return ctx.badRequest("Can not find user in chat");
+    //     }
+    //   }
+    // }
 
     if (res || isNumber(res)) {
       if (isNumber(res)) {

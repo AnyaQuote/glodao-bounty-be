@@ -1,0 +1,22 @@
+{
+  "kind": "collectionType",
+  "collectionName": "tweet_comment_records",
+  "info": {
+    "name": "TweetCommentRecord",
+    "description": ""
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "tweetId": {
+      "type": "string"
+    },
+    "data": {
+      "type": "json"
+    }
+  }
+}

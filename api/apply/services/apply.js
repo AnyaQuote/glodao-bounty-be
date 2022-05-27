@@ -135,6 +135,17 @@ const validateTwitterLinks = async (taskData, taskCreatedTime, user) => {
 
     if (tweetData.errorMsg) return tweetData.errorMsg;
 
+    if (currentStepObj.type === "comment") {
+      const isNotDuplicated = await strapi.services[
+        "tweet-comment-record"
+      ].verifyDuplicateCommentContent(
+        twitterHelper.getTweetIdFromLink(currentStepObj.link),
+        twitterHelper.getTweetIdFromLink(currentStepObj.submitedLink),
+        tweetData
+      );
+      if (!isNotDuplicated) return "Invalid tweet content: empty or duplicated";
+    }
+
     const errorMsg = validateTweetData(
       tweetData,
       currentStepObj,
@@ -254,6 +265,7 @@ const verifyCommentLink = (data, baseRequirement) => {
     return "Tweet link missing required hashtag";
   const conversation_id = _.get(data, "in_reply_to_status_id_str", "");
   const id = _.get(data, "id_str", "");
+
   if (
     _.isEqual(
       conversation_id,
@@ -262,6 +274,7 @@ const verifyCommentLink = (data, baseRequirement) => {
     !_.isEqual(id, conversation_id)
   )
     return "";
+
   return "Comment not found";
 };
 
