@@ -1,0 +1,52 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/tweet-comment-records",
+      "handler": "tweet-comment-record.find",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/tweet-comment-records/count",
+      "handler": "tweet-comment-record.count",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/tweet-comment-records/:id",
+      "handler": "tweet-comment-record.findOne",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/tweet-comment-records",
+      "handler": "tweet-comment-record.create",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/tweet-comment-records/:id",
+      "handler": "tweet-comment-record.update",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/tweet-comment-records/:id",
+      "handler": "tweet-comment-record.delete",
+      "config": {
+        "policies": []
+      }
+    }
+  ]
+}
