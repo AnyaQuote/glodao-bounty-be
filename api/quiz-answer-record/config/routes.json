@@ -2,56 +2,48 @@
   "routes": [
     {
       "method": "GET",
-      "path": "/tasks",
-      "handler": "task.find",
+      "path": "/quiz-answer-records",
+      "handler": "quiz-answer-record.find",
       "config": {
         "policies": []
       }
     },
     {
       "method": "GET",
-      "path": "/tasks/count",
-      "handler": "task.count",
+      "path": "/quiz-answer-records/count",
+      "handler": "quiz-answer-record.count",
       "config": {
         "policies": []
       }
     },
     {
       "method": "GET",
-      "path": "/tasks/:id",
-      "handler": "task.findOne",
+      "path": "/quiz-answer-records/:id",
+      "handler": "quiz-answer-record.findOne",
       "config": {
         "policies": []
       }
     },
     {
       "method": "POST",
-      "path": "/tasks",
-      "handler": "task.create",
+      "path": "/quiz-answer-records",
+      "handler": "quiz-answer-record.create",
       "config": {
         "policies": []
       }
     },
     {
       "method": "PUT",
-      "path": "/tasks/:id",
-      "handler": "task.update",
+      "path": "/quiz-answer-records/:id",
+      "handler": "quiz-answer-record.update",
       "config": {
         "policies": []
       }
     },
     {
       "method": "DELETE",
-      "path": "/tasks/:id",
-      "handler": "task.delete",
-      "config": {
-        "policies": []
-      }
-    },
-    {
-      "method": "POST",
-      "path": "/createTask",
-      "handler": "task.createTask",
+      "path": "/quiz-answer-records/:id",
+      "handler": "quiz-answer-record.delete",
       "config": {
         "policies": []
       }

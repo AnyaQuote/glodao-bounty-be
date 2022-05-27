@@ -2,7 +2,10 @@
 
 const { get, gte } = require("lodash");
 const moment = require("moment");
-
+const checkIsOwner = (ctx, ownerAddress) => {
+  if (ctx.state.user.username !== ownerAddress)
+    return ctx.forbidden(`You can not update this entry`);
+};
 /**
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-services)
  * to customize this service
@@ -56,6 +59,24 @@ const updateTaskTotalParticipantsById = async (id) => {
 };
 
 /**
+ * Update a task completed participants
+ * @param {string} id task id
+ * @returns updated task
+ */
+const updateTaskCompletedParticipantsById = async (id) => {
+  const completedParticipants = await strapi.services.apply.count({
+    task: id,
+    completeTime_null: false,
+  });
+  return await strapi.services.task.update(
+    { id },
+    {
+      completedParticipants,
+    }
+  );
+};
+
+/**
  * Check if a task's priority pool with specific id is full
  * @param {string} taskId task id
  * @returns true if task's priority pool is full, else false
@@ -82,10 +103,64 @@ const isTaskProcessable = (task) => {
   return moment().isBetween(moment(task.startTime), moment(task.endTime));
 };
 
+/**
+ * Check owner address and call create task services
+ * @param {any} ctx
+ * @param {task} missionData
+ * @returns task
+ */
+const createTask = async (ctx, missionData) => {
+  const {
+    ownerAddress,
+    poolId,
+    name,
+    type,
+    status,
+    tokenBasePrice,
+    rewardAmount,
+    startTime,
+    endTime,
+    maxParticipant,
+    priorityRewardAmount,
+    data,
+    metadata,
+  } = missionData;
+
+  checkIsOwner(ctx, ownerAddress);
+
+  const pool = await strapi.services["voting-pool"].findOne({
+    id: poolId,
+  });
+
+  const numberOfCreatedMissions = await strapi.services.task.count({ poolId });
+
+  if (numberOfCreatedMissions >= pool.totalMission) {
+    ctx.forbidden("You cannot create this entry");
+  }
+
+  return await strapi.services.task.create({
+    poolId,
+    name,
+    type,
+    status,
+    chainId: pool.chainId,
+    tokenBasePrice,
+    rewardAmount,
+    startTime,
+    endTime,
+    maxParticipant,
+    priorityRewardAmount,
+    data,
+    metadata,
+  });
+};
+
 module.exports = {
   increaseTaskTotalParticipants,
   increaseTaskTotalParticipantsById,
   updateTaskTotalParticipantsById,
   isPriorityPoolFullById,
   isTaskProcessable,
+  updateTaskCompletedParticipantsById,
+  createTask,
 };

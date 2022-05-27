@@ -13,7 +13,8 @@
   "pluginOptions": {},
   "attributes": {
     "projectName": {
-      "type": "string"
+      "type": "string",
+      "unique": true
     },
     "data": {
       "type": "json"
@@ -46,10 +47,16 @@
       "type": "string",
       "unique": true
     },
-    "rewardTokenSymbol": {
+    "totalMission": {
       "type": "string"
     },
-    "totalMission": {
+    "tokenName": {
+      "type": "string"
+    },
+    "chain": {
+      "type": "string"
+    },
+    "chainId": {
       "type": "string"
     },
     "rewardAmount": {

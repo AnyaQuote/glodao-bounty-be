@@ -28,7 +28,7 @@
     "endTime": {
       "type": "datetime"
     },
-    "maxParticipant": {
+    "maxParticipants": {
       "type": "integer"
     },
     "hunter": {
@@ -63,6 +63,21 @@
     },
     "missionIndex": {
       "type": "integer"
+    },
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "learn",
+        "bounty"
+      ],
+      "default": "bounty"
+    },
+    "completedParticipants": {
+      "type": "integer",
+      "default": 0
+    },
+    "poolId": {
+      "type": "string"
     }
   }
 }

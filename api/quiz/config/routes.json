@@ -2,56 +2,64 @@
   "routes": [
     {
       "method": "GET",
-      "path": "/tasks",
-      "handler": "task.find",
+      "path": "/quizzes",
+      "handler": "quiz.find",
       "config": {
         "policies": []
       }
     },
     {
       "method": "GET",
-      "path": "/tasks/count",
-      "handler": "task.count",
+      "path": "/quizzes/count",
+      "handler": "quiz.count",
       "config": {
         "policies": []
       }
     },
     {
       "method": "GET",
-      "path": "/tasks/:id",
-      "handler": "task.findOne",
+      "path": "/quizzes/:id",
+      "handler": "quiz.findOne",
       "config": {
         "policies": []
       }
     },
     {
       "method": "POST",
-      "path": "/tasks",
-      "handler": "task.create",
+      "path": "/quizzes",
+      "handler": "quiz.create",
       "config": {
         "policies": []
       }
     },
     {
       "method": "PUT",
-      "path": "/tasks/:id",
-      "handler": "task.update",
+      "path": "/quizzes/:id",
+      "handler": "quiz.update",
       "config": {
         "policies": []
       }
     },
     {
       "method": "DELETE",
-      "path": "/tasks/:id",
-      "handler": "task.delete",
+      "path": "/quizzes/:id",
+      "handler": "quiz.delete",
       "config": {
         "policies": []
       }
     },
     {
       "method": "POST",
-      "path": "/createTask",
-      "handler": "task.createTask",
+      "path": "/quizzes/verify",
+      "handler": "quiz.verify",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/quizzes/getQuiz/:id",
+      "handler": "quiz.getQuiz",
       "config": {
         "policies": []
       }

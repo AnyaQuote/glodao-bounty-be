@@ -6,6 +6,13 @@
  */
 
 module.exports = {
+  updateVotingPoolInfo: async (ctx) => {
+    const votingPoolData = ctx.request.body
+    return await strapi.services["voting-pool"].updateVotingPoolInfo(
+      ctx,
+      votingPoolData
+    );
+  },
   createOrUpdateVotingPool: async (ctx) => {
     const votingPoolData = ctx.request.body;
     if (!votingPoolData.poolId || !votingPoolData.ownerAddress)

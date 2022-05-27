@@ -12,7 +12,9 @@
     "build:prod": "NODE_ENV=production strapi build",
     "strapi": "strapi",
     "---": "---",
-    "listen:bsc-testnet:dev": "NODE_ENV=development CHAIN_ID=97 node watchers/startWatcher.js"
+    "listen:bsc-testnet:dev": "NODE_ENV=development CHAIN_ID=97 node watchers/startWatcher.js",
+    "exportApply": "node ./helpers/exportApplyData.js ",
+    "exportTask": "node ./helpers/exportTaskReport.js "
   },
   "devDependencies": {},
   "dependencies": {
