@@ -93,8 +93,6 @@ const updateStatusToApproved = async (votingPoolData) => {
 };
 
 const cancelVotingPool = async (ctx, votingPoolData) => {
-  checkIsOwner(ctx, votingPoolData.ownerAddress);
-
   const poolInfo = await getPoolInfo(votingPoolData.poolId);
   if (poolInfo && poolInfo.cancelled) {
     await strapi.services["voting-pool"].update(
