@@ -2,12 +2,13 @@
   "kind": "collectionType",
   "collectionName": "tweet_comment_records",
   "info": {
-    "name": "TweetCommentRecord"
+    "name": "TweetCommentRecord",
+    "description": ""
   },
   "options": {
     "increments": true,
     "timestamps": true,
-    "draftAndPublish": true
+    "draftAndPublish": false
   },
   "pluginOptions": {},
   "attributes": {
