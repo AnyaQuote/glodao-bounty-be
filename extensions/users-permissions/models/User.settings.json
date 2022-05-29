@@ -19,7 +19,6 @@
     },
     "email": {
       "type": "email",
-      "minLength": 6,
       "configurable": false
     },
     "provider": {
@@ -92,6 +91,9 @@
       "type": "string",
       "private": true,
       "required": false
+    },
+    "telegramId": {
+      "type": "string"
     }
   }
 }
