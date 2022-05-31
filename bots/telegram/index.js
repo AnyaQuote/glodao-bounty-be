@@ -18,6 +18,8 @@ const HOST = process.env.WEB_HOST;
 const main = async () => {
   await setupStrapi();
   console.log("Strapi ready");
+  console.log(strapi.config.database.connections);
+  console.log(strapi.config.connections);
   setupBot();
   console.log("Bot Ready");
 
@@ -34,6 +36,20 @@ const setupBot = () => {
     await next();
     // runs after next middleware finishes
     console.timeEnd(`Processing update ${ctx.update.update_id}`);
+  });
+
+  bot.start((ctx) => {
+    const { from } = ctx.message;
+    console.log("------ Start ------");
+    console.log(from);
+    return ctx.replyWithMarkdown(
+      `Hello [${
+        from.username || from.first_name || from.last_name
+      }](tg://user?id=${
+        from.id
+      })\nIf you come from our Bounty app, you can link your account here for Telegram task validation!
+    `
+    );
   });
 
   bot.help((ctx) => ctx.replyWithHTML(MESSAGES.HELP_MESSAGE));
@@ -80,6 +96,11 @@ const setupBot = () => {
 
       const hunter = await strapi.services.hunter.findOne({ referralCode });
       if (_.isEmpty(hunter)) return ctx.reply(MESSAGES.INVALID_REF_LINK_ERROR);
+
+      if (!_.isEmpty(_.get(hunter, "user.telegramId", "")))
+        return ctx.reply(
+          "This account had been linked with a Telegram account already\nIf you own the linked Telegram account, use /unlink command to unlink the account"
+        );
 
       await strapi.query("user", "users-permissions").update(
         { id: hunter.user.id },
