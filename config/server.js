@@ -6,4 +6,8 @@ module.exports = ({ env }) => ({
       secret: env("ADMIN_JWT_SECRET", "26adb2bdd37450eeb71df36f64d0fdaf"),
     },
   },
+  url:
+    env("NODE_ENV") === "production"
+      ? "https://diversity-voting-2.contracts.dev"
+      : "https://diversity-voting-2.contracts.dev",
 });
