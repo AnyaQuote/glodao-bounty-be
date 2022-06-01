@@ -1,0 +1,28 @@
+{
+  "kind": "collectionType",
+  "collectionName": "bounty_rewards",
+  "info": {
+    "name": "BountyReward"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "walletAddress": {
+      "type": "string",
+      "required": true
+    },
+    "currentReward": {
+      "type": "string"
+    },
+    "hunter": {
+      "model": "hunter"
+    },
+    "data": {
+      "type": "json"
+    }
+  }
+}
