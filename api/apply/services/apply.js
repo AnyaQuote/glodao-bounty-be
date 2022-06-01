@@ -143,7 +143,7 @@ const validateTwitterLinks = async (taskData, taskCreatedTime, user) => {
         twitterHelper.getTweetIdFromLink(currentStepObj.submitedLink),
         tweetData
       );
-      if (!isNotDuplicated) return "Invalid tweet content: empty or duplicated";
+      if (!isNotDuplicated) return "Invalid tweet content: too similar with other tweets";
     }
 
     const errorMsg = validateTweetData(
