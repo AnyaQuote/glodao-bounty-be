@@ -28,6 +28,7 @@ const { generateRandomString } = require("../../../helpers");
 const connect = (provider, query) => {
   const access_token = query.access_token || query.code || query.oauth_token;
   let referrerCode = _.get(query, "referrerCode", "######");
+  const userType = _.get(query, "userType");
 
   return new Promise((resolve, reject) => {
     if (!access_token) {
@@ -78,6 +79,26 @@ const connect = (provider, query) => {
         }
 
         if (!_.isEmpty(user)) {
+          if (_.get(user.projectOwner, "id") && _.get(user.hunter, "id"))
+            return resolve([user, null]);
+
+          if (userType === "voting") {
+            if (!_.get(user.projectOwner, "id")) {
+              // create project owner
+              const projectOwner = await strapi.plugins[
+                "users-permissions"
+              ].services.user.createProjectOwner(user);
+              user.projectOwner = projectOwner;
+            }
+          } else {
+            if (!_.get(user.hunter, "id")) {
+              // create hunter
+              const hunter = await strapi.plugins[
+                "users-permissions"
+              ].services.user.createHunter(user);
+              user.hunter = hunter;
+            }
+          }
           return resolve([user, null]);
         }
 
@@ -106,19 +127,38 @@ const connect = (provider, query) => {
           referrerCode,
         });
 
-        const { id: userId } = await strapi
+        const createdUser = await strapi
           .query("user", "users-permissions")
           .create(params);
 
-        const afterCreatedUser = await strapi
-          .query("user", "users-permissions")
-          .findOne({ id: userId });
+        try {
+          if (userType === "voting") {
+            await strapi.plugins[
+              "users-permissions"
+            ].services.user.createProjectOwner(createdUser);
+          } else {
+            await strapi.plugins[
+              "users-permissions"
+            ].services.user.createHunter(createdUser);
+          }
 
-        let afterRemovePrivateDataUser = afterCreatedUser;
-        delete afterRemovePrivateDataUser.accessToken;
-        delete afterRemovePrivateDataUser.accessTokenSecret;
+          const afterCreatedUser = await strapi
+            .query("user", "users-permissions")
+            .findOne({ id: createdUser.id });
 
-        return resolve([afterRemovePrivateDataUser, null]);
+          let afterRemovePrivateDataUser = afterCreatedUser;
+          delete afterRemovePrivateDataUser.accessToken;
+          delete afterRemovePrivateDataUser.accessTokenSecret;
+
+          return resolve([afterRemovePrivateDataUser, null]);
+        } catch (error) {
+          await strapi
+            .query("user", "users-permissions")
+            .delete({ id: createdUser.id });
+          throw new Error(
+            "[INFO]Cannot create user right now. Please try again!"
+          );
+        }
       } catch (err) {
         if (err.message.includes("[INFO]")) {
           reject([null, err.message.match(/[^(\[INFO\])]+/)[0]]);

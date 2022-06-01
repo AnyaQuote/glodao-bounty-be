@@ -1,0 +1,35 @@
+{
+  "kind": "collectionType",
+  "collectionName": "project_owners",
+  "info": {
+    "name": "ProjectOwner"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    },
+    "user": {
+      "via": "projectOwner",
+      "plugin": "users-permissions",
+      "model": "user"
+    },
+    "address": {
+      "type": "string"
+    },
+    "nonce": {
+      "type": "string"
+    },
+    "metadata": {
+      "type": "json"
+    }
+  }
+}

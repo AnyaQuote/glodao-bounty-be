@@ -93,14 +93,9 @@
       "private": true,
       "required": false
     },
-    "userType": {
-      "type": "string"
-    },
-    "nonce": {
-      "type": "string"
-    },
-    "walletType": {
-      "type": "string"
+    "projectOwner": {
+      "via": "user",
+      "model": "project-owner"
     }
   }
 }
