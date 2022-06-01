@@ -38,21 +38,80 @@ const setupBot = () => {
     console.timeEnd(`Processing update ${ctx.update.update_id}`);
   });
 
-  bot.start((ctx) => {
-    const { from } = ctx.message;
-    console.log("------ Start ------");
-    console.log(from);
-    return ctx.replyWithMarkdown(
-      `Hello [${
-        from.username || from.first_name || from.last_name
-      }](tg://user?id=${
-        from.id
-      })\nIf you come from our Bounty app, you can link your account here for Telegram task validation!
-    `
-    );
+  bot.start(async (ctx) => {
+    try {
+      const { from, text } = ctx.message;
+      console.log("------ Start ------");
+      console.log(ctx);
+      console.log(ctx.message.entities);
+
+      console.log(from);
+      await ctx.replyWithMarkdown(
+        `Hello [${
+          from.username || from.first_name || from.last_name
+        }](tg://user?id=${
+          from.id
+        })\nIf you come from our Bounty app, you can paste your referral link here to link your account
+  `
+      );
+      if (_.isEqual(text.trim(), "/start")) return;
+
+      const splitedArr = _.split(text.trim(), /\s+/, 2);
+
+      console.log(splitedArr);
+      if (splitedArr.length < 2) return;
+      const referralCode = splitedArr[1];
+      if (_.size(referralCode) !== 6) return;
+      await ctx.reply("Detect user from bounty app!");
+      ctx.reply("Processing ...");
+      const telegramId = _.get(ctx, "message.from.id", "");
+      if (!telegramId) return ctx.reply(MESSAGES.UNKNOWN_ERROR);
+      console.log(ctx.message);
+      console.log(telegramId, _.get(ctx, "message.from.username", ""));
+
+      const isUsedTelegramId =
+        (await strapi
+          .query("user", "users-permissions")
+          .count({ telegramId })) > 0;
+      if (isUsedTelegramId) return ctx.reply(MESSAGES.ALREADY_LINKED_ERROR);
+
+      const hunter = await strapi.services.hunter.findOne({ referralCode });
+      if (_.isEmpty(hunter)) return ctx.reply(MESSAGES.INVALID_REF_LINK_ERROR);
+
+      if (!_.isEmpty(_.get(hunter, "user.telegramId", "")))
+        return ctx.reply(
+          "This account had been linked with a Telegram account already\nIf you own the linked Telegram account, use /unlink command to unlink the account"
+        );
+
+      await strapi.query("user", "users-permissions").update(
+        { id: hunter.user.id },
+        {
+          telegramId,
+          referralCode,
+          referrerCode: hunter.referrerCode,
+        }
+      );
+      return ctx.reply(
+        "Link account successfully! You can process Telegram task from now on",
+        {
+          reply_to_message_id: ctx.message.message_id,
+        }
+      );
+    } catch (error) {
+      console.log(error);
+      return ctx.reply(MESSAGES.UNKNOWN_ERROR, {
+        reply_to_message_id: ctx.message.message_id,
+      });
+    }
   });
 
-  bot.help((ctx) => ctx.replyWithHTML(MESSAGES.HELP_MESSAGE));
+  bot.help((ctx) => {
+    try {
+      return ctx.replyWithHTML(MESSAGES.HELP_MESSAGE);
+    } catch (error) {
+      return ctx.reply(error);
+    }
+  });
 
   bot.command("easteregg", (ctx) =>
     ctx.reply("You have found the easter egg!!! But it does not have any yet")
@@ -169,9 +228,70 @@ const setupBot = () => {
         new_chat_member.last_name
       }](tg://user?id=${
         new_chat_member.id
-      })\nIf you come from our Bounty app, you can link your account here for Telegram task validation!
+      })\nIf you come from our Bounty app, you can chat with me to link your account
       `
     );
+  });
+
+  bot.hears(HTTP_URL_REGEX, async (ctx) => {
+    try {
+      console.log("--- ACCOUNT LINKING ACTION ---");
+      // Check if there is a telegram id from message
+      const telegramId = _.get(ctx, "message.from.id", "");
+      if (!telegramId) return ctx.reply(MESSAGES.UNKNOWN_ERROR);
+      console.log(ctx.message);
+      console.log(telegramId, _.get(ctx, "message.from.username", ""));
+
+      const urlEntities = ctx.message.entities.filter(
+        (entity) => entity.type === "url"
+      );
+      if (!urlEntities || urlEntities.length !== 1) return;
+
+      // Check ref link valid
+      const { searchParams, host } = new URL(
+        _.get(ctx, "message.text", "").substring(
+          urlEntities[0].offset,
+          urlEntities[0].offset + urlEntities[0].length
+        )
+      );
+      if (host !== HOST) return;
+      if (!searchParams || !searchParams.get("ref"))
+        return ctx.reply(MESSAGES.INVALID_REF_URL_ERROR);
+
+      const referralCode = searchParams.get("ref");
+
+      // Check if this telegram id had been used
+      const isUsedTelegramId =
+        (await strapi
+          .query("user", "users-permissions")
+          .count({ telegramId })) > 0;
+      if (isUsedTelegramId) return ctx.reply(MESSAGES.ALREADY_LINKED_ERROR);
+
+      const hunter = await strapi.services.hunter.findOne({ referralCode });
+      if (_.isEmpty(hunter)) return ctx.reply(MESSAGES.INVALID_REF_LINK_ERROR);
+
+      if (!_.isEmpty(_.get(hunter, "user.telegramId", "")))
+        return ctx.reply(
+          "This account had been linked with a Telegram account already\nIf you own the linked Telegram account, use /unlink command to unlink the account"
+        );
+
+      await strapi.query("user", "users-permissions").update(
+        { id: hunter.user.id },
+        {
+          telegramId,
+          referralCode,
+          referrerCode: hunter.referrerCode,
+        }
+      );
+      return ctx.reply(MESSAGES.LINK_SUCCESS, {
+        reply_to_message_id: ctx.message.message_id,
+      });
+    } catch (error) {
+      console.log(error);
+      return ctx.reply(MESSAGES.UNKNOWN_ERROR, {
+        reply_to_message_id: ctx.message.message_id,
+      });
+    }
   });
 };
 
