@@ -149,9 +149,8 @@ const validateTwitterLinks = async (taskData, taskCreatedTime, user) => {
         "tweet-comment-record"
       ].isTweetDataWordCorrect(tweetData);
       console.log("is word corret: " + isWordCorrect);
-      // if (!isWordCorrect) {
-        // return "Invalid tweet content: there are some unmeaning words";
-      // }
+      if (!isWordCorrect)
+        return "Invalid tweet content: there are some unmeaning words";
     }
 
     const errorMsg = validateTweetData(

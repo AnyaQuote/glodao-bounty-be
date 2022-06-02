@@ -74,6 +74,8 @@ const isTweetDataWordCorrect = (data) => {
     const splitedArr = split(text, /\s+/);
     for (let index = 0; index < splitedArr.length; index++) {
       const word = splitedArr[index];
+      console.log(word);
+      if (word.startsWith("@")) continue;
       if (word.length >= 12) {
         console.log(word);
         return false;
