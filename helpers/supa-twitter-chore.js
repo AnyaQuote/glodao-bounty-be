@@ -183,7 +183,6 @@ async function main(argv) {
             commentMap.set(user.id, element);
           }
         }
-        if (found_reply_flag) break;
         if (res.length < 10) break;
         since_id = res[res.length - 1].id_str;
       } while (true);
