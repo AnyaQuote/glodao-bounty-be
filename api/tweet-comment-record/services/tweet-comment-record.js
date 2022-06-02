@@ -74,7 +74,10 @@ const isTweetDataWordCorrect = (data) => {
     const splitedArr = split(text, /\s+/);
     for (let index = 0; index < splitedArr.length; index++) {
       const word = splitedArr[index];
-      if (word.length >= 12) return false;
+      if (word.length >= 12) {
+        console.log(word);
+        return false;
+      }
     }
     return true;
   } catch (error) {

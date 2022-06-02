@@ -148,8 +148,10 @@ const validateTwitterLinks = async (taskData, taskCreatedTime, user) => {
       const isWordCorrect = await strapi.services[
         "tweet-comment-record"
       ].isTweetDataWordCorrect(tweetData);
-      if (!isWordCorrect)
+      console.log("is word corret: " + isWordCorrect);
+      if (!isWordCorrect) {
         return "Invalid tweet content: there are some unmeaning words";
+      }
     }
 
     const errorMsg = validateTweetData(
