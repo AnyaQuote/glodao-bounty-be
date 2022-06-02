@@ -71,7 +71,7 @@ const verifyDuplicateCommentContent = async (tweetId, commentId, data) => {
 const isTweetDataWordCorrect = (data) => {
   try {
     const text = get(data, "full_text", "") || _.get(data, "text", "");
-    const splitedArr = split(text, /\s+/);
+    const splitedArr = split(text, /\W+/);
     for (let index = 0; index < splitedArr.length; index++) {
       const word = splitedArr[index];
       console.log(word);
