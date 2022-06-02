@@ -147,14 +147,19 @@ async function main(argv) {
           tokenIndex++;
           if (tokenIndex >= accessTokenArr.length - 2) tokenIndex = 0;
         }
-        const res = await getUserTimeline(
-          user.id,
-          accessTokenArr[tokenIndex],
-          accessTokenSecretArr[tokenIndex],
-          200,
-          since_id,
-          "1521058325038874624"
-        );
+        let res = [];
+        try {
+          res = await getUserTimeline(
+            user.id,
+            accessTokenArr[tokenIndex],
+            accessTokenSecretArr[tokenIndex],
+            200,
+            since_id,
+            "1521058325038874624"
+          );
+        } catch (error) {
+          break;
+        }
         let found_reply_flag = false;
         console.log("res.length", res.length);
         for (let index = 0; index < res.length; index++) {
