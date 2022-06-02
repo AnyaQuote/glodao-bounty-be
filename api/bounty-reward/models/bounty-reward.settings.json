@@ -22,11 +22,13 @@
       "required": true
     },
     "rewardsHistory": {
-      "type": "json"
+      "type": "json",
+      "private": true
     },
     "depositHistory": {
       "type": "json",
-      "required": true
+      "required": true,
+      "private": true
     },
     "withdrawHistory": {
       "type": "json"
