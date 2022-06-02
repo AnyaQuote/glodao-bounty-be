@@ -169,21 +169,18 @@ async function main(argv) {
             found_reply_flag = true;
             comments.push(element);
             commentMap.set(user.id, element);
-            break;
           }
           if (element.in_reply_to_status_id_str === "1526865440579911681") {
             console.log("reply2");
             found_reply_flag = true;
             comments2.push(element);
             commentMap.set(user.id, element);
-            break;
           }
           if (element.in_reply_to_status_id_str === "1521254581681934338") {
             console.log("reply3");
             found_reply_flag = true;
             comments3.push(element);
             commentMap.set(user.id, element);
-            break;
           }
         }
         if (found_reply_flag) break;
