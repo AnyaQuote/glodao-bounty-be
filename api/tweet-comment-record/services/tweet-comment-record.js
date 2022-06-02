@@ -78,6 +78,15 @@ const isTweetDataWordCorrect = (data) => {
       if (word.startsWith("@")) continue;
       if (word.length > 12) {
         console.log(word);
+        if (
+          word.match(
+            /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/
+          ) ||
+          word.match(
+            /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/
+          )
+        )
+          continue;
         return false;
       }
     }
