@@ -9,7 +9,7 @@ const {
   split,
 } = require("lodash");
 const { similarity } = require("../../../helpers");
-const MAX_SIMILARITY = 0.7;
+const MAX_SIMILARITY = 0.8;
 
 /**
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-services)
@@ -42,6 +42,7 @@ const verifyDuplicateCommentContent = async (tweetId, commentId, data) => {
         similarity(get(el, "text", "").trim(), text.trim()) >= MAX_SIMILARITY &&
         !isEqual(get(el, "commentId", ""), commentId)
     );
+    if (isDuplicated) return false;
 
     await strapi.services["tweet-comment-record"].update(
       {
@@ -60,7 +61,6 @@ const verifyDuplicateCommentContent = async (tweetId, commentId, data) => {
         ),
       }
     );
-    if (isDuplicated) return false;
 
     return true;
   } catch (error) {
