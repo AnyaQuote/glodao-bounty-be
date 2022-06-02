@@ -1,5 +1,13 @@
 "use strict";
-const { get, isEqual, findIndex, some, isEmpty, uniqBy } = require("lodash");
+const {
+  get,
+  isEqual,
+  findIndex,
+  some,
+  isEmpty,
+  uniqBy,
+  split,
+} = require("lodash");
 const { similarity } = require("../../../helpers");
 const MAX_SIMILARITY = 0.7;
 
@@ -34,7 +42,6 @@ const verifyDuplicateCommentContent = async (tweetId, commentId, data) => {
         similarity(get(el, "text", "").trim(), text.trim()) >= MAX_SIMILARITY &&
         !isEqual(get(el, "commentId", ""), commentId)
     );
-    if (isDuplicated) return false;
 
     await strapi.services["tweet-comment-record"].update(
       {
@@ -53,6 +60,22 @@ const verifyDuplicateCommentContent = async (tweetId, commentId, data) => {
         ),
       }
     );
+    if (isDuplicated) return false;
+
+    return true;
+  } catch (error) {
+    return false;
+  }
+};
+
+const isTweetDataWordCorrect = (data) => {
+  try {
+    const text = get(data, "full_text", "") || _.get(data, "text", "");
+    const splitedArr = split(text, /\s+/);
+    for (let index = 0; index < splitedArr.length; index++) {
+      const word = splitedArr[index];
+      if (word.length >= 12) return false;
+    }
     return true;
   } catch (error) {
     return false;
@@ -61,4 +84,5 @@ const verifyDuplicateCommentContent = async (tweetId, commentId, data) => {
 
 module.exports = {
   verifyDuplicateCommentContent,
+  isTweetDataWordCorrect,
 };
