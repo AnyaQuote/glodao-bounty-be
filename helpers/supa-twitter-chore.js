@@ -120,61 +120,6 @@ async function main(argv) {
   let index = 0;
   let tokenIndex = 0;
   const commentMap = new Map();
-  for (let userIndex = 0; userIndex < users.length; userIndex++) {
-    const user = users[userIndex];
-    since_id = "";
-    console.log("change user: ", user.id);
-    console.log("change user: ", userIndex);
-    do {
-      index++;
-      console.log(index);
-      if (index % 500 === 0) {
-        tokenIndex++;
-        if (tokenIndex >= accessTokenArr.length - 2) tokenIndex = 0;
-      }
-      const res = await getUserTimeline(
-        user.id,
-        accessTokenArr[tokenIndex],
-        accessTokenSecretArr[tokenIndex],
-        200,
-        since_id,
-        "1521058325038874624"
-      );
-      let found_reply_flag = false;
-      console.log("res.length", res.length);
-      for (let index = 0; index < res.length; index++) {
-        const element = res[index];
-        if (element.in_reply_to_status_id_str === "1527366479557328896") {
-          console.log("reply");
-          found_reply_flag = true;
-          comments.push(element);
-          commentMap.set(user.id, element);
-          break;
-        }
-        if (element.in_reply_to_status_id_str === "1526865440579911681") {
-          console.log("reply2");
-          found_reply_flag = true;
-          comments2.push(element);
-          commentMap.set(user.id, element);
-          break;
-        }
-        if (element.in_reply_to_status_id_str === "1521254581681934338") {
-          console.log("reply3");
-          found_reply_flag = true;
-          comments3.push(element);
-          commentMap.set(user.id, element);
-          break;
-        }
-      }
-      if (found_reply_flag) break;
-      if (res.length < 10) break;
-      since_id = res[res.length - 1].id_str;
-    } while (true);
-  }
-  console.log(comments);
-  console.log(comments.length);
-  console.log(commentMap.size);
-  const arrs = [];
   const headers = [
     {
       id: "id",
@@ -189,37 +134,134 @@ async function main(argv) {
       title: "text",
     },
   ];
-  // comments.forEach(comment=>{
-  //   console.log(_.replace(comment.text,/\s+/g,' '))
-  // })
-  // return
-  await exportDataToCsv(
-    comments.map((comment) => ({
-      id: comment.user.id,
-      screen_name: comment.user.screen_name,
-      text: _.replace(comment.text, /\s+/g, " "),
-    })),
-    headers,
-    "algolaunch-test-comment.csv"
-  );
-  await exportDataToCsv(
-    comments2.map((comment) => ({
-      id: comment.user.id,
-      screen_name: comment.user.screen_name,
-      text: _.replace(comment.text, /\s+/g, " "),
-    })),
-    headers,
-    "algolaunch-test-comment2.csv"
-  );
-  await exportDataToCsv(
-    comments3.map((comment) => ({
-      id: comment.user.id,
-      screen_name: comment.user.screen_name,
-      text: _.replace(comment.text, /\s+/g, " "),
-    })),
-    headers,
-    "algolaunch-test-comment3.csv"
-  );
+  try {
+    for (let userIndex = 0; userIndex < users.length; userIndex++) {
+      const user = users[userIndex];
+      since_id = "";
+      console.log("change user: ", user.id);
+      console.log("change user: ", userIndex);
+      do {
+        index++;
+        console.log(index);
+        if (index % 500 === 0) {
+          tokenIndex++;
+          if (tokenIndex >= accessTokenArr.length - 2) tokenIndex = 0;
+        }
+        const res = await getUserTimeline(
+          user.id,
+          accessTokenArr[tokenIndex],
+          accessTokenSecretArr[tokenIndex],
+          200,
+          since_id,
+          "1521058325038874624"
+        );
+        let found_reply_flag = false;
+        console.log("res.length", res.length);
+        for (let index = 0; index < res.length; index++) {
+          const element = res[index];
+          if (element.in_reply_to_status_id_str === "1527366479557328896") {
+            console.log("reply");
+            found_reply_flag = true;
+            comments.push(element);
+            commentMap.set(user.id, element);
+            break;
+          }
+          if (element.in_reply_to_status_id_str === "1526865440579911681") {
+            console.log("reply2");
+            found_reply_flag = true;
+            comments2.push(element);
+            commentMap.set(user.id, element);
+            break;
+          }
+          if (element.in_reply_to_status_id_str === "1521254581681934338") {
+            console.log("reply3");
+            found_reply_flag = true;
+            comments3.push(element);
+            commentMap.set(user.id, element);
+            break;
+          }
+        }
+        if (found_reply_flag) break;
+        if (res.length < 10) break;
+        since_id = res[res.length - 1].id_str;
+      } while (true);
+    }
+    console.log(comments);
+    console.log(comments.length);
+    console.log(commentMap.size);
+    const arrs = [];
+
+    // comments.forEach(comment=>{
+    //   console.log(_.replace(comment.text,/\s+/g,' '))
+    // })
+    // return
+    await exportDataToCsv(
+      comments.map((comment) => ({
+        id: comment.user.id,
+        screen_name: comment.user.screen_name,
+        text: _.replace(comment.text, /\s+/g, " "),
+      })),
+      headers,
+      "algolaunch-test-comment.csv"
+    );
+    await exportDataToCsv(
+      comments2.map((comment) => ({
+        id: comment.user.id,
+        screen_name: comment.user.screen_name,
+        text: _.replace(comment.text, /\s+/g, " "),
+      })),
+      headers,
+      "algolaunch-test-comment2.csv"
+    );
+    await exportDataToCsv(
+      comments3.map((comment) => ({
+        id: comment.user.id,
+        screen_name: comment.user.screen_name,
+        text: _.replace(comment.text, /\s+/g, " "),
+      })),
+      headers,
+      "algolaunch-test-comment3.csv"
+    );
+  } catch (error) {
+    await exportDataToCsv(
+      comments.map((comment) => ({
+        id: comment.user.id,
+        screen_name: comment.user.screen_name,
+        text: _.replace(comment.text, /\s+/g, " "),
+      })),
+      headers,
+      "algolaunch-test-comment.csv"
+    );
+    await exportDataToCsv(
+      comments2.map((comment) => ({
+        id: comment.user.id,
+        screen_name: comment.user.screen_name,
+        text: _.replace(comment.text, /\s+/g, " "),
+      })),
+      headers,
+      "algolaunch-test-comment2.csv"
+    );
+    await exportDataToCsv(
+      comments3.map((comment) => ({
+        id: comment.user.id,
+        screen_name: comment.user.screen_name,
+        text: _.replace(comment.text, /\s+/g, " "),
+      })),
+      headers,
+      "algolaunch-test-comment3.csv"
+    );
+    await exportDataToCsv(
+      [{ error: error }],
+      [
+        {
+          id: "error",
+          title: "error",
+        },
+      ],
+      "error.csv"
+    );
+    console.log(error);
+  }
 }
 
 const exportUserListToCsv = async (users, file_name) => {
