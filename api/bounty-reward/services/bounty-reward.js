@@ -59,7 +59,6 @@ const recordReward = async (
     let depositHistory = record.depositHistory || [];
 
     for (const [key, value] of rewardMap) {
-      console.log(key + " = " + value);
       if (key === tokenAddress) {
         rewardArr.push({
           tokenAddress,
@@ -108,7 +107,6 @@ const recordReward = async (
         datetime: moment().toISOString(),
       });
     }
-    console.log(rewardArr);
 
     return await strapi.services["bounty-reward"].update(
       { id: record.id },
@@ -147,7 +145,6 @@ const distributeReward = async (
     let withdrawHistory = record.withdrawHistory || [];
 
     for (const [key, value] of rewardMap) {
-      console.log(key + " = " + value);
       if (key === tokenAddress) {
         if (FixedNumber.from(`${value.rewardAmount}`).isZero()) {
           throw new Error("Not enough balance left");
