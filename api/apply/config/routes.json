@@ -63,6 +63,22 @@
       "config": {
         "policies": ["global::is-owner", "isTaskProcessable"]
       }
+    },
+    {
+      "method": "POST",
+      "path": "/applies/startHunting",
+      "handler": "apply.startHuntingProcess",
+      "config": {
+        "policies": ["global::captcha-validation", "isTaskProcessable"]
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/applies/finishHuntingProcess",
+      "handler": "apply.finishHuntingProcess",
+      "config": {
+        "policies": ["global::captcha-validation", "isTaskProcessable"]
+      }
     }
   ]
 }

@@ -16,6 +16,35 @@ const {
  */
 
 module.exports = {
+  startHuntingProcess: async (ctx) => {
+    const { hunter, task } = ctx.request.body;
+    try {
+      return await strapi.services.apply.create({
+        hunter,
+        task,
+        ID: `${hunter}_${task}`,
+      });
+    } catch (error) {
+      return ctx.badRequest(error.data.errors);
+    }
+  },
+  finishHuntingProcess: async (ctx) => {
+    const { id, walletAddress } = ctx.request.body;
+    const apply = await strapi.services.apply.findOne({ id });
+
+    if (!isEqual(walletAddress, get(apply, "hunter.address", "")))
+      return ctx.unauthorized(
+        "Invalid request: Wallet not matched with the pre-registered one"
+      );
+
+    if (!isTaskCompleted(apply.data)) return ctx.badRequest("Unfinished task");
+    if (!walletAddress)
+      return ctx.badRequest("Missing wallet address to earn reward");
+    return await strapi.services.apply.updateApplyStateToComplete(
+      id,
+      get(apply, "hunter.address", "")
+    );
+  },
   applyForPriorityPool: async (ctx) => {
     const { walletAddress, applyId, hunterId, taskId, poolId } =
       ctx.request.body;
