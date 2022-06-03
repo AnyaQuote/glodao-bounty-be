@@ -2,7 +2,8 @@
   "kind": "collectionType",
   "collectionName": "bounty_rewards",
   "info": {
-    "name": "BountyReward"
+    "name": "BountyReward",
+    "description": ""
   },
   "options": {
     "increments": true,
@@ -13,15 +14,23 @@
   "attributes": {
     "walletAddress": {
       "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "rewards": {
+      "type": "json",
       "required": true
     },
-    "currentReward": {
-      "type": "string"
+    "rewardsHistory": {
+      "type": "json",
+      "private": true
     },
-    "hunter": {
-      "model": "hunter"
+    "depositHistory": {
+      "type": "json",
+      "required": true,
+      "private": true
     },
-    "data": {
+    "withdrawHistory": {
       "type": "json"
     }
   }
