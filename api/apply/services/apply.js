@@ -143,7 +143,16 @@ const validateTwitterLinks = async (taskData, taskCreatedTime, user) => {
         twitterHelper.getTweetIdFromLink(currentStepObj.submitedLink),
         tweetData
       );
-      if (!isNotDuplicated) return "Invalid tweet content: too similar with other tweets";
+      if (!isNotDuplicated)
+        return "Invalid tweet content: too similar with other tweets";
+      const isWordCorrect = await strapi.services[
+        "tweet-comment-record"
+      ].isTweetDataWordCorrect(tweetData);
+      console.log("is word corret: " + isWordCorrect);
+      if (!isWordCorrect) {
+        console.log("wrong content");
+        return "Invalid tweet content: there are some unmeaning words";
+      }
     }
 
     const errorMsg = validateTweetData(
