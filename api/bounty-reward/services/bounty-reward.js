@@ -122,14 +122,7 @@ const recordReward = async (
   }
 };
 
-const distributeReward = async (
-  walletAddress,
-  tokenAddress,
-  token,
-  rewardAmount,
-  decimals = "18",
-  tokenBasePrice = "1"
-) => {
+const distributeReward = async (walletAddress, tokenAddress, rewardAmount) => {
   try {
     const record = await strapi.services["bounty-reward"].findOne({
       walletAddress,
@@ -157,30 +150,30 @@ const distributeReward = async (
         ) {
           throw new Error("Not enough balance left");
         }
+        existedFlag = true;
         rewardArr.push({
+          ...value,
           tokenAddress,
-          token,
           rewardAmount: FixedNumber.from(`${value.rewardAmount}`).subUnsafe(
             FixedNumber.from(`${rewardAmount}`)
           )._value,
-          decimals,
-          tokenBasePrice,
         });
         distributedRecord.push({
           tokenAddress,
-          token,
+          token: value.token,
           rewardAmount,
           datetime: moment().toISOString(),
           type: "sub",
         });
         withdrawHistory.push({
           tokenAddress,
-          token,
+          token: value.token,
           rewardAmount,
           datetime: moment().toISOString(),
         });
       } else rewardArr.push({ ...value });
     }
+    if (!existedFlag) throw new Error("Not enough balance left");
 
     return await strapi.services["bounty-reward"].update(
       { id: record.id },
