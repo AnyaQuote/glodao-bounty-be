@@ -247,42 +247,42 @@ module.exports = {
       updatedTaskData["twitter"] = twitterTaskData;
     }
 
-    // if (isEqual(type, "telegram")) {
-    //   const telegramId = get(user, "telegramId", "");
-    //   if (isEmpty(telegramId))
-    //     return ctx.badRequest("You had not linked your Telegram account");
+    if (isEqual(type, "telegram")) {
+      const telegramId = get(user, "telegramId", "");
+      if (isEmpty(telegramId))
+        return ctx.badRequest("You had not linked your Telegram account");
 
-    //   let telegramTaskData = get(taskData, [type], []);
-    //   const mergedTelegramTask = merge(
-    //     telegramTaskData.map((step) => {
-    //       return {
-    //         ...step,
-    //         submitedId: telegramId,
-    //       };
-    //     }),
-    //     get(apply, ["task", "data", type], [])
-    //   );
+      let telegramTaskData = get(taskData, [type], []);
+      const mergedTelegramTask = merge(
+        telegramTaskData.map((step) => {
+          return {
+            ...step,
+            submitedId: telegramId,
+          };
+        }),
+        get(apply, ["task", "data", type], [])
+      );
 
-    //   for (let index = 0; index < mergedTelegramTask.length; index++) {
-    //     const element = mergedTelegramTask[index];
-    //     if (index === mergedTelegramTask.length - 1 && element.finished) {
-    //       const isUserFollow = await isUserFollowChat(
-    //         getChatFromLink(element.link),
-    //         element.submitedId
-    //       );
-    //       if (!isUserFollow) return ctx.badRequest("Can not find user in chat");
-    //     } else if (
-    //       element.finished &&
-    //       !mergedTelegramTask[index + 1].finished
-    //     ) {
-    //       const isUserFollow = await isUserFollowChat(
-    //         getChatFromLink(element.link),
-    //         element.submitedId
-    //       );
-    //       if (!isUserFollow) return ctx.badRequest("Can not find user in chat");
-    //     }
-    //   }
-    // }
+      for (let index = 0; index < mergedTelegramTask.length; index++) {
+        const element = mergedTelegramTask[index];
+        if (index === mergedTelegramTask.length - 1 && element.finished) {
+          const isUserFollow = await isUserFollowChat(
+            getChatFromLink(element.link),
+            element.submitedId
+          );
+          if (!isUserFollow) return ctx.badRequest("Can not find user in chat");
+        } else if (
+          element.finished &&
+          !mergedTelegramTask[index + 1].finished
+        ) {
+          const isUserFollow = await isUserFollowChat(
+            getChatFromLink(element.link),
+            element.submitedId
+          );
+          if (!isUserFollow) return ctx.badRequest("Can not find user in chat");
+        }
+      }
+    }
 
     if (res || isNumber(res)) {
       if (isNumber(res)) {
