@@ -12,7 +12,8 @@ const UNLINK_SUCCESS = "Account unlinked successfully";
 const REF_LINK_FORMAT_REQUIRED =
   "Please provide your referral link with the following format:\n/link your_referral_link";
 const HELP_MESSAGE =
-  "I can help you link your telegram account with your GloDAO bounty app account. \nPaste your referral link here and you are good to go!\n\nYou can control me by sending these commands:\n\n<a>/link</a> - Link your telegram account with your bounty app account\n<a>/unlink</a> - Unlink your telegram account\n";
+  // "I can help you link your telegram account with your GloDAO bounty app account. \nPaste your referral link here and you are good to go!\n\nYou can control me by sending these commands:\n\n<a>/link</a> - Link your telegram account with your bounty app account\n<a>/unlink</a> - Unlink your telegram account\n";
+  "I can help you link your telegram account with your GloDAO bounty app account. \nPaste your referral link here and you are good to go!\n\nYou can control me by sending these commands:\n\n<a>/link</a> - Link your telegram account with your bounty app account\n";
 
 module.exports = {
   UNKNOWN_ERROR,
