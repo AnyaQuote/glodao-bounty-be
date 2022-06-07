@@ -51,7 +51,7 @@ const setupBot = () => {
           from.username || from.first_name || from.last_name
         }](tg://user?id=${
           from.id
-        })\nIf you come from our Bounty app, you can paste your referral link here to link your account
+        })\nIf you come from our Bounty app, you can paste your referral link here to link your account.\n For more information, you can use /help
   `
       );
       if (_.isEqual(text.trim(), "/start")) return;
