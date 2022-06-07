@@ -51,7 +51,7 @@ const setupBot = () => {
           from.username || from.first_name || from.last_name
         }](tg://user?id=${
           from.id
-        })\nIf you come from our Bounty app, you can paste your referral link here to link your account.\n For more information, you can use /help
+        })\nIf you come from our Bounty app, you can paste your referral link here to link your account.\nFor more information, you can use /help
   `
       );
       if (_.isEqual(text.trim(), "/start")) return;
@@ -222,26 +222,26 @@ const setupBot = () => {
     }
   });
 
-  bot.on("new_chat_members", async (ctx) => {
-    try {
-      const { new_chat_participant, new_chat_member, new_chat_members } =
-        ctx.message;
-      console.log("------ New member ------");
-      console.log(new_chat_member);
-      return ctx.replyWithMarkdown(
-        `Hello [${
-          new_chat_member.username ||
-          new_chat_member.first_name ||
-          new_chat_member.last_name
-        }](tg://user?id=${
-          new_chat_member.id
-        })\nIf you come from our Bounty app, you can chat with me to link your account
-      `
-      );
-    } catch (error) {
-      console.log(error);
-    }
-  });
+  // bot.on("new_chat_members", async (ctx) => {
+  //   try {
+  //     const { new_chat_participant, new_chat_member, new_chat_members } =
+  //       ctx.message;
+  //     console.log("------ New member ------");
+  //     console.log(new_chat_member);
+  //     return ctx.replyWithMarkdown(
+  //       `Hello [${
+  //         new_chat_member.username ||
+  //         new_chat_member.first_name ||
+  //         new_chat_member.last_name
+  //       }](tg://user?id=${
+  //         new_chat_member.id
+  //       })\nIf you come from our Bounty app, you can chat with me to link your account
+  //     `
+  //     );
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // });
 
   bot.hears(HTTP_URL_REGEX, async (ctx) => {
     try {
