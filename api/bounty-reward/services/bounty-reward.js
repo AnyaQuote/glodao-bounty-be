@@ -39,6 +39,7 @@ const recordReward = async (
             rewardAmount,
             datetime: moment().toISOString(),
             type: "add",
+            tokenBasePrice,
           },
         ],
         depositHistory: [
@@ -47,6 +48,7 @@ const recordReward = async (
             token,
             rewardAmount,
             datetime: moment().toISOString(),
+            tokenBasePrice,
           },
         ],
       });
@@ -76,12 +78,14 @@ const recordReward = async (
           rewardAmount,
           datetime: moment().toISOString(),
           type: "add",
+          tokenBasePrice,
         });
         depositHistory.push({
           tokenAddress,
           token,
           rewardAmount,
           datetime: moment().toISOString(),
+          tokenBasePrice,
         });
       } else rewardArr.push({ ...value });
     }
@@ -99,12 +103,14 @@ const recordReward = async (
         rewardAmount,
         datetime: moment().toISOString(),
         type: "add",
+        tokenBasePrice,
       });
       depositHistory.push({
         tokenAddress,
         token,
         rewardAmount,
         datetime: moment().toISOString(),
+        tokenBasePrice,
       });
     }
 
@@ -164,12 +170,14 @@ const distributeReward = async (walletAddress, tokenAddress, rewardAmount) => {
           rewardAmount,
           datetime: moment().toISOString(),
           type: "sub",
+          tokenBasePrice: value.tokenBasePrice,
         });
         withdrawHistory.push({
           tokenAddress,
           token: value.token,
           rewardAmount,
           datetime: moment().toISOString(),
+          tokenBasePrice: value.tokenBasePrice,
         });
       } else rewardArr.push({ ...value });
     }
