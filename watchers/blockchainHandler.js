@@ -121,15 +121,15 @@ const getVotingContractCreation = (chainId) => {
     case "56":
       return {
         transactionHash:
-          "0x345367d23b234ca3d5aee3daeb442b2bc7a4c2165b90a5258966421f7b1ebbff",
-        blockNumber: 19524574,
+          "0xf858152b53e95148276f92bc596d0e4dd850e5d3132908ba040e835391be407a",
+        blockNumber: 19868002,
       };
     case 97:
     case "97":
       return {
         transactionHash:
-          "0x345367d23b234ca3d5aee3daeb442b2bc7a4c2165b90a5258966421f7b1ebbff",
-        blockNumber: 19524574,
+          "0xf858152b53e95148276f92bc596d0e4dd850e5d3132908ba040e835391be407a",
+        blockNumber: 19868002,
       };
   }
 };
@@ -143,10 +143,10 @@ const getVotingContract = (chainId) => {
       return "";
     case 56:
     case "56":
-      return "0xb51Bf8C508f775981bBD1876cd2Ef6f1f4cd03b2";
+      return "0xCEb2E361B1B3fB0E44BC337D459A36f4CA467869";
     case 97:
     case "97":
-      return "0xb51Bf8C508f775981bBD1876cd2Ef6f1f4cd03b2";
+      return "0xCEb2E361B1B3fB0E44BC337D459A36f4CA467869";
   }
   return null;
 };

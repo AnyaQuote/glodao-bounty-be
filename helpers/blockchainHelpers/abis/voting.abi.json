@@ -85,25 +85,37 @@
       {
         "indexed": true,
         "internalType": "address",
-        "name": "erc20",
+        "name": "owner",
         "type": "address"
       },
       {
         "indexed": true,
         "internalType": "address",
-        "name": "owner",
+        "name": "requiredErc20",
         "type": "address"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "poolType",
+        "name": "requiredAmount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "optionalErc20",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "optionalAmount",
         "type": "uint256"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "amount",
+        "name": "poolType",
         "type": "uint256"
       }
     ],
@@ -139,6 +151,12 @@
         "type": "address"
       },
       {
+        "indexed": true,
+        "internalType": "bool",
+        "name": "approved",
+        "type": "bool"
+      },
+      {
         "indexed": false,
         "internalType": "bool",
         "name": "completed",
@@ -159,6 +177,30 @@
     ],
     "name": "UserVoted",
     "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "approvedUsers",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
     "inputs": [
@@ -195,12 +237,22 @@
       },
       {
         "internalType": "address",
-        "name": "_erc20",
+        "name": "_requiredErc20",
         "type": "address"
       },
       {
         "internalType": "uint256",
-        "name": "_amount",
+        "name": "_requiredAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "_optionalErc20",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_optionalAmount",
         "type": "uint256"
       }
     ],
@@ -226,6 +278,63 @@
     "inputs": [
       {
         "internalType": "uint256",
+        "name": "pid",
+        "type": "uint256"
+      }
+    ],
+    "name": "getApproveds",
+    "outputs": [
+      {
+        "internalType": "address[]",
+        "name": "",
+        "type": "address[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "poolType",
+        "type": "uint256"
+      }
+    ],
+    "name": "getCancelationFeePercent",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "poolType",
+        "type": "uint256"
+      }
+    ],
+    "name": "getCreationFee",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
         "name": "poolType",
         "type": "uint256"
       },
@@ -233,9 +342,14 @@
         "internalType": "address",
         "name": "user",
         "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "poolId",
+        "type": "uint256"
       }
     ],
-    "name": "getFee",
+    "name": "getMaxTime",
     "outputs": [
       {
         "internalType": "uint256",
@@ -279,26 +393,40 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "poolType",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "poolId",
+        "name": "pid",
         "type": "uint256"
       }
     ],
-    "name": "getStakeTax",
+    "name": "getPoolUserLengths",
     "outputs": [
       {
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "pid",
+        "type": "uint256"
+      }
+    ],
+    "name": "getRejects",
+    "outputs": [
+      {
+        "internalType": "address[]",
+        "name": "",
+        "type": "address[]"
       }
     ],
     "stateMutability": "view",
@@ -366,18 +494,28 @@
     "outputs": [
       {
         "internalType": "contract IERC20",
-        "name": "erc20",
+        "name": "requiredErc20",
         "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "requiredAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "contract IERC20",
+        "name": "optionalErc20",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "optionalAmount",
+        "type": "uint256"
       },
       {
         "internalType": "address",
         "name": "owner",
         "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
       },
       {
         "internalType": "uint256",
@@ -420,12 +558,12 @@
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "fee",
+        "name": "creationFee",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "stakeFee",
+        "name": "cancelationFeePercent",
         "type": "uint256"
       },
       {
@@ -434,19 +572,77 @@
         "type": "uint256"
       },
       {
-        "internalType": "address",
-        "name": "requiredErc20",
-        "type": "address"
+        "internalType": "uint256",
+        "name": "minTime",
+        "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "minTime",
+        "name": "maxTime",
         "type": "uint256"
       },
       {
         "internalType": "bool",
         "name": "added",
         "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "poolUserInfos",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "voted",
+        "type": "bool"
+      },
+      {
+        "internalType": "bool",
+        "name": "votedYes",
+        "type": "bool"
+      },
+      {
+        "internalType": "uint256",
+        "name": "votedWeight",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "rejectedUsers",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -470,12 +666,12 @@
         "components": [
           {
             "internalType": "uint256",
-            "name": "fee",
+            "name": "creationFee",
             "type": "uint256"
           },
           {
             "internalType": "uint256",
-            "name": "stakeFee",
+            "name": "cancelationFeePercent",
             "type": "uint256"
           },
           {
@@ -484,13 +680,13 @@
             "type": "uint256"
           },
           {
-            "internalType": "address",
-            "name": "requiredErc20",
-            "type": "address"
+            "internalType": "uint256",
+            "name": "minTime",
+            "type": "uint256"
           },
           {
             "internalType": "uint256",
-            "name": "minTime",
+            "name": "maxTime",
             "type": "uint256"
           },
           {
@@ -538,42 +734,23 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "userVotedPools",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "uint256",
         "name": "poolType",
         "type": "uint256"
       },
       {
+        "internalType": "uint256",
+        "name": "requiredAmount",
+        "type": "uint256"
+      },
+      {
         "internalType": "address",
-        "name": "erc20",
+        "name": "optionalErc20",
         "type": "address"
       },
       {
         "internalType": "uint256",
-        "name": "amount",
+        "name": "optionalAmount",
         "type": "uint256"
       }
     ],
@@ -588,6 +765,11 @@
         "internalType": "uint256",
         "name": "poolId",
         "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "approve",
+        "type": "bool"
       }
     ],
     "name": "vote",
