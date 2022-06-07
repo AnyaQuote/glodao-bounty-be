@@ -99,9 +99,9 @@ const setupBot = () => {
       );
     } catch (error) {
       console.log(error);
-      return ctx.reply(MESSAGES.UNKNOWN_ERROR, {
-        reply_to_message_id: ctx.message.message_id,
-      });
+      // return ctx.reply(MESSAGES.UNKNOWN_ERROR, {
+      //   reply_to_message_id: ctx.message.message_id,
+      // });
     }
   });
 
@@ -113,9 +113,15 @@ const setupBot = () => {
     }
   });
 
-  bot.command("easteregg", (ctx) =>
-    ctx.reply("You have found the easter egg!!! But it does not have any yet")
-  );
+  bot.command("easteregg", (ctx) => {
+    try {
+      ctx.reply(
+        "You have found the easter egg!!! But it does not have any yet"
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  });
 
   bot.command("link", async (ctx) => {
     try {
@@ -174,9 +180,9 @@ const setupBot = () => {
       });
     } catch (error) {
       console.log(error);
-      return ctx.reply(MESSAGES.UNKNOWN_ERROR, {
-        reply_to_message_id: ctx.message.message_id,
-      });
+      // return ctx.reply(MESSAGES.UNKNOWN_ERROR, {
+      //   reply_to_message_id: ctx.message.message_id,
+      // });
     }
   });
 
@@ -210,27 +216,31 @@ const setupBot = () => {
       });
     } catch (error) {
       console.log(error);
-      return ctx.reply(MESSAGES.UNKNOWN_ERROR, {
-        reply_to_message_id: ctx.message.message_id,
-      });
+      // return ctx.reply(MESSAGES.UNKNOWN_ERROR, {
+      //   reply_to_message_id: ctx.message.message_id,
+      // });
     }
   });
 
   bot.on("new_chat_members", async (ctx) => {
-    const { new_chat_participant, new_chat_member, new_chat_members } =
-      ctx.message;
-    console.log("------ New member ------");
-    console.log(new_chat_member);
-    return ctx.replyWithMarkdown(
-      `Hello [${
-        new_chat_member.username ||
-        new_chat_member.first_name ||
-        new_chat_member.last_name
-      }](tg://user?id=${
-        new_chat_member.id
-      })\nIf you come from our Bounty app, you can chat with me to link your account
+    try {
+      const { new_chat_participant, new_chat_member, new_chat_members } =
+        ctx.message;
+      console.log("------ New member ------");
+      console.log(new_chat_member);
+      return ctx.replyWithMarkdown(
+        `Hello [${
+          new_chat_member.username ||
+          new_chat_member.first_name ||
+          new_chat_member.last_name
+        }](tg://user?id=${
+          new_chat_member.id
+        })\nIf you come from our Bounty app, you can chat with me to link your account
       `
-    );
+      );
+    } catch (error) {
+      console.log(error);
+    }
   });
 
   bot.hears(HTTP_URL_REGEX, async (ctx) => {
@@ -288,9 +298,9 @@ const setupBot = () => {
       });
     } catch (error) {
       console.log(error);
-      return ctx.reply(MESSAGES.UNKNOWN_ERROR, {
-        reply_to_message_id: ctx.message.message_id,
-      });
+      // return ctx.reply(MESSAGES.UNKNOWN_ERROR, {
+      //   reply_to_message_id: ctx.message.message_id,
+      // });
     }
   });
 };
