@@ -62,8 +62,9 @@ const setupBot = () => {
       if (splitedArr.length < 2) return;
       const referralCode = splitedArr[1];
       if (_.size(referralCode) !== 6) return;
-      await ctx.reply("Detect user from bounty app!");
-      ctx.reply("Processing ...");
+      await sleep(1000);
+      await ctx.reply("Detect user from bounty app!\nProcessing ...");
+      await sleep(1000);
       const telegramId = _.get(ctx, "message.from.id", "");
       if (!telegramId) return ctx.reply(MESSAGES.UNKNOWN_ERROR);
       console.log(ctx.message);
@@ -304,7 +305,9 @@ const setupBot = () => {
     }
   });
 };
-
+const sleep = async (ms) => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+};
 main();
 
 // Enable graceful stop
