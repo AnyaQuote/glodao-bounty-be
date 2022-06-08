@@ -9,8 +9,10 @@ module.exports = {
   lifecycles: {
     // Called before an entry is created
     async beforeCreate(event) {
-      const totalTaskCount = await strapi.services.task.count();
+      const type = event.type || "bounty";
+      const totalTaskCount = await strapi.services.task.count({ type: type });
       event.missionIndex = totalTaskCount + 1;
+      event.type = type;
     },
   },
 };

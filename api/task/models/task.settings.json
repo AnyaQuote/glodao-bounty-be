@@ -66,15 +66,19 @@
     },
     "type": {
       "type": "enumeration",
-      "enum": [
-        "learn",
-        "bounty"
-      ],
-      "default": "bounty"
+      "enum": ["learn", "bounty", "event", "referral", "lucky", "active"],
+      "default": "bounty",
+      "required": true
     },
     "completedParticipants": {
       "type": "integer",
       "default": 0
+    },
+    "finishMessage": {
+      "type": "string"
+    },
+    "finishLink": {
+      "type": "string"
     }
   }
 }
