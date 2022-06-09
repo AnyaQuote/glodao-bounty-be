@@ -11,11 +11,23 @@ module.exports = {
     async beforeCreate(event) {
       const type = event.type || "bounty";
       let searchType = type;
-      if (type === "active" || type === "lucky" || type === "referral")
-        searchType = "event";
-      const totalTaskCount = await strapi.services.task.count({
+      let totalTaskCount = await strapi.services.task.count({
         type: searchType,
       });
+      if (type === "active" || type === "lucky" || type === "referral") {
+        searchType = "event";
+        const activeCount = await strapi.services.task.count({
+          type: "active",
+        });
+        const luckyCount = await strapi.services.task.count({
+          type: "lucky",
+        });
+        const referralCount = await strapi.services.task.count({
+          type: "referral",
+        });
+        totalTaskCount = activeCount + luckyCount + referralCount;
+      }
+
       event.missionIndex = totalTaskCount + 1;
       event.type = type;
     },
