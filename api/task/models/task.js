@@ -10,7 +10,12 @@ module.exports = {
     // Called before an entry is created
     async beforeCreate(event) {
       const type = event.type || "bounty";
-      const totalTaskCount = await strapi.services.task.count({ type: type });
+      let searchType = type;
+      if (type === "active" || type === "lucky" || type === "referral")
+        searchType = "event";
+      const totalTaskCount = await strapi.services.task.count({
+        type: searchType,
+      });
       event.missionIndex = totalTaskCount + 1;
       event.type = type;
     },
