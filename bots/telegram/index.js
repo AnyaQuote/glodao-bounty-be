@@ -187,41 +187,41 @@ const setupBot = () => {
     }
   });
 
-  bot.command("unlink", async (ctx) => {
-    try {
-      console.log("--- ACCOUNT UNLINKING ACTION ---");
-      // Check if there is a telegram id from message
-      const telegramId = _.get(ctx, "message.from.id", "");
-      if (!telegramId) return ctx.reply(MESSAGES.UNKNOWN_ERROR);
-      console.log(ctx.message);
-      console.log(telegramId, _.get(ctx, "message.from.username", ""));
+  // bot.command("unlink", async (ctx) => {
+  //   try {
+  //     console.log("--- ACCOUNT UNLINKING ACTION ---");
+  //     // Check if there is a telegram id from message
+  //     const telegramId = _.get(ctx, "message.from.id", "");
+  //     if (!telegramId) return ctx.reply(MESSAGES.UNKNOWN_ERROR);
+  //     console.log(ctx.message);
+  //     console.log(telegramId, _.get(ctx, "message.from.username", ""));
 
-      const linkedUser = await strapi
-        .query("user", "users-permissions")
-        .findOne({ telegramId });
+  //     const linkedUser = await strapi
+  //       .query("user", "users-permissions")
+  //       .findOne({ telegramId });
 
-      if (_.isEmpty(linkedUser))
-        return ctx.reply(MESSAGES.NOT_LINKED_ERROR, {
-          reply_to_message_id: ctx.message.message_id,
-        });
+  //     if (_.isEmpty(linkedUser))
+  //       return ctx.reply(MESSAGES.NOT_LINKED_ERROR, {
+  //         reply_to_message_id: ctx.message.message_id,
+  //       });
 
-      await strapi.query("user", "users-permissions").update(
-        { id: linkedUser.id },
-        {
-          telegramId: "",
-        }
-      );
+  //     await strapi.query("user", "users-permissions").update(
+  //       { id: linkedUser.id },
+  //       {
+  //         telegramId: "",
+  //       }
+  //     );
 
-      return ctx.reply(MESSAGES.UNLINK_SUCCESS, {
-        reply_to_message_id: ctx.message.message_id,
-      });
-    } catch (error) {
-      console.log(error);
-      // return ctx.reply(MESSAGES.UNKNOWN_ERROR, {
-      //   reply_to_message_id: ctx.message.message_id,
-      // });
-    }
-  });
+  //     return ctx.reply(MESSAGES.UNLINK_SUCCESS, {
+  //       reply_to_message_id: ctx.message.message_id,
+  //     });
+  //   } catch (error) {
+  //     console.log(error);
+  //     // return ctx.reply(MESSAGES.UNKNOWN_ERROR, {
+  //     //   reply_to_message_id: ctx.message.message_id,
+  //     // });
+  //   }
+  // });
 
   // bot.on("new_chat_members", async (ctx) => {
   //   try {
@@ -283,7 +283,7 @@ const setupBot = () => {
 
       if (!_.isEmpty(_.get(hunter, "user.telegramId", "")))
         return ctx.reply(
-          "This account had been linked with a Telegram account already\nIf you own the linked Telegram account, use /unlink command to unlink the account"
+          "This account had been linked with a Telegram account already\nIf you own the linked account, please contact GloDAO technical support for help"
         );
 
       await strapi.query("user", "users-permissions").update(
