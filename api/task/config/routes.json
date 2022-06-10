@@ -50,10 +50,10 @@
     },
     {
       "method": "POST",
-      "path": "/createTask",
+      "path": "/tasks/createTask",
       "handler": "task.createTask",
       "config": {
-        "policies": []
+        "policies": ["global::is-address-owner"]
       }
     }
   ]

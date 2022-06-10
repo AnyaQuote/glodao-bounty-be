@@ -2,10 +2,7 @@
 
 const { get, gte } = require("lodash");
 const moment = require("moment");
-const checkIsOwner = (ctx, ownerAddress) => {
-  if (ctx.state.user.username !== ownerAddress)
-    return ctx.forbidden(`You can not update this entry`);
-};
+
 /**
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-services)
  * to customize this service
@@ -104,14 +101,13 @@ const isTaskProcessable = (task) => {
 };
 
 /**
- * Check owner address and call create task services
+ * Create task services
  * @param {any} ctx
  * @param {task} missionData
  * @returns task
  */
 const createTask = async (ctx, missionData) => {
   const {
-    ownerAddress,
     poolId,
     name,
     type,
@@ -126,8 +122,6 @@ const createTask = async (ctx, missionData) => {
     metadata,
   } = missionData;
 
-  checkIsOwner(ctx, ownerAddress);
-
   const pool = await strapi.services["voting-pool"].findOne({
     id: poolId,
   });
@@ -135,7 +129,7 @@ const createTask = async (ctx, missionData) => {
   const numberOfCreatedMissions = await strapi.services.task.count({ poolId });
 
   if (numberOfCreatedMissions >= pool.totalMission) {
-    ctx.forbidden("You cannot create this entry");
+    ctx.forbidden("You have reached missions limit");
   }
 
   return await strapi.services.task.create({

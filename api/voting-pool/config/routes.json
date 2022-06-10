@@ -29,7 +29,7 @@
       "path": "/voting-pools",
       "handler": "voting-pool.create",
       "config": {
-        "policies": []
+        "policies": ["global::is-address-owner"]
       }
     },
     {
@@ -37,7 +37,7 @@
       "path": "/voting-pools/:id",
       "handler": "voting-pool.update",
       "config": {
-        "policies": []
+        "policies": ["global::is-address-owner"]
       }
     },
     {
@@ -45,39 +45,39 @@
       "path": "/voting-pools/:id",
       "handler": "voting-pool.delete",
       "config": {
-        "policies": []
+        "policies": ["global::is-address-owner"]
       }
     },
     {
       "method": "POST",
-      "path": "/createOrUpdateVotingPool",
+      "path": "/voting-pools/createOrUpdateVotingPool",
       "handler": "voting-pool.createOrUpdateVotingPool",
       "config": {
-        "policies": []
+        "policies": ["global::is-address-owner"]
       }
     },
     {
       "method": "PUT",
-      "path": "/updateStatusToApproved",
+      "path": "/voting-pools/updateStatusToApproved",
       "handler": "voting-pool.updateStatusToApproved",
       "config": {
-        "policies": []
+        "policies": ["global::is-address-owner"]
       }
     },
     {
       "method": "PUT",
-      "path": "/cancelVotingPool",
+      "path": "/voting-pools/cancelVotingPool",
       "handler": "voting-pool.cancelVotingPool",
       "config": {
-        "policies": []
+        "policies": ["global::is-address-owner"]
       }
     },
     {
       "method": "POST",
-      "path": "/updateVotingPoolInfo",
+      "path": "/voting-pools/updateVotingPoolInfo",
       "handler": "voting-pool.updateVotingPoolInfo",
       "config": {
-        "policies": []
+        "policies": ["global::is-address-owner"]
       }
     }
   ]

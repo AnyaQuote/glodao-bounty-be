@@ -63,6 +63,14 @@
       "config": {
         "policies": []
       }
+    },
+    {
+      "method": "POST",
+      "path": "/quizzes/createQuiz",
+      "handler": "quiz.createQuiz",
+      "config": {
+        "policies": ["global::is-address-owner"]
+      }
     }
   ]
 }
