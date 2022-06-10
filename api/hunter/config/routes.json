@@ -83,6 +83,14 @@
       "config": {
         "policies": ["global::is-owner"]
       }
+    },
+    {
+      "method": "GET",
+      "path": "/getActiveReferral",
+      "handler": "hunter.getActiveReferral",
+      "config": {
+        "policies": []
+      }
     }
   ]
 }

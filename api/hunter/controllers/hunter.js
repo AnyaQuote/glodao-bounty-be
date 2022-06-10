@@ -126,4 +126,23 @@ module.exports = {
       };
     });
   },
+  getActiveReferral: async (ctx) => {
+    try {
+      let hunters = [];
+      const limit = 5000;
+      let _start = 0;
+      do {
+        const res = await strapi.services.hunter.find({
+          _limit: limit,
+          _start,
+        });
+        hunters = hunters.concat(res);
+        _start += limit;
+        if (res.length < limit) break;
+      } while (true);
+      return _.uniqBy(hunters, "referrerCode").length;
+    } catch (error) {
+      return ctx.badRequest("Bad params");
+    }
+  },
 };
