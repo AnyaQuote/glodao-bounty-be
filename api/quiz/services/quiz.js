@@ -17,7 +17,26 @@ const verifyQuizAnswer = (base, compare) => {
 const getWrongAnswerList = (base, compare) => {
   return getArrDiff(compare, base);
 };
+/**
+ * Create new quiz record
+ * @param {object} quizData contain model to create quiz
+ * @returns quiz with id
+ */
+const createQuiz = async (quizData) => {
+  const { name, description, learningInformation, data, answer, metadata } =
+    quizData;
+  const res = await strapi.services.quiz.create({
+    name,
+    description,
+    learningInformation,
+    data: { ...data },
+    answer: { ...answer },
+    metadata: { ...metadata },
+  });
+  return res;
+};
 module.exports = {
   verifyQuizAnswer,
   getWrongAnswerList,
+  createQuiz,
 };
