@@ -3,34 +3,44 @@ const {
   getPoolInfo,
 } = require("../../../helpers/blockchainHelpers/voting-helper");
 
-const checkIsOwner = (ctx, ownerAddress) => {
-  if (ctx.state.user.username !== ownerAddress)
-    return ctx.forbidden(`You can not update this entry`);
-};
-
+/**
+ * Create new voting pool data
+ * If contract query found this pool using contract poolId field, peform update pool
+ * Else, create new voting pool data
+ * @param {object} votingPoolData
+ * @returns upserted pool data
+ */
 const createVotingPool = async (ctx, votingPoolData) => {
   // 1. check contract has poolId
-  // 2. check ctx.state.user.username == poolContract.ownerAddress
   let pool;
   const poolInfo = await getPoolInfo(votingPoolData.poolId);
-  if (poolInfo && poolInfo.owner && ctx.state.user.username == poolInfo.owner) {
-    // check votingPool exist
-    const votingPool = await strapi.services["voting-pool"].findOne({
-      poolId: votingPoolData.poolId,
-    });
-    if (votingPool && votingPool.id) {
-      votingPoolData.data = {
-        ...votingPool.data,
-        ...votingPoolData.data,
-      };
-      pool = await updateVotingPool(votingPoolData, votingPool.id);
-    } else {
-      pool = await strapi.services["voting-pool"].create(votingPoolData);
-    }
+
+  if (!poolInfo) {
+    return ctx.badRequest("Contract can not identify this record");
   }
+
+  const votingPool = await strapi.services["voting-pool"].findOne({
+    poolId: votingPoolData.poolId,
+  });
+  if (votingPool && votingPool.id) {
+    votingPoolData.data = {
+      ...votingPool.data,
+      ...votingPoolData.data,
+    };
+    pool = await updateVotingPool(votingPoolData, votingPool.id);
+  } else {
+    pool = await strapi.services["voting-pool"].create(votingPoolData);
+  }
+
   return pool;
 };
 
+/**
+ * Update voting pool data
+ * @param {object} votingPoolData
+ * @param {string} votingPooId strapi id of a voting pool record
+ * @returns updated pool data
+ */
 const updateVotingPool = async (votingPoolData, votingPooId) => {
   const pool = await strapi.services["voting-pool"].update(
     {
@@ -55,12 +65,15 @@ const updateVotingPool = async (votingPoolData, votingPooId) => {
   return pool;
 };
 
+/**
+ * If pool existed, update pool data. Else, create new pool
+ * @param {*} votingPoolData
+ * @returns upserted pool data
+ */
 const createOrUpdateVotingPool = async (ctx, votingPoolData) => {
   const votingPool = await strapi.services["voting-pool"].findOne({
     poolId: votingPoolData.poolId,
   });
-  checkIsOwner(ctx, votingPoolData.ownerAddress);
-
   let pool;
   if (votingPool && votingPool.id) {
     votingPoolData.data = {
@@ -75,6 +88,11 @@ const createOrUpdateVotingPool = async (ctx, votingPoolData) => {
   return pool;
 };
 
+/**
+ * Change pool status to approved
+ * @param {object} votingPoolData
+ * @returns pool data with status update to approved
+ */
 const updateStatusToApproved = async (votingPoolData) => {
   const poolInfo = await getPoolInfo(votingPoolData.poolId);
   if (poolInfo && poolInfo.completed && !poolInfo.cancelled) {
@@ -92,7 +110,12 @@ const updateStatusToApproved = async (votingPoolData) => {
   return poolInfo;
 };
 
-const cancelVotingPool = async (ctx, votingPoolData) => {
+/**
+ * Change pool status to cancelled
+ * @param {object} votingPoolData
+ * @returns pool with status update to cancelled
+ */
+const cancelVotingPool = async (votingPoolData) => {
   const poolInfo = await getPoolInfo(votingPoolData.poolId);
   if (poolInfo && poolInfo.cancelled) {
     await strapi.services["voting-pool"].update(
@@ -107,9 +130,13 @@ const cancelVotingPool = async (ctx, votingPoolData) => {
   return poolInfo;
 };
 
-const updateVotingPoolInfo = async (ctx, votingPoolData) => {
-  const { id, projectName, ownerAddress, unicodeName } = votingPoolData;
-  checkIsOwner(ctx, ownerAddress);
+/**
+ * MARK FOR DELETE
+ * @param {object} votingPoolData
+ * @returns updated pool data
+ */
+const updateVotingPoolInfo = async (votingPoolData) => {
+  const { id, projectName, unicodeName } = votingPoolData;
   const updatedPool = await strapi.services["voting-pool"].update(
     { id },
     {

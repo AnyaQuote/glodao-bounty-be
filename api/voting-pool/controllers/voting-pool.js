@@ -6,18 +6,9 @@
  */
 
 module.exports = {
-  updateVotingPoolInfo: async (ctx) => {
-    const votingPoolData = ctx.request.body
-    return await strapi.services["voting-pool"].updateVotingPoolInfo(
-      ctx,
-      votingPoolData
-    );
-  },
   createOrUpdateVotingPool: async (ctx) => {
     const votingPoolData = ctx.request.body;
-    if (!votingPoolData.poolId || !votingPoolData.ownerAddress)
-      return ctx.badRequest("Invalid project Id or owner address");
-
+    if (!votingPoolData.poolId) return ctx.badRequest("Invalid project Id");
     return await strapi.services["voting-pool"].createOrUpdateVotingPool(
       ctx,
       votingPoolData
@@ -31,14 +22,12 @@ module.exports = {
   cancelVotingPool: async (ctx) => {
     const votingPoolData = ctx.request.body;
     return await strapi.services["voting-pool"].cancelVotingPool(
-      ctx,
       votingPoolData
     );
   },
   updateVotingPoolInfo: async (ctx) => {
-    const votingPoolData = ctx.request.body
+    const votingPoolData = ctx.request.body;
     return await strapi.services["voting-pool"].updateVotingPoolInfo(
-      ctx,
       votingPoolData
     );
   },
