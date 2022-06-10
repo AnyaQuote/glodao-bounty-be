@@ -53,7 +53,7 @@
       "path": "/createTask",
       "handler": "task.createTask",
       "config": {
-        "policies": []
+        "policies": ["global::is-address-owner"]
       }
     }
   ]
