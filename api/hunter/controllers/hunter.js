@@ -129,12 +129,13 @@ module.exports = {
   getActiveReferral: async (ctx) => {
     try {
       let hunters = [];
-      const limit = 5000;
+      const limit = 500;
       let _start = 0;
       do {
         const res = await strapi.services.hunter.find({
           _limit: limit,
           _start,
+          referrerCode_ne: "######",
         });
         hunters = hunters.concat(res);
         _start += limit;
