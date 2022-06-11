@@ -7,6 +7,16 @@ const { isEqual, get } = require("lodash");
  * to customize this service
  */
 
+const updateUserToken = async (userId, accessToken, accessTokenSecret) => {
+  return await strapi.query("user", "users-permissions").update(
+    { id: userId },
+    {
+      accessToken: accessToken,
+      accessTokenSecret: accessTokenSecret,
+    }
+  );
+};
+
 /**
  * Update nonce of a hunter
  * @param {hunter} hunter hunter that need to be updated
@@ -74,4 +84,5 @@ module.exports = {
   updateHunterWalletAddress,
   isPreRegisteredWalletMatched,
   updateHunterStatusToNewbie,
+  updateUserToken,
 };
