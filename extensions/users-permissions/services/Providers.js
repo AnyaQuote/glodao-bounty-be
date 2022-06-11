@@ -78,7 +78,20 @@ const connect = (provider, query) => {
         }
 
         if (!_.isEmpty(user)) {
-          return resolve([user, null]);
+          const { accessToken, accessTokenSecret } = profile;
+          let updatedTokenUser = user;
+          if (!_.isEqual(user.accessToken, accessToken)) {
+            try {
+              updatedTokenUser = await strapi.services.hunter.updateUserToken(
+                user.id,
+                accessToken,
+                accessTokenSecret
+              );
+            } catch (error) {
+              console.log(error);
+            }
+          }
+          return resolve([updatedTokenUser, null]);
         }
 
         if (
