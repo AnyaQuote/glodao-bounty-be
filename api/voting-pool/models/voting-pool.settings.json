@@ -21,11 +21,20 @@
     },
     "type": {
       "type": "enumeration",
-      "enum": ["bounty", "launchpad"]
+      "enum": [
+        "bounty",
+        "launchpad"
+      ]
     },
     "status": {
       "type": "enumeration",
-      "enum": ["pending", "voting", "approved", "rejected", "cancelled"]
+      "enum": [
+        "pending",
+        "voting",
+        "approved",
+        "rejected",
+        "cancelled"
+      ]
     },
     "startDate": {
       "type": "datetime"
@@ -61,6 +70,12 @@
     },
     "rewardAmount": {
       "type": "string"
+    },
+    "votingStart": {
+      "type": "datetime"
+    },
+    "votingEnd": {
+      "type": "datetime"
     }
   }
 }
