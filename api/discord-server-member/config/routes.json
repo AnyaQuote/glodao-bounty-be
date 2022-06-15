@@ -1,0 +1,76 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/discord-server-members",
+      "handler": "discord-server-member.find",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/discord-server-members/count",
+      "handler": "discord-server-member.count",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/discord-server-members/:id",
+      "handler": "discord-server-member.findOne",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/discord-server-members",
+      "handler": "discord-server-member.create",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/discord-server-members/:id",
+      "handler": "discord-server-member.update",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/discord-server-members/:id",
+      "handler": "discord-server-member.delete",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/discord-server-members/addGuildMember",
+      "handler": "discord-server-member.addGuildMember",
+      "config": {
+        "policies": ["isValidBotJwt"]
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/discord-server-members/removeGuildMember",
+      "handler": "discord-server-member.removeGuildMember",
+      "config": {
+        "policies": ["isValidBotJwt"]
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/discord-server-members/updateHunterDiscordId",
+      "handler": "discord-server-member.updateHunterDiscordId",
+      "config": {
+        "policies": ["isValidBotJwt"]
+      }
+    }
+  ]
+}

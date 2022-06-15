@@ -94,6 +94,9 @@
     },
     "telegramId": {
       "type": "string"
+    },
+    "discordId": {
+      "type": "string"
     }
   }
 }

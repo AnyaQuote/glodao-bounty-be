@@ -1,0 +1,22 @@
+{
+  "kind": "collectionType",
+  "connection": "bot",
+  "collectionName": "discord_server_members",
+  "info": {
+    "name": "DiscordServerMember"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "guildId": {
+      "type": "string"
+    },
+    "userId": {
+      "type": "string"
+    }
+  }
+}

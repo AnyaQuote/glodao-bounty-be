@@ -284,6 +284,48 @@ module.exports = {
       }
     }
 
+    if (isEqual(type, "discord")) {
+      const discordId = get(user, "discordId", "");
+      if (isEmpty(discordId))
+        return ctx.badRequest("You had not linked your Discord account");
+
+      let discordTaskData = get(taskData, [type], []);
+      const mergedDiscordTask = merge(
+        discordTaskData.map((step) => {
+          return {
+            ...step,
+            submitedId: discordId,
+          };
+        }),
+        get(apply, ["task", "data", type], [])
+      );
+      console.log(mergedDiscordTask);
+
+      for (let index = 0; index < mergedDiscordTask.length; index++) {
+        const element = mergedDiscordTask[index];
+        const { guildId, submitedId } = element;
+        if (index === mergedDiscordTask.length - 1 && element.finished) {
+          const isExistedRecord = await strapi.services[
+            "discord-server-member"
+          ].findOne({
+            guildId,
+            userId: submitedId,
+          });
+          if (!isExistedRecord)
+            return ctx.badRequest("Can not find user in the server");
+        } else if (element.finished && !mergedDiscordTask[index + 1].finished) {
+          const isExistedRecord = await strapi.services[
+            "discord-server-member"
+          ].findOne({
+            guildId,
+            userId: submitedId,
+          });
+          if (!isExistedRecord)
+            return ctx.badRequest("Can not find user in the server");
+        }
+      }
+    }
+
     if (res || isNumber(res)) {
       if (isNumber(res)) {
         const resetedTask = get(taskData, [type], []).map((task, index) => {
