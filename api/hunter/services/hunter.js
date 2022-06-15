@@ -17,6 +17,25 @@ const updateUserToken = async (userId, accessToken, accessTokenSecret) => {
   );
 };
 
+const updateUserDiscordId = async (userId, discordId) => {
+  return await strapi.query("user", "users-permissions").update(
+    { id: userId },
+    {
+      discordId,
+    }
+  );
+};
+
+const updateUserDiscordIdByHunter = async (hunterId, discordId) => {
+  const user = await strapi.services.hunter.findOne({ id: hunterId });
+  return await strapi.query("user", "users-permissions").update(
+    { id: user.id },
+    {
+      discordId,
+    }
+  );
+};
+
 /**
  * Update nonce of a hunter
  * @param {hunter} hunter hunter that need to be updated
@@ -85,4 +104,6 @@ module.exports = {
   isPreRegisteredWalletMatched,
   updateHunterStatusToNewbie,
   updateUserToken,
+  updateUserDiscordId,
+  updateUserDiscordIdByHunter,
 };
