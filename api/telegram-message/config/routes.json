@@ -1,0 +1,52 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/telegram-messages",
+      "handler": "telegram-message.find",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/telegram-messages/count",
+      "handler": "telegram-message.count",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/telegram-messages/:id",
+      "handler": "telegram-message.findOne",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/telegram-messages",
+      "handler": "telegram-message.create",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/telegram-messages/:id",
+      "handler": "telegram-message.update",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/telegram-messages/:id",
+      "handler": "telegram-message.delete",
+      "config": {
+        "policies": []
+      }
+    }
+  ]
+}

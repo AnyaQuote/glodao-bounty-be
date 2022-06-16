@@ -1,0 +1,25 @@
+{
+  "kind": "collectionType",
+  "connection": "bot",
+  "collectionName": "telegram_messages",
+  "info": {
+    "name": "TelegramMessage"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "userId": {
+      "type": "string"
+    },
+    "channelId": {
+      "type": "string"
+    },
+    "text": {
+      "type": "string"
+    }
+  }
+}
