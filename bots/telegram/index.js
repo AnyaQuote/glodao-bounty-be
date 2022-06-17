@@ -3,6 +3,7 @@ require("dotenv").config();
 const { Telegraf } = require("telegraf");
 const { setupStrapi } = require("../../helpers/strapi-helper");
 const _ = require("lodash");
+const moment = require("moment");
 const MESSAGES = require("./messages");
 
 const bot = new Telegraf(process.env.TELEGRAM_BOT_API_TOKEN);
@@ -302,6 +303,36 @@ const setupBot = () => {
       // return ctx.reply(MESSAGES.UNKNOWN_ERROR, {
       //   reply_to_message_id: ctx.message.message_id,
       // });
+    }
+  });
+
+  bot.on("message", (ctx) => {
+    try {
+      const {
+        from,
+        chat,
+        text,
+        date,
+        message_id: messageId,
+      } = _.get(ctx, "message", {});
+      const { id: userId, username: authorUsername } = from;
+      const { id: chatId, username: chatUsername } = chat;
+      console.log(`${authorUsername} send message in ${chatUsername}: ${text}`);
+      strapi.services["telegram-message"]
+        .create({
+          userId: `${userId}`,
+          chatId: `${chatId}`,
+          text,
+          authorUsername,
+          chatUsername,
+          messageId: `${messageId}`,
+          date: moment(date * 1000).toISOString(),
+        })
+        .catch((error) => {
+          console.log(error.data.errors, "ohno");
+        });
+    } catch (error) {
+      console.log(error);
     }
   });
 };

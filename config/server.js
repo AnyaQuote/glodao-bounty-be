@@ -6,6 +6,9 @@ module.exports = ({ env }) => ({
       secret: env("ADMIN_JWT_SECRET", "26adb2bdd37450eeb71df36f64d0fdaf"),
     },
   },
+  cron: {
+    enabled: true,
+  },
   url:
     env("NODE_ENV") === "production"
       ? "https://api.glodao.io"
