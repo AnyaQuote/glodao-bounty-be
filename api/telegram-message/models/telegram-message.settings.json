@@ -24,6 +24,15 @@
     },
     "date": {
       "type": "datetime"
+    },
+    "messageId": {
+      "type": "string"
+    },
+    "chatUsername": {
+      "type": "string"
+    },
+    "authorUsername": {
+      "type": "string"
     }
   }
 }
