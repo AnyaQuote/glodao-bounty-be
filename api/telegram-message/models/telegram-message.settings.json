@@ -3,7 +3,8 @@
   "connection": "bot",
   "collectionName": "telegram_messages",
   "info": {
-    "name": "TelegramMessage"
+    "name": "TelegramMessage",
+    "description": ""
   },
   "options": {
     "increments": true,
@@ -15,11 +16,14 @@
     "userId": {
       "type": "string"
     },
-    "channelId": {
+    "chatId": {
       "type": "string"
     },
     "text": {
       "type": "string"
+    },
+    "date": {
+      "type": "datetime"
     }
   }
 }
