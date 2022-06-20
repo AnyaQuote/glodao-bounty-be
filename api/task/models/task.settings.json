@@ -79,6 +79,9 @@
     },
     "finishLink": {
       "type": "string"
+    },
+    "optionalTokens": {
+      "type": "json"
     }
   }
 }

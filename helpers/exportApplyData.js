@@ -13,10 +13,18 @@ const glodaoAddress = "0x7a05CE29a44cA8dD49D967367F98D3F07E204faC";
 const rewardAddressMap = new Map();
 let basePriorityReward = FIXED_NUMBER.ZERO;
 let baseCommunityReward = FIXED_NUMBER.ZERO;
+
+let optionTokenRewardAddressArr = [];
+const optionalTokenPriorityReward = new Map();
+const optionalTokenCommunityReward = new Map();
+const optionalTokenMap = new Map();
+let optionalTokenArr = [];
 let task = {};
 let filename = "data";
 const priorityPoolMap = new Map();
 let allHunterArr = [];
+
+const everyRewardMap = new Map();
 
 async function main(argv) {
   await initialize();
@@ -27,6 +35,7 @@ async function main(argv) {
   );
   await calculatePoolReward(argv.task, tempApplies);
   let rewardCalculatedArr = [];
+  let optionalRewardCalculatedArr = [];
   for (let index = 0; index < tempApplies.length; index++) {
     const apply = tempApplies[index];
     const hunter = apply.hunter;
@@ -76,8 +85,18 @@ async function main(argv) {
       rootCommissionRate,
       glodaoAddress,
       glodaoCommissionRate,
+      optionalTokenReward: optionalTokenArr.map((token) => ({
+        rewardToken: token.rewardToken,
+        bounty: isPriority
+          ? optionalTokenPriorityReward.get(token.tokenContractAddress)
+          : optionalTokenCommunityReward.get(token.tokenContractAddress),
+        tokenContractAddress: token.tokenContractAddress,
+        tokenBasePrice: token.tokenBasePrice,
+        decimals: token.decimals,
+      })),
     });
   }
+
   rewardAddressMap.set(glodaoAddress, FIXED_NUMBER.ZERO);
   rewardCalculatedArr.forEach((apply) => {
     const {
@@ -88,11 +107,74 @@ async function main(argv) {
       commissionRate,
       rootCommissionRate,
       glodaoCommissionRate,
+      optionalTokenReward,
     } = apply;
-    accumulateAddressReward(walletAddress, bounty, "100");
-    accumulateAddressReward(commissionAddress, bounty, commissionRate);
-    accumulateAddressReward(rootAddress, bounty, rootCommissionRate);
-    accumulateAddressReward(glodaoAddress, bounty, glodaoCommissionRate);
+    const tokenContractAddress = _.get(
+      task,
+      "metadata.tokenContractAddress",
+      "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"
+    );
+    accumulateAddressReward(walletAddress, bounty, "100", tokenContractAddress);
+    accumulateAddressReward(
+      commissionAddress,
+      bounty,
+      commissionRate,
+      tokenContractAddress
+    );
+    accumulateAddressReward(
+      rootAddress,
+      bounty,
+      rootCommissionRate,
+      tokenContractAddress
+    );
+    accumulateAddressReward(
+      glodaoAddress,
+      bounty,
+      glodaoCommissionRate,
+      tokenContractAddress
+    );
+    optionalTokenReward.forEach((optionalToken) => {
+      accumulateAddressReward(
+        walletAddress,
+        optionalToken.bounty,
+        "100",
+        optionalToken.tokenContractAddress,
+        optionalToken.decimals,
+        optionalToken.rewardToken,
+        optionalToken.tokenBasePrice,
+        true
+      );
+      accumulateAddressReward(
+        commissionAddress,
+        optionalToken.bounty,
+        commissionRate,
+        optionalToken.tokenContractAddress,
+        optionalToken.decimals,
+        optionalToken.rewardToken,
+        optionalToken.tokenBasePrice,
+        true
+      );
+      accumulateAddressReward(
+        rootAddress,
+        optionalToken.bounty,
+        rootCommissionRate,
+        optionalToken.tokenContractAddress,
+        optionalToken.decimals,
+        optionalToken.rewardToken,
+        optionalToken.tokenBasePrice,
+        true
+      );
+      accumulateAddressReward(
+        glodaoAddress,
+        optionalToken.bounty,
+        glodaoCommissionRate,
+        optionalToken.tokenContractAddress,
+        optionalToken.decimals,
+        optionalToken.rewardToken,
+        optionalToken.tokenBasePrice,
+        true
+      );
+    });
   });
 
   const chunks = _.chunk(rewardCalculatedArr, 10);
@@ -114,6 +196,12 @@ async function main(argv) {
                   commissionRate: apply.commissionRate,
                   status: "awarded",
                   poolType: newPoolType,
+                  optionalTokenReward: apply.optionalTokenReward.map(
+                    (reward) => ({
+                      ...reward,
+                      bounty: `${reward.bounty._value}`.substring(0, 8),
+                    })
+                  ),
                 }
               );
             })
@@ -127,6 +215,41 @@ async function main(argv) {
         }
       }
       console.log("\x1b[32m", "mission accomplished");
+      // let bountyRewardArr = [];
+      // for (const [key, value] of everyRewardMap) {
+      //   for (let index = 0; index < value.length; index++) {
+      //     const element = value[index];
+      //     bountyRewardArr.push({
+      //       walletAddress: key,
+      //       ...element,
+      //       rewardAmount: element.rewardAmount._value,
+      //     });
+      //   }
+      // }
+      // const bountyRewardChunks = _.chunk(bountyRewardArr, 10);
+      // for (const subBountyRewards of bountyRewardChunks) {
+      //   try {
+      //     await Promise.all(
+      //       subBountyRewards.map((bountyReward) => {
+      //         return strapi.services["bounty-reward"].recordReward(
+      //           bountyReward.walletAddress,
+      //           bountyReward.tokenAddress,
+      //           bountyReward.token,
+      //           bountyReward.rewardAmount,
+      //           bountyReward.decimals,
+      //           bountyReward.tokenBasePrice
+      //         );
+      //       })
+      //     ).then(() => {
+      //       console.log("batch completed bounty");
+      //     });
+      //   } catch (error) {
+      //     console.log("\x1b[31m", "Wasted");
+      //     console.log("\x1b[37m", error);
+      //     console.log("\x1b[31m", "Wasted");
+      //   }
+      // }
+      console.log("bounty reward record finish");
       break;
     case "reverify":
       for (const subChunksOfApplies of chunks) {
@@ -164,13 +287,54 @@ async function main(argv) {
       }
       console.log("\x1b[32m", "mission accomplished");
       break;
+    case "recordReward":
+      let bountyRewardArr = [];
+      for (const [key, value] of everyRewardMap) {
+        for (let index = 0; index < value.length; index++) {
+          const element = value[index];
+          bountyRewardArr.push({
+            walletAddress: key,
+            ...element,
+            rewardAmount: element.rewardAmount._value.substring(0,8),
+          });
+        }
+      }
+      const bountyRewardChunks = _.chunk(bountyRewardArr, 1);
+      for (const subBountyRewards of bountyRewardChunks) {
+        try {
+          await Promise.all(
+            subBountyRewards.map((bountyReward) => {
+              return strapi.services["bounty-reward"].recordReward(
+                bountyReward.walletAddress,
+                bountyReward.tokenAddress,
+                bountyReward.token,
+                bountyReward.rewardAmount,
+                bountyReward.decimals,
+                bountyReward.tokenBasePrice
+              );
+            })
+          ).then(() => {
+            console.log("batch completed bounty");
+          });
+        } catch (error) {
+          console.log("\x1b[31m", "Wasted");
+          console.log("\x1b[37m", error);
+          console.log("\x1b[31m", "Wasted");
+        }
+      }
+      console.log("bounty reward record finish");
+      break;
     default:
-      await exportMapToCsv(rewardAddressMap);
+      await exportMapToCsvWithName(
+        rewardAddressMap,
+        filename + "-" + _.get(task, "metadata.rewardToken", "BUSD")
+      );
+
       // console.log(rewardAddressMap);
       break;
   }
 }
-
+exportOptionalTokenRewardData = async () => {};
 getAllNeededData = async () => {
   allHunterArr = await strapi.services.hunter.find({ _limit: -1 });
 };
@@ -179,19 +343,58 @@ initialize = async () => {
   await setupStrapi();
 };
 
-accumulateAddressReward = (address, bounty, rate) => {
+accumulateAddressReward = (
+  address,
+  bounty,
+  rate,
+  tokenAddress,
+  decimals = "18",
+  token = "BUSD",
+  tokenBasePrice = "1",
+  isOptionalToken = false
+) => {
   if (!address || _.isEqual(address, "######")) return;
-  const previousReward = rewardAddressMap.get(address)
-    ? rewardAddressMap.get(address)
-    : FIXED_NUMBER.ZERO;
-  rewardAddressMap.set(
-    address,
-    previousReward.addUnsafe(
-      bounty
-        .mulUnsafe(FixedNumber.from(`${rate}`))
-        .divUnsafe(FIXED_NUMBER.HUNDRED)
-    )
-  );
+  if (!isOptionalToken) {
+    const previousReward = rewardAddressMap.get(address)
+      ? rewardAddressMap.get(address)
+      : FIXED_NUMBER.ZERO;
+    rewardAddressMap.set(
+      address,
+      previousReward.addUnsafe(
+        bounty
+          .mulUnsafe(FixedNumber.from(`${rate}`))
+          .divUnsafe(FIXED_NUMBER.HUNDRED)
+      )
+    );
+  }
+
+  const everyPreviousReward = everyRewardMap.get(address)
+    ? everyRewardMap.get(address)
+    : [];
+  let existedFlag = false;
+  let everyAfterReward = [];
+  everyPreviousReward.forEach((token) => {
+    if (token.tokenAddress === tokenAddress) {
+      existedFlag = true;
+      everyAfterReward.push({
+        ...token,
+        rewardAmount: token.rewardAmount.addUnsafe(
+          bounty
+            .mulUnsafe(FixedNumber.from(`${rate}`))
+            .divUnsafe(FIXED_NUMBER.HUNDRED)
+        ),
+      });
+    } else everyAfterReward.push(token);
+  });
+  if (!existedFlag && token !== "BUSD")
+    everyAfterReward.push({
+      decimals,
+      tokenAddress,
+      rewardAmount: bounty,
+      token,
+      tokenBasePrice,
+    });
+  everyRewardMap.set(address, everyAfterReward);
 };
 
 getHunterByReferrerCode = (referrerCode) => {
@@ -212,7 +415,7 @@ calculatePoolReward = async (taskId, relatedCompleteApplies) => {
   const countTotla = await strapi.services.apply.count({ task: taskId });
   console.log(task.name);
   console.log(task.missionIndex);
-  filename = task.name + "-" + task.missionIndex + "-" + argv.date;
+  filename = task.name + "-" + task.missionIndex;
   console.log("total par:" + task.totalParticipants);
   console.log("total par:" + countTotla);
   const allPriorityPool = relatedCompleteApplies.slice(
@@ -238,9 +441,34 @@ calculatePoolReward = async (taskId, relatedCompleteApplies) => {
     .mulUnsafe(FixedNumber.from("93"))
     .divUnsafe(FIXED_NUMBER.HUNDRED)
     .subUnsafe(FixedNumber.from(_.get(task, "priorityRewardAmount", "0")));
+  const optionalTokens = _.get(task, "optionalTokens", []);
+  optionalTokenArr = optionalTokens;
   const totalCommunityParticipants =
     relatedCompleteApplies.length - priorityCount;
-  console.log(totalCommunityParticipants);
+  optionalTokens.forEach((token) => {
+    optionalTokenMap.set(token.tokenContractAddress, token);
+    let optionPriorityReward = 0;
+    let optionCommunityReward = 0;
+    if (task.maxPriorityParticipants !== 0)
+      optionPriorityReward = FixedNumber.from(
+        _.get(token, "priorityRewardAmount", "0")
+      ).divUnsafe(
+        FixedNumber.from(_.get(task, "maxPriorityParticipants", "1"))
+      );
+    optionCommunityReward = FixedNumber.from(_.get(token, "rewardAmount", "0"))
+      .mulUnsafe(FixedNumber.from("93"))
+      .divUnsafe(FIXED_NUMBER.HUNDRED)
+      .subUnsafe(FixedNumber.from(_.get(token, "priorityRewardAmount", "0")))
+      .divUnsafe(FixedNumber.from(`${totalCommunityParticipants}`));
+    optionalTokenPriorityReward.set(
+      token.tokenContractAddress,
+      optionPriorityReward
+    );
+    optionalTokenCommunityReward.set(
+      token.tokenContractAddress,
+      optionCommunityReward
+    );
+  });
   baseCommunityReward = totalCommunityReward.divUnsafe(
     FixedNumber.from(`${totalCommunityParticipants}`)
   );
@@ -252,6 +480,29 @@ getRelatedCompleteApplies = async (task) => {
     status: "completed",
     _limit: -1,
   });
+};
+
+exportMapToCsvWithName = async (map, name) => {
+  const header = [
+    {
+      id: "walletAddress",
+      title: "Wallet_Address",
+    },
+    {
+      id: "rewardAmount",
+      title: "Reward_Amount",
+    },
+  ];
+
+  const data = [];
+  for (const [key, value] of map) {
+    data.push({
+      walletAddress: key,
+      rewardAmount: `${value._value}`.substring(0, 8),
+    });
+  }
+
+  await exportDataToCsv(data, header, `${name}.csv`);
 };
 
 exportMapToCsv = async (map) => {
