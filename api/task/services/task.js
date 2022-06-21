@@ -1,6 +1,6 @@
 "use strict";
 
-const { get, gte } = require("lodash");
+const { get, gte, isEmpty } = require("lodash");
 const moment = require("moment");
 
 /**
@@ -116,7 +116,8 @@ const createTask = async (ctx, missionData) => {
     rewardAmount,
     startTime,
     endTime,
-    maxParticipant,
+    maxParticipants,
+    maxPriorityParticipants,
     priorityRewardAmount,
     data,
     metadata,
@@ -125,6 +126,17 @@ const createTask = async (ctx, missionData) => {
   const pool = await strapi.services["voting-pool"].findOne({
     id: poolId,
   });
+
+  if (isEmpty(pool)) {
+    ctx.badRequest("Could not find pool to create this mission");
+  }
+
+  if (
+    moment(startTime).isBefore(moment(pool.startDate)) ||
+    moment(endTime).isAfter(moment(pool.endDate))
+  ) {
+    ctx.badRequest("Invalid mission start and end date");
+  }
 
   const numberOfCreatedMissions = await strapi.services.task.count({ poolId });
 
@@ -142,8 +154,9 @@ const createTask = async (ctx, missionData) => {
     rewardAmount,
     startTime,
     endTime,
-    maxParticipant,
+    maxParticipants,
     priorityRewardAmount,
+    maxPriorityParticipants,
     data,
     metadata,
   });
