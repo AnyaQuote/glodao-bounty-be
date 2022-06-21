@@ -97,6 +97,9 @@
     },
     "discordId": {
       "type": "string"
+    },
+    "kycSessionId": {
+      "type": "string"
     }
   }
 }
