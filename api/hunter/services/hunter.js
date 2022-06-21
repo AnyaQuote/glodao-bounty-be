@@ -36,6 +36,15 @@ const updateUserDiscordIdByHunter = async (hunterId, discordId) => {
   );
 };
 
+const updateUserKycSessionId = async (userId, kycSessionId) => {
+  return await strapi.query("user", "users-permissions").update(
+    { id: userId },
+    {
+      kycSessionId,
+    }
+  );
+};
+
 /**
  * Update nonce of a hunter
  * @param {hunter} hunter hunter that need to be updated
@@ -106,4 +115,5 @@ module.exports = {
   updateUserToken,
   updateUserDiscordId,
   updateUserDiscordIdByHunter,
+  updateUserKycSessionId,
 };

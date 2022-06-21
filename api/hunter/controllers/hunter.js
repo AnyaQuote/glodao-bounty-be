@@ -146,4 +146,50 @@ module.exports = {
       return ctx.badRequest("Bad params");
     }
   },
+  verifyJwt: async (ctx) => {
+    const jwt =
+      _.get(ctx, "query.jwt", "") ||
+      _.get(ctx, "request.body.jwt", "") ||
+      _.get(ctx, "params.jwt", "");
+    try {
+      const jwtVerification = await strapi.plugins[
+        "users-permissions"
+      ].services.jwt.verify(jwt);
+      return {
+        status: true,
+        code: 200,
+        data: jwtVerification,
+      };
+    } catch (error) {
+      console.log(error);
+      return {
+        status: false,
+        code: 400,
+        error: "Invalid token",
+        data: {},
+      };
+    }
+  },
+  updateUserSessionId: async (ctx) => {
+    const kycSessionId = _.get(ctx, "request.body.kycSessionId", "");
+    const user = _.get(ctx, "state.user", {});
+    try {
+      const data = await strapi.services.hunter.updateUserKycSessionId(
+        user.id,
+        kycSessionId
+      );
+      return {
+        status: true,
+        code: 200,
+        data,
+      };
+    } catch (error) {
+      console.log(error);
+      return {
+        status: false,
+        code: 400,
+        error: "Can not update user kyc session id",
+      };
+    }
+  },
 };
