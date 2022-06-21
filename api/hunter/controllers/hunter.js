@@ -146,4 +146,28 @@ module.exports = {
       return ctx.badRequest("Bad params");
     }
   },
+  verifyJwt: async (ctx) => {
+    const jwt =
+      _.get(ctx, "query.jwt", "") ||
+      _.get(ctx, "request.body.jwt", "") ||
+      _.get(ctx, "params.jwt", "");
+    try {
+      const jwtVerification = await strapi.plugins[
+        "users-permissions"
+      ].services.jwt.verify(jwt);
+      return {
+        status: true,
+        code: 200,
+        data: jwtVerification,
+      };
+    } catch (error) {
+      console.log(error);
+      return {
+        status: false,
+        code: 400,
+        error: "Invalid token",
+        data: {},
+      };
+    }
+  },
 };

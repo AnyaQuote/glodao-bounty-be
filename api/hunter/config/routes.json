@@ -91,6 +91,14 @@
       "config": {
         "policies": []
       }
+    },
+    {
+      "method": "GET",
+      "path": "/verifyJwt/:jwt",
+      "handler": "hunter.verifyJwt",
+      "config": {
+        "policies": []
+      }
     }
   ]
 }
