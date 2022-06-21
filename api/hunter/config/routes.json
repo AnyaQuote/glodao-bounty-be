@@ -99,6 +99,14 @@
       "config": {
         "policies": []
       }
+    },
+    {
+      "method": "POST",
+      "path": "/hunter/updateUserSessionId",
+      "handler": "hunter.updateUserSessionId",
+      "config": {
+        "policies": []
+      }
     }
   ]
 }
