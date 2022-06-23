@@ -289,13 +289,14 @@ async function main(argv) {
       break;
     case "recordReward":
       let bountyRewardArr = [];
+      let index = 0;
       for (const [key, value] of everyRewardMap) {
         for (let index = 0; index < value.length; index++) {
           const element = value[index];
           bountyRewardArr.push({
             walletAddress: key,
             ...element,
-            rewardAmount: element.rewardAmount._value.substring(0,8),
+            rewardAmount: element.rewardAmount._value.substring(0, 8),
           });
         }
       }
@@ -314,7 +315,7 @@ async function main(argv) {
               );
             })
           ).then(() => {
-            console.log("batch completed bounty");
+            console.log("batch completed bounty", index++);
           });
         } catch (error) {
           console.log("\x1b[31m", "Wasted");
@@ -386,7 +387,7 @@ accumulateAddressReward = (
       });
     } else everyAfterReward.push(token);
   });
-  if (!existedFlag && token !== "BUSD")
+  if (!existedFlag)
     everyAfterReward.push({
       decimals,
       tokenAddress,
