@@ -47,6 +47,14 @@
       "config": {
         "policies": []
       }
+    },
+    {
+      "method": "GET",
+      "path": "/tasks/getAverageCommunityReward/:limit",
+      "handler": "task.getAverageCommunityReward",
+      "config": {
+        "policies": []
+      }
     }
   ]
 }
