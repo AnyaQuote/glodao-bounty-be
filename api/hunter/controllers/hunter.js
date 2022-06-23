@@ -66,65 +66,109 @@ module.exports = {
     }
   },
   getReferrals: async (ctx) => {
-    const { id } = ctx.query;
-    const hunter = await strapi.services.hunter.findOne({ id });
-    const relatedApplies = await strapi.services.apply.find({
-      referrerCode: hunter.referralCode,
-      status: "awarded",
-      _limit: -1,
-    });
-    const referralMap = new Map();
-    const groupByHunterId = _.groupBy(relatedApplies, "hunter.id");
-    for (const key in groupByHunterId) {
-      if (Object.hasOwnProperty.call(groupByHunterId, key)) {
-        const element = groupByHunterId[key];
-        const sumWithInitial = element.reduce(
-          (prev, current) => ({
-            totalEarn: prev.totalEarn.addUnsafe(
-              FixedNumber.from(current.bounty).mulUnsafe(
-                FixedNumber.from(current.task.tokenBasePrice)
+    try {
+      const { id } = ctx.query;
+      const hunter = await strapi.services.hunter.findOne({ id });
+      const relatedApplies = await strapi.services.apply.find({
+        referrerCode: hunter.referralCode,
+        status: "awarded",
+        _limit: -1,
+      });
+
+      const referralMap = new Map();
+      const groupByHunterId = _.groupBy(
+        relatedApplies.map((apply) => {
+          const optionalTokenReward = _.get(apply, "optionalTokenReward", []);
+          let optionalTokenTotalValue = FixedNumber.from("0");
+          optionalTokenReward.forEach((token) => {
+            optionalTokenTotalValue = optionalTokenTotalValue.addUnsafe(
+              FixedNumber.from(`${token.bounty}`).mulUnsafe(
+                FixedNumber.from(`${token.tokenBasePrice}`)
               )
-            ),
-            commission: prev.commission.addUnsafe(
-              FixedNumber.from(current.bounty)
-                .mulUnsafe(FixedNumber.from(`${current.commissionRate}`))
-                .divUnsafe(FIXED_NUMBER.HUNDRED)
-                .mulUnsafe(FixedNumber.from(current.task.tokenBasePrice))
-            ),
-            commissionToday:
-              moment().diff(moment(current.updatedAt), "hours") <= 24
-                ? prev.commissionToday.addUnsafe(
-                    FixedNumber.from(current.bounty)
-                      .mulUnsafe(FixedNumber.from(`${current.commissionRate}`))
-                      .divUnsafe(FIXED_NUMBER.HUNDRED)
-                      .mulUnsafe(FixedNumber.from(current.task.tokenBasePrice))
+            );
+          });
+          return { ...apply, optionalTokenTotalValue };
+        }),
+        "hunter.id"
+      );
+      for (const key in groupByHunterId) {
+        if (Object.hasOwnProperty.call(groupByHunterId, key)) {
+          const element = groupByHunterId[key];
+          // console.log(element);
+          const sumWithInitial = element.reduce(
+            (prev, current) => ({
+              totalEarn: prev.totalEarn
+                .addUnsafe(
+                  FixedNumber.from(current.bounty).mulUnsafe(
+                    FixedNumber.from(current.task.tokenBasePrice)
                   )
-                : prev.commissionToday,
-          }),
-          {
-            totalEarn: FIXED_NUMBER.ZERO,
-            commission: FIXED_NUMBER.ZERO,
-            commissionToday: FIXED_NUMBER.ZERO,
-          }
-        );
-        referralMap.set(key, sumWithInitial);
+                )
+                .addUnsafe(current.optionalTokenTotalValue),
+              commission: prev.commission
+                .addUnsafe(
+                  FixedNumber.from(current.bounty)
+                    .mulUnsafe(FixedNumber.from(`${current.commissionRate}`))
+                    .divUnsafe(FIXED_NUMBER.HUNDRED)
+                    .mulUnsafe(FixedNumber.from(current.task.tokenBasePrice))
+                )
+                .addUnsafe(
+                  current.optionalTokenTotalValue
+                    .mulUnsafe(FixedNumber.from(`${current.commissionRate}`))
+                    .divUnsafe(FIXED_NUMBER.HUNDRED)
+                    .mulUnsafe(FixedNumber.from(current.task.tokenBasePrice))
+                ),
+              commissionToday:
+                moment().diff(moment(current.completeTime), "hours") <= 24
+                  ? prev.commissionToday
+                      .addUnsafe(
+                        FixedNumber.from(current.bounty)
+                          .mulUnsafe(
+                            FixedNumber.from(`${current.commissionRate}`)
+                          )
+                          .divUnsafe(FIXED_NUMBER.HUNDRED)
+                          .mulUnsafe(
+                            FixedNumber.from(current.task.tokenBasePrice)
+                          )
+                      )
+                      .addUnsafe(
+                        current.optionalTokenTotalValue
+                          .mulUnsafe(
+                            FixedNumber.from(`${current.commissionRate}`)
+                          )
+                          .divUnsafe(FIXED_NUMBER.HUNDRED)
+                          .mulUnsafe(
+                            FixedNumber.from(current.task.tokenBasePrice)
+                          )
+                      )
+                  : prev.commissionToday,
+            }),
+            {
+              totalEarn: FIXED_NUMBER.ZERO,
+              commission: FIXED_NUMBER.ZERO,
+              commissionToday: FIXED_NUMBER.ZERO,
+            }
+          );
+          referralMap.set(key, sumWithInitial);
+        }
       }
+
+      const referrals = await strapi.services.hunter.find({
+        referrerCode: hunter.referralCode,
+        _limit: -1,
+      });
+
+      return referrals.map((r) => {
+        const val = referralMap.get(r.id);
+        return {
+          ...r,
+          totalEarn: _.get(val, "totalEarn._value", "0"),
+          commission: _.get(val, "commission._value", "0"),
+          commissionToday: _.get(val, "commissionToday._value", "0"),
+        };
+      });
+    } catch (error) {
+      console.log(error);
     }
-
-    const referrals = await strapi.services.hunter.find({
-      referrerCode: hunter.referralCode,
-      _limit: -1,
-    });
-
-    return referrals.map((r) => {
-      const val = referralMap.get(r.id);
-      return {
-        ...r,
-        totalEarn: _.get(val, "totalEarn._value", "0"),
-        commission: _.get(val, "commission._value", "0"),
-        commissionToday: _.get(val, "commissionToday._value", "0"),
-      };
-    });
   },
   getActiveReferral: async (ctx) => {
     try {
