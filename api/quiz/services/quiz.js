@@ -19,20 +19,16 @@ const getWrongAnswerList = (base, compare) => {
   return getArrDiff(compare, base);
 };
 
-const NOT_AUTHORIZED = 'You are not authorize to do this'
+const NOT_AUTHORIZED = "You are not authorize to do this";
 
 /**
  * Create quiz record with userId
  * @param {*} ctx context
- * @param {*} quizData 
- * @returns 
+ * @param {*} quizData
+ * @returns
  */
 const createQuiz = async (ctx, quizData) => {
-  const userId = ctx.state.user.id
-  if (isEmpty(userId)) {
-    ctx.forbidden(NOT_AUTHORIZED)
-  }
-
+  const userId = ctx.state.user.id;
   const { name, description, learningInformation, data, answer, metadata } =
     quizData;
   const res = await strapi.services.quiz.create({
@@ -40,9 +36,9 @@ const createQuiz = async (ctx, quizData) => {
     userId,
     description,
     learningInformation,
-    data: { ...data },
-    answer: { ...answer },
-    metadata: { ...metadata },
+    data,
+    answer,
+    metadata,
   });
   return res;
 };
