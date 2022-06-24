@@ -54,7 +54,7 @@ module.exports = {
   },
   createQuiz: async (ctx) => {
     const quizData = ctx.request.body;
-    return await strapi.services.quiz.createQuiz(quizData);
+    return await strapi.services.quiz.createQuiz(ctx, quizData);
   },
   getOwnerQuiz: async (ctx) => {
     const { id } = ctx.params;
