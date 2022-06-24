@@ -1,5 +1,6 @@
 "use strict";
 const { isArrayIncluded, getArrDiff } = require("../../../helpers");
+const { isEmpty } = require("lodash");
 /**
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-services)
  * to customize this service
@@ -35,8 +36,40 @@ const createQuiz = async (quizData) => {
   });
   return res;
 };
+
+const RECORD_NOT_FOUND = "Could not find this record";
+const NOT_RECORD_OWNER = "You are not authorize to get this record";
+/**
+ * Check if user is the owner of this quiz and return all including answer field
+ * @param {*} ctx context
+ * @param {string} id quiz record's id
+ */
+const getOwnerQuiz = async (ctx, id) => {
+  const quiz = await strapi.services.quiz.findOne({ id });
+
+  if (isEmpty(quiz)) {
+    ctx.badRequest(RECORD_NOT_FOUND);
+  }
+
+  if (ctx.state.user.id !== quiz.userId) {
+    ctx.badRequest(NOT_RECORD_OWNER);
+  }
+
+  const { description, learningInformation, answer, name, metadata, data } =
+    quiz;
+  return {
+    data,
+    description,
+    answer,
+    learningInformation,
+    name,
+    metadata,
+    id,
+  };
+};
 module.exports = {
   verifyQuizAnswer,
   getWrongAnswerList,
   createQuiz,
+  getOwnerQuiz,
 };
