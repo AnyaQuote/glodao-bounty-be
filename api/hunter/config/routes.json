@@ -83,6 +83,30 @@
       "config": {
         "policies": ["global::is-owner"]
       }
+    },
+    {
+      "method": "GET",
+      "path": "/getActiveReferral",
+      "handler": "hunter.getActiveReferral",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/verifyJwt/:jwt",
+      "handler": "hunter.verifyJwt",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/hunter/updateUserSessionId",
+      "handler": "hunter.updateUserSessionId",
+      "config": {
+        "policies": []
+      }
     }
   ]
 }

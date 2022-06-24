@@ -79,27 +79,20 @@ const connect = (provider, query) => {
         }
 
         if (!_.isEmpty(user)) {
-          if (_.get(user.projectOwner, "id") && _.get(user.hunter, "id"))
-            return resolve([user, null]);
-
-          if (userType === "voting") {
-            if (!_.get(user.projectOwner, "id")) {
-              // create project owner
-              const projectOwner = await strapi.plugins[
-                "users-permissions"
-              ].services.user.createProjectOwner(user);
-              user.projectOwner = projectOwner;
-            }
-          } else {
-            if (!_.get(user.hunter, "id")) {
-              // create hunter
-              const hunter = await strapi.plugins[
-                "users-permissions"
-              ].services.user.createHunter(user);
-              user.hunter = hunter;
+          const { accessToken, accessTokenSecret } = profile;
+          let updatedTokenUser = user;
+          if (!_.isEqual(user.accessToken, accessToken)) {
+            try {
+              updatedTokenUser = await strapi.services.hunter.updateUserToken(
+                user.id,
+                accessToken,
+                accessTokenSecret
+              );
+            } catch (error) {
+              console.log(error);
             }
           }
-          return resolve([user, null]);
+          return resolve([updatedTokenUser, null]);
         }
 
         if (

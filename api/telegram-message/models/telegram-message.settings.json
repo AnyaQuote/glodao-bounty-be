@@ -1,0 +1,38 @@
+{
+  "kind": "collectionType",
+  "connection": "bot",
+  "collectionName": "telegram_messages",
+  "info": {
+    "name": "TelegramMessage",
+    "description": ""
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "userId": {
+      "type": "string"
+    },
+    "chatId": {
+      "type": "string"
+    },
+    "text": {
+      "type": "string"
+    },
+    "date": {
+      "type": "datetime"
+    },
+    "messageId": {
+      "type": "string"
+    },
+    "chatUsername": {
+      "type": "string"
+    },
+    "authorUsername": {
+      "type": "string"
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "kind": "collectionType",
+  "collectionName": "bounty_rewards",
+  "info": {
+    "name": "BountyReward",
+    "description": ""
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "walletAddress": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "rewards": {
+      "type": "json",
+      "required": true
+    },
+    "rewardsHistory": {
+      "type": "json",
+      "private": true
+    },
+    "depositHistory": {
+      "type": "json",
+      "required": true,
+      "private": true
+    },
+    "withdrawHistory": {
+      "type": "json"
+    }
+  }
+}

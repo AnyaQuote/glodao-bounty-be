@@ -64,6 +64,9 @@
     },
     "hunter": {
       "model": "hunter"
+    },
+    "optionalTokenReward": {
+      "type": "json"
     }
   }
 }

@@ -7,6 +7,44 @@ const { isEqual, get } = require("lodash");
  * to customize this service
  */
 
+const updateUserToken = async (userId, accessToken, accessTokenSecret) => {
+  return await strapi.query("user", "users-permissions").update(
+    { id: userId },
+    {
+      accessToken: accessToken,
+      accessTokenSecret: accessTokenSecret,
+    }
+  );
+};
+
+const updateUserDiscordId = async (userId, discordId) => {
+  return await strapi.query("user", "users-permissions").update(
+    { id: userId },
+    {
+      discordId,
+    }
+  );
+};
+
+const updateUserDiscordIdByHunter = async (hunterId, discordId) => {
+  const user = await strapi.services.hunter.findOne({ id: hunterId });
+  return await strapi.query("user", "users-permissions").update(
+    { id: user.id },
+    {
+      discordId,
+    }
+  );
+};
+
+const updateUserKycSessionId = async (userId, kycSessionId) => {
+  return await strapi.query("user", "users-permissions").update(
+    { id: userId },
+    {
+      kycSessionId,
+    }
+  );
+};
+
 /**
  * Update nonce of a hunter
  * @param {hunter} hunter hunter that need to be updated
@@ -74,4 +112,8 @@ module.exports = {
   updateHunterWalletAddress,
   isPreRegisteredWalletMatched,
   updateHunterStatusToNewbie,
+  updateUserToken,
+  updateUserDiscordId,
+  updateUserDiscordIdByHunter,
+  updateUserKycSessionId,
 };

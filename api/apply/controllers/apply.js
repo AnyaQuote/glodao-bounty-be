@@ -16,6 +16,35 @@ const {
  */
 
 module.exports = {
+  startHuntingProcess: async (ctx) => {
+    const { hunter, task } = ctx.request.body;
+    try {
+      return await strapi.services.apply.create({
+        hunter,
+        task,
+        ID: `${hunter}_${task}`,
+      });
+    } catch (error) {
+      return ctx.badRequest(error.data.errors);
+    }
+  },
+  finishHuntingProcess: async (ctx) => {
+    const { id, walletAddress } = ctx.request.body;
+    const apply = await strapi.services.apply.findOne({ id });
+
+    if (!isEqual(walletAddress, get(apply, "hunter.address", "")))
+      return ctx.unauthorized(
+        "Invalid request: Wallet not matched with the pre-registered one"
+      );
+
+    if (!isTaskCompleted(apply.data)) return ctx.badRequest("Unfinished task");
+    if (!walletAddress)
+      return ctx.badRequest("Missing wallet address to earn reward");
+    return await strapi.services.apply.updateApplyStateToComplete(
+      id,
+      get(apply, "hunter.address", "")
+    );
+  },
   applyForPriorityPool: async (ctx) => {
     const { walletAddress, applyId, hunterId, taskId, poolId } =
       ctx.request.body;
@@ -219,12 +248,16 @@ module.exports = {
     }
 
     if (isEqual(type, "telegram")) {
+      const telegramId = get(user, "telegramId", "");
+      if (isEmpty(telegramId))
+        return ctx.badRequest("You had not linked your Telegram account");
+
       let telegramTaskData = get(taskData, [type], []);
       const mergedTelegramTask = merge(
         telegramTaskData.map((step) => {
           return {
             ...step,
-            submitedId: step.link,
+            submitedId: telegramId,
           };
         }),
         get(apply, ["task", "data", type], [])
@@ -247,6 +280,48 @@ module.exports = {
             element.submitedId
           );
           if (!isUserFollow) return ctx.badRequest("Can not find user in chat");
+        }
+      }
+    }
+
+    if (isEqual(type, "discord")) {
+      const discordId = get(user, "discordId", "");
+      if (isEmpty(discordId))
+        return ctx.badRequest("You had not linked your Discord account");
+
+      let discordTaskData = get(taskData, [type], []);
+      const mergedDiscordTask = merge(
+        discordTaskData.map((step) => {
+          return {
+            ...step,
+            submitedId: discordId,
+          };
+        }),
+        get(apply, ["task", "data", type], [])
+      );
+      console.log(mergedDiscordTask);
+
+      for (let index = 0; index < mergedDiscordTask.length; index++) {
+        const element = mergedDiscordTask[index];
+        const { guildId, submitedId } = element;
+        if (index === mergedDiscordTask.length - 1 && element.finished) {
+          const isExistedRecord = await strapi.services[
+            "discord-server-member"
+          ].findOne({
+            guildId,
+            userId: submitedId,
+          });
+          if (!isExistedRecord)
+            return ctx.badRequest("Can not find user in the server");
+        } else if (element.finished && !mergedDiscordTask[index + 1].finished) {
+          const isExistedRecord = await strapi.services[
+            "discord-server-member"
+          ].findOne({
+            guildId,
+            userId: submitedId,
+          });
+          if (!isExistedRecord)
+            return ctx.badRequest("Can not find user in the server");
         }
       }
     }

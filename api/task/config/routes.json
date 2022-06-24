@@ -55,6 +55,14 @@
       "config": {
         "policies": ["global::is-address-owner"]
       }
+    },
+    {
+      "method": "GET",
+      "path": "/tasks/getAverageCommunityReward/:limit",
+      "handler": "task.getAverageCommunityReward",
+      "config": {
+        "policies": []
+      }
     }
   ]
 }

@@ -14,7 +14,9 @@
     "---": "---",
     "listen:bsc-testnet:dev": "NODE_ENV=development CHAIN_ID=97 node watchers/startWatcher.js",
     "exportApply": "node ./helpers/exportApplyData.js ",
-    "exportTask": "node ./helpers/exportTaskReport.js "
+    "exportTask": "node ./helpers/exportTaskReport.js ",
+    "startTelegramBot": "node ./bots/telegram",
+    "startTelegramBot:prod": "NODE_ENV=production node ./bots/telegram"
   },
   "devDependencies": {},
   "dependencies": {
@@ -41,6 +43,7 @@
     "csv-writer": "^1.6.0",
     "csvtojson": "^2.0.10",
     "ethereumjs-util": "^7.1.4",
+    "form-data": "^4.0.0",
     "lodash": "^4.17.21",
     "mocha": "^9.2.2",
     "moment": "^2.29.1",
@@ -58,7 +61,8 @@
     "strapi-plugin-users-permissions": "3.6.1",
     "strapi-provider-email-nodemailer": "3.6.1",
     "strapi-utils": "3.6.1",
-    "web3": "^1.2.9",
+    "telegraf": "^4.8.3",
+    "web3": "^1.7.1",
     "yargs": "^17.4.1"
   },
   "author": {

@@ -2,6 +2,7 @@
 
 const { get, gte, isEmpty } = require("lodash");
 const moment = require("moment");
+const { FixedNumber } = require("@ethersproject/bignumber");
 
 /**
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-services)
@@ -100,6 +101,7 @@ const isTaskProcessable = (task) => {
   return moment().isBetween(moment(task.startTime), moment(task.endTime));
 };
 
+
 /**
  * Create task services
  * @param {any} ctx
@@ -160,7 +162,47 @@ const createTask = async (ctx, missionData) => {
     data,
     metadata,
   });
-};
+}
+
+  const calculateAverageCommunityReward = async (
+    _limit,
+    type = "bounty",
+    _sort = "endTime:DESC",
+    isEnded = true
+  ) => {
+    const tasks = await strapi.services.task.find({
+      _limit,
+      type: type ? type : undefined,
+      _sort,
+      endTime_lte: isEnded ? moment().toISOString() : undefined,
+    });
+    const applies = await Promise.all(
+      tasks.map((task) => {
+        return strapi.services.apply.findOne({
+          task: task.id,
+          status: "awarded",
+          poolType: "community",
+        });
+      })
+    );
+    let result = FixedNumber.from("0");
+    applies.forEach((apply) => {
+      const optionalTokenReward = get(apply, "optionalTokenReward", []);
+      let optionalTokenTotalValue = FixedNumber.from("0");
+      optionalTokenReward.forEach((token) => {
+        optionalTokenTotalValue = optionalTokenTotalValue.addUnsafe(
+          FixedNumber.from(`${token.bounty}`).mulUnsafe(
+            FixedNumber.from(`${token.tokenBasePrice}`)
+          )
+        );
+      });
+      result = result
+        .addUnsafe(optionalTokenTotalValue)
+        .addUnsafe(FixedNumber.from(`${apply.bounty}`));
+    });
+    return result.divUnsafe(FixedNumber.from(`${_limit}`))._value;
+  }
+
 
 module.exports = {
   increaseTaskTotalParticipants,
@@ -170,4 +212,5 @@ module.exports = {
   isTaskProcessable,
   updateTaskCompletedParticipantsById,
   createTask,
+  calculateAverageCommunityReward,
 };

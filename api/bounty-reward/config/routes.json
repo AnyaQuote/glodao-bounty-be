@@ -1,0 +1,52 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/bounty-rewards",
+      "handler": "bounty-reward.find",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/bounty-rewards/count",
+      "handler": "bounty-reward.count",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/bounty-rewards/:id",
+      "handler": "bounty-reward.findOne",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/bounty-rewards",
+      "handler": "bounty-reward.create",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/bounty-rewards/:id",
+      "handler": "bounty-reward.update",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/bounty-rewards/:id",
+      "handler": "bounty-reward.delete",
+      "config": {
+        "policies": []
+      }
+    }
+  ]
+}

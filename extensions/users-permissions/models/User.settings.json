@@ -19,7 +19,6 @@
     },
     "email": {
       "type": "email",
-      "minLength": 6,
       "configurable": false
     },
     "provider": {
@@ -96,6 +95,15 @@
     "projectOwner": {
       "via": "user",
       "model": "project-owner"
+    },
+    "telegramId": {
+      "type": "string"
+    },
+    "discordId": {
+      "type": "string"
+    },
+    "kycSessionId": {
+      "type": "string"
     }
   }
 }
