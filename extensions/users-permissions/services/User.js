@@ -133,6 +133,7 @@ module.exports = {
     if (userType === "voting") {
       const projectOwner = await strapi.services["project-owner"].find({
         user: user.id,
+        _limit: 1,
       });
       if (isEmpty(projectOwner)) {
         await createProjectOwner(user);
@@ -140,6 +141,7 @@ module.exports = {
     } else {
       const hunter = await strapi.services.hunter.find({
         user: user.id,
+        limit: 1,
       });
       if (isEmpty(hunter)) {
         await createHunter(user);
