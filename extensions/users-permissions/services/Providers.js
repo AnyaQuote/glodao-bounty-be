@@ -124,38 +124,21 @@ const connect = (provider, query) => {
           .query("user", "users-permissions")
           .create(params);
 
-        try {
-          if (userType === "voting") {
-            await strapi.plugins[
-              "users-permissions"
-            ].services.user.createProjectOwner(createdUser);
-          } else {
-            await strapi.plugins[
-              "users-permissions"
-            ].services.user.createHunter(createdUser);
-          }
+        await strapi.plugins[
+          "user-permissions"
+        ].services.user.createHunterOrProjectOwner(userType, createdUser);
 
-          const afterCreatedUser = await strapi
-            .query("user", "users-permissions")
-            .findOne({ id: createdUser.id });
+        const afterCreatedUser = await strapi
+          .query("user", "users-permissions")
+          .findOne({ id: createdUser.id });
 
-          let afterRemovePrivateDataUser = afterCreatedUser;
-          delete afterRemovePrivateDataUser.accessToken;
-          delete afterRemovePrivateDataUser.accessTokenSecret;
+        let afterRemovePrivateDataUser = afterCreatedUser;
+        delete afterRemovePrivateDataUser.accessToken;
+        delete afterRemovePrivateDataUser.accessTokenSecret;
 
-          return resolve([afterRemovePrivateDataUser, null]);
-        } catch (error) {
-          await strapi
-            .query("user", "users-permissions")
-            .delete({ id: createdUser.id });
-          throw new Error(
-            "[INFO]Cannot create user right now. Please try again!"
-          );
-        }
+        return resolve([afterRemovePrivateDataUser, null]);
       } catch (err) {
-        if (err.message.includes("[INFO]")) {
-          reject([null, err.message.match(/[^(\[INFO\])]+/)[0]]);
-        } else reject([null, err]);
+        reject([null, err]);
       }
     });
   });
