@@ -41,19 +41,16 @@ const connect = (provider, query) => {
         return reject([null, err]);
       }
 
-      // We need at least the mail.
-      // if (!profile.email) {
-      //   return reject([null, { message: "Email was not available." }]);
-      // }
-
       try {
-        if (
-          !(await strapi.plugins["users-permissions"].services.user.isRefExist(
-            referrerCode
-          )) &&
-          (await strapi.services.campaign.count({ code: referrerCode })) === 0
-        )
+        const isRefExist = await strapi.plugins[
+          "users-permissions"
+        ].services.user.isRefExist(referrerCode);
+        const campaignCount = strapi.services.campaign.count({
+          code: referrerCode,
+        });
+        if (!isRefExist && campaignCount === 0) {
           referrerCode = "######";
+        }
 
         const users = await strapi.query("user", "users-permissions").find({
           twitterId: profile.twitterId,
@@ -78,6 +75,7 @@ const connect = (provider, query) => {
           ]);
         }
 
+        // Second time sign in through provider, user is existed
         if (!_.isEmpty(user)) {
           const { accessToken, accessTokenSecret } = profile;
           let updatedTokenUser = user;
@@ -92,52 +90,57 @@ const connect = (provider, query) => {
               console.log(error);
             }
           }
+          await strapi.plugins[
+            "users-permissions"
+          ].services.user.createHunterOrProjectOwner(
+            userType,
+            updatedTokenUser
+          );
           return resolve([updatedTokenUser, null]);
         }
+        // First time sign in through providers, user is empty
+        else {
+          if (
+            !_.isEmpty(_.find(users, (user) => user.provider !== provider)) &&
+            advanced.unique_email
+          ) {
+            return resolve([
+              null,
+              [{ messages: [{ id: "Auth.form.error.email.taken" }] }],
+              "Email is already taken.",
+            ]);
+          }
 
-        if (
-          !_.isEmpty(_.find(users, (user) => user.provider !== provider)) &&
-          advanced.unique_email
-        ) {
-          return resolve([
-            null,
-            [{ messages: [{ id: "Auth.form.error.email.taken" }] }],
-            "Email is already taken.",
-          ]);
+          // Retrieve default role.
+          const defaultRole = await strapi
+            .query("role", "users-permissions")
+            .findOne({ type: advanced.default_role }, []);
+
+          const params = _.assign(profile, {
+            provider: provider,
+            role: defaultRole.id,
+            confirmed: true,
+            referralCode: generateReferralCode(profile.username),
+            referrerCode,
+          });
+
+          // Create the new user.
+          const createdUser = await strapi
+            .query("user", "users-permissions")
+            .create(params);
+
+          await strapi.plugins[
+            "users-permissions"
+          ].services.user.createHunterOrProjectOwner(userType, createdUser);
+
+          let afterRemovePrivateDataUser = createdUser;
+          delete afterRemovePrivateDataUser.accessToken;
+          delete afterRemovePrivateDataUser.accessTokenSecret;
+
+          return resolve([afterRemovePrivateDataUser, null]);
         }
-
-        // Retrieve default role.
-        const defaultRole = await strapi
-          .query("role", "users-permissions")
-          .findOne({ type: advanced.default_role }, []);
-
-        // Create the new user.
-        const params = _.assign(profile, {
-          provider: provider,
-          role: defaultRole.id,
-          confirmed: true,
-          referralCode: generateReferralCode(profile.username),
-          referrerCode,
-        });
-
-        const createdUser = await strapi
-          .query("user", "users-permissions")
-          .create(params);
-
-        await strapi.plugins[
-          "user-permissions"
-        ].services.user.createHunterOrProjectOwner(userType, createdUser);
-
-        const afterCreatedUser = await strapi
-          .query("user", "users-permissions")
-          .findOne({ id: createdUser.id });
-
-        let afterRemovePrivateDataUser = afterCreatedUser;
-        delete afterRemovePrivateDataUser.accessToken;
-        delete afterRemovePrivateDataUser.accessTokenSecret;
-
-        return resolve([afterRemovePrivateDataUser, null]);
       } catch (err) {
+        console.log("err", err);
         reject([null, err]);
       }
     });
