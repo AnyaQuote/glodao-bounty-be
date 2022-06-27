@@ -4,7 +4,11 @@ const twitterHelperV1 = require("../../../helpers/twitter-helper-v1");
 const _ = require("lodash");
 const moment = require("moment");
 const { TWEET_MIN_WORDS_COUNT } = require("../../../constants");
-const { getWordsCount } = require("../../../helpers/index");
+const {
+  getWordsCount,
+  getArrDiff,
+  isArrayIncluded,
+} = require("../../../helpers/index");
 
 /**
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-services)
@@ -254,6 +258,14 @@ const verifyTweetLink = (data, baseRequirement) => {
   if (_.lt(getWordsCount(text), TWEET_MIN_WORDS_COUNT))
     return "The length of the submitted tweet is not valid";
   if (
+    !_.isEmpty(_.get(baseRequirement, "mentions", "")) &&
+    !isUserMentionsIncluded(
+      _.get(data, "entities.user_mentions", []),
+      baseRequirement.mentions
+    )
+  )
+    return "Tweet link missing required user mentions";
+  if (
     isHashtagIncluded(
       _.get(data, "entities.hashtags", []),
       baseRequirement.hashtag
@@ -272,6 +284,14 @@ const verifyCommentLink = (data, baseRequirement) => {
     !isHashtagIncluded(data.entities.hashtags, baseRequirement.hashtag)
   )
     return "Tweet link missing required hashtag";
+  if (
+    !_.isEmpty(_.get(baseRequirement, "mentions", "")) &&
+    !isUserMentionsIncluded(
+      _.get(data, "entities.user_mentions", []),
+      baseRequirement.mentions
+    )
+  )
+    return "Tweet link missing required user mentions";
   const conversation_id = _.get(data, "in_reply_to_status_id_str", "");
   const id = _.get(data, "id_str", "");
 
@@ -296,6 +316,15 @@ const verifyRetweetLink = (data, baseRequirement) => {
     !isHashtagIncluded(data.entities.hashtags, baseRequirement.hashtag)
   )
     return "Tweet link missing required hashtag";
+  // if mission users mentioned the tweet from entities.user_mentions
+  if (
+    !_.isEmpty(_.get(baseRequirement, "mentions", "")) &&
+    !isUserMentionsIncluded(
+      _.get(data, "entities.user_mentions", []),
+      baseRequirement.mentions
+    )
+  )
+    return "Tweet link missing required user mentions";
 
   if (!data.is_quote_status) return "Link missing required referenced tweet";
   if (
@@ -346,6 +375,25 @@ const isHashtagIncluded = (hashtags, requiredHashtag) => {
       _.isEqual(_.toLower(hashtag.text), _.toLower(requiredHashtag))
     ) > -1
   );
+};
+
+/**
+ * check if user mentions are included in the tweet
+ * @param {array} mentions
+ * @param {array} requiredMention
+ * @returns {boolean} true if user mentions are included in the tweet else false
+ */
+const isUserMentionsIncluded = (mentions, requiredMentions) => {
+  return isArrayIncluded(toLower(requiredMentions), toLower(mentions));
+};
+
+/**
+ * to lower array of strings
+ * @param {array} array of strings
+ * @returns {array} array of strings
+ */
+const toLower = (array) => {
+  return _.map(array, (item) => _.toLower(item));
 };
 
 module.exports = {
