@@ -1,5 +1,6 @@
 "use strict";
 const { generateRandomNonce } = require("../../../helpers/wallet-helper");
+const { isEmpty } = require("lodash");
 const EMPTY_CODE = "######";
 
 /**
@@ -10,8 +11,13 @@ const EMPTY_CODE = "######";
 
 const _ = require("lodash");
 
+/**
+ * Create projectOwner record related to new user record
+ * @param {*} user
+ * @returns
+ */
 const createProjectOwner = async (user) => {
-  const { referrerCode, id, username, referralCode, avatar } = user;
+  const { id, username, avatar } = user;
   const projectOwner = await strapi.services["project-owner"].create({
     name: username,
     status: "active",
@@ -24,6 +30,11 @@ const createProjectOwner = async (user) => {
   return projectOwner;
 };
 
+/**
+ * Create hunter record related to new user record
+ * @param {User} user
+ * @returns hunter record
+ */
 const createHunter = async (user) => {
   const { referrerCode, id, username, referralCode, avatar } = user;
   const campaign = await strapi.services.campaign.findOne({
@@ -111,6 +122,28 @@ module.exports = {
   async isRefExist(ref) {
     return (await strapi.services.hunter.count({ referralCode: ref })) > 0;
   },
-  createProjectOwner,
-  createHunter,
+  /**
+   * Create hunter or projectOwner related to created user
+   * If userType is voting, check projectOwner
+   * Else check for hunter
+   * @param {*} userType voting or undefined
+   * @param {*} user created user
+   */
+  async createHunterOrProjectOwner(userType, user) {
+    if (userType === "voting") {
+      const projectOwner = await strapi.services["project-owner"].find({
+        user: user.id,
+      });
+      if (isEmpty(projectOwner)) {
+        await createProjectOwner(user);
+      }
+    } else {
+      const hunter = await strapi.services.hunter.find({
+        user: user.id,
+      });
+      if (isEmpty(hunter)) {
+        await createHunter(user);
+      }
+    }
+  },
 };
