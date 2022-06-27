@@ -73,7 +73,7 @@
     },
     "referralCode": {
       "type": "string",
-      "unique": false
+      "unique": true
     },
     "referrerCode": {
       "type": "string",
