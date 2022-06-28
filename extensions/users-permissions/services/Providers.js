@@ -75,7 +75,6 @@ const connect = (provider, query) => {
           ]);
         }
 
-        // Second time sign in through provider, user is existed
         if (!_.isEmpty(user)) {
           const { accessToken, accessTokenSecret } = profile;
           let updatedTokenUser = user;
