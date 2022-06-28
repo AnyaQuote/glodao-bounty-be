@@ -284,8 +284,6 @@ const verifyCommentLink = (data, baseRequirement) => {
     !isHashtagIncluded(data.entities.hashtags, baseRequirement.hashtag)
   )
     return "Tweet link missing required hashtag";
-  console.log(_.get(baseRequirement, "mentions", ""));
-  console.log(_.get(data, "entities.user_mentions", []));
   if (
     !_.isEmpty(_.get(baseRequirement, "mentions", "")) &&
     !isUserMentionsIncluded(
