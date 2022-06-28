@@ -122,6 +122,7 @@ module.exports = {
   async isRefExist(ref) {
     return (await strapi.services.hunter.count({ referralCode: ref })) > 0;
   },
+
   /**
    * Create hunter or projectOwner related to created user
    * If userType is voting, check projectOwner

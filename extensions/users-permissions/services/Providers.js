@@ -90,13 +90,19 @@ const connect = (provider, query) => {
               return reject([null, error]);
             }
           }
-          await strapi.plugins[
+          let afterUpdatedUser = updatedTokenUser;
+          const res = await strapi.plugins[
             "users-permissions"
           ].services.user.createHunterOrProjectOwner(
             userType,
             updatedTokenUser
           );
-          return resolve([updatedTokenUser, null]);
+          if (res) {
+            afterUpdatedUser = await strapi
+              .query("user", "users-permissions")
+              .findOne({ id: updatedTokenUser.id });
+          }
+          return resolve([afterUpdatedUser, null]);
         } else {
           if (
             !_.isEmpty(_.find(users, (user) => user.provider !== provider)) &&
