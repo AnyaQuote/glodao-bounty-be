@@ -52,4 +52,12 @@ module.exports = {
       id,
     };
   },
+  createQuiz: async (ctx) => {
+    const quizData = ctx.request.body;
+    return await strapi.services.quiz.createQuiz(ctx, quizData);
+  },
+  getOwnerQuiz: async (ctx) => {
+    const { id } = ctx.params;
+    return await strapi.services.quiz.getOwnerQuiz(ctx, id);
+  },
 };
