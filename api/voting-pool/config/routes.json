@@ -1,0 +1,84 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/voting-pools",
+      "handler": "voting-pool.find",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/voting-pools/count",
+      "handler": "voting-pool.count",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/voting-pools/:id",
+      "handler": "voting-pool.findOne",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/voting-pools",
+      "handler": "voting-pool.create",
+      "config": {
+        "policies": ["global::is-address-owner"]
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/voting-pools/:id",
+      "handler": "voting-pool.update",
+      "config": {
+        "policies": ["global::is-address-owner"]
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/voting-pools/:id",
+      "handler": "voting-pool.delete",
+      "config": {
+        "policies": ["global::is-address-owner"]
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/voting-pools/createOrUpdateVotingPool",
+      "handler": "voting-pool.createOrUpdateVotingPool",
+      "config": {
+        "policies": ["global::is-address-owner"]
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/voting-pools/updateStatusToApproved",
+      "handler": "voting-pool.updateStatusToApproved",
+      "config": {
+        "policies": ["global::is-address-owner"]
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/voting-pools/cancelVotingPool",
+      "handler": "voting-pool.cancelVotingPool",
+      "config": {
+        "policies": ["global::is-address-owner"]
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/voting-pools/updateVotingPoolInfo",
+      "handler": "voting-pool.updateVotingPoolInfo",
+      "config": {
+        "policies": ["global::is-address-owner"]
+      }
+    }
+  ]
+}
