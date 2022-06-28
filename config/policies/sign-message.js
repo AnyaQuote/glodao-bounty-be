@@ -23,7 +23,13 @@ module.exports = async (ctx, next) => {
     id: hunterId,
   });
 
-  if (await verifySoliditySignature(walletAddress, signature, hunter.nonce)) {
+  const isVerified = await verifySoliditySignature(
+    walletAddress,
+    signature,
+    hunter.nonce
+  );
+
+  if (isVerified) {
     await strapi.services.hunter.updateHunterNonce(hunter);
     return await next();
   }
