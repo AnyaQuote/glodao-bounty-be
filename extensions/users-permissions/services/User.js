@@ -138,7 +138,7 @@ module.exports = {
         user: user.id,
         _limit: 1,
       });
-      if (isEmpty(projectOwner)) {
+      if (_.isEmpty(projectOwner)) {
         result = await createProjectOwner(user);
       }
     } else {
@@ -146,7 +146,7 @@ module.exports = {
         user: user.id,
         _limit: 1,
       });
-      if (isEmpty(hunter)) {
+      if (_.isEmpty(hunter)) {
         result = await createHunter(user);
       }
       return result;
