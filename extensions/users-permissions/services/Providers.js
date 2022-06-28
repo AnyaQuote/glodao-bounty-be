@@ -45,10 +45,10 @@ const connect = (provider, query) => {
         const isRefExist = await strapi.plugins[
           "users-permissions"
         ].services.user.isRefExist(referrerCode);
-        const campaignCount = strapi.services.campaign.count({
+        const referrerCampaignCount = await strapi.services.campaign.count({
           code: referrerCode,
         });
-        if (!isRefExist && campaignCount === 0) {
+        if (!isRefExist && referrerCampaignCount === 0) {
           referrerCode = "######";
         }
 
@@ -87,7 +87,7 @@ const connect = (provider, query) => {
                 accessTokenSecret
               );
             } catch (error) {
-              console.log(error);
+              return reject([null, error]);
             }
           }
           await strapi.plugins[
@@ -97,9 +97,7 @@ const connect = (provider, query) => {
             updatedTokenUser
           );
           return resolve([updatedTokenUser, null]);
-        }
-        // First time sign in through providers, user is empty
-        else {
+        } else {
           if (
             !_.isEmpty(_.find(users, (user) => user.provider !== provider)) &&
             advanced.unique_email
@@ -124,7 +122,6 @@ const connect = (provider, query) => {
             referrerCode,
           });
 
-          // Create the new user.
           const createdUser = await strapi
             .query("user", "users-permissions")
             .create(params);
@@ -133,14 +130,17 @@ const connect = (provider, query) => {
             "users-permissions"
           ].services.user.createHunterOrProjectOwner(userType, createdUser);
 
-          let afterRemovePrivateDataUser = createdUser;
+          const afterCreatedUser = await strapi
+            .query("user", "users-permissions")
+            .findOne({ id: createdUser.id });
+
+          let afterRemovePrivateDataUser = afterCreatedUser;
           delete afterRemovePrivateDataUser.accessToken;
           delete afterRemovePrivateDataUser.accessTokenSecret;
 
           return resolve([afterRemovePrivateDataUser, null]);
         }
       } catch (err) {
-        console.log("err", err);
         reject([null, err]);
       }
     });

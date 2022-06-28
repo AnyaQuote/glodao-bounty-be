@@ -146,7 +146,9 @@ const distributeReward = async (walletAddress, tokenAddress, rewardAmount) => {
     for (const [key, value] of rewardMap) {
       if (key === tokenAddress) {
         if (FixedNumber.from(`${value.rewardAmount}`).isZero()) {
-          throw new Error("Not enough balance left");
+          throw new Error(
+            "Not enough balance left zero: " + value.rewardAmount
+          );
         }
         if (
           bigNumberHelper.lt(
@@ -154,7 +156,9 @@ const distributeReward = async (walletAddress, tokenAddress, rewardAmount) => {
             FixedNumber.from(`${rewardAmount}`)
           )
         ) {
-          throw new Error("Not enough balance left");
+          throw new Error(
+            "Not enough balance left" + value.rewardAmount + "-" + rewardAmount
+          );
         }
         existedFlag = true;
         rewardArr.push({

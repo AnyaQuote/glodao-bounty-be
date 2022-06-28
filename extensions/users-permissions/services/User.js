@@ -10,6 +10,7 @@ const EMPTY_CODE = "######";
  */
 
 const _ = require("lodash");
+const { generateRandomNonce } = require("../../../helpers/wallet-helper");
 
 /**
  * Create projectOwner record related to new user record
@@ -18,7 +19,7 @@ const _ = require("lodash");
  */
 const createProjectOwner = async (user) => {
   const { id, username, avatar } = user;
-  const projectOwner = await strapi.services["project-owner"].create({
+  const newProjectOwner = {
     name: username,
     status: "active",
     user: id,
@@ -26,8 +27,11 @@ const createProjectOwner = async (user) => {
     metadata: {
       avatar,
     },
-  });
-  return projectOwner;
+  };
+  const createdProjectOwner = await strapi.services["project-owner"].create(
+    newProjectOwner
+  );
+  return createdProjectOwner;
 };
 
 /**
@@ -40,9 +44,9 @@ const createHunter = async (user) => {
   const campaign = await strapi.services.campaign.findOne({
     code: referrerCode,
   });
-  let hunter;
-  if (!isEmpty(campaign)) {
-    hunter = await strapi.services.hunter.create({
+  let newHunter;
+  if (!_.isEmpty(campaign)) {
+    newHunter = {
       name: username,
       status: "active",
       user: id,
@@ -55,9 +59,9 @@ const createHunter = async (user) => {
       metadata: {
         avatar,
       },
-    });
+    };
   } else {
-    let root = EMPTY_CODE;
+    let root = "######";
     let campaignCode = "######";
     if (referrerCode !== EMPTY_CODE) {
       const referrer = await strapi.services.hunter.findOne({
@@ -68,7 +72,7 @@ const createHunter = async (user) => {
         campaignCode = referrer.campaignCode;
       }
     }
-    hunter = await strapi.services.hunter.create({
+    newHunter = {
       name: username,
       status: "active",
       user: id,
@@ -81,10 +85,10 @@ const createHunter = async (user) => {
       metadata: {
         avatar,
       },
-    });
-
-    return hunter;
+    };
   }
+  const createdHunter = await strapi.services.hunter.create(newHunter);
+  return createdHunter;
 };
 
 module.exports = {
@@ -130,13 +134,14 @@ module.exports = {
    * @param {*} user created user
    */
   async createHunterOrProjectOwner(userType, user) {
+    let result = null;
     if (userType === "voting") {
       const projectOwner = await strapi.services["project-owner"].find({
         user: user.id,
         _limit: 1,
       });
       if (isEmpty(projectOwner)) {
-        await createProjectOwner(user);
+        result = await createProjectOwner(user);
       }
     } else {
       const hunter = await strapi.services.hunter.find({
@@ -144,8 +149,9 @@ module.exports = {
         _limit: 1,
       });
       if (isEmpty(hunter)) {
-        await createHunter(user);
+        result = await createHunter(user);
       }
+      return result;
     }
   },
 };

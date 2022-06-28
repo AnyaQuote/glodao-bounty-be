@@ -1,12 +1,11 @@
 const axios = require("axios");
 
 const TWITTER_API_BEARER_TOKEN =
-  "AAAAAAAAAAAAAAAAAAAAAHx6bAEAAAAAEZ6IHXM8mjVUgQwu38ZgrKRZoiE%3D4YqyeD6OXVsETqStKaN5XLYo4SJBfZ5GK9QMSRUNZrped2eHsZ";
+  "AAAAAAAAAAAAAAAAAAAAALuUaQEAAAAAEBsacTfmkY4%2BoEw37K7eaR%2FB7Dg%3DfNoM30JKw2Rn5PWAxYJOIbmQMOzIaK3y4XYzcZu31eTt3Yxwg2";
 const TWEET_API_URL = "https://api.twitter.com/2/tweets";
 const USER_API_URL = "https://api.twitter.com/2/users";
 
 const axiosInstance = axios.create({
-  timeout: 1000,
   headers: {
     Authorization: `Bearer ${TWITTER_API_BEARER_TOKEN}`,
   },
@@ -116,6 +115,32 @@ const getUserLikedTweets = async (
   }
 };
 
+const getTweetLikedUsers = async (
+  tweetId,
+  pagination_token = "",
+  expansions = "",
+  userFields = "created_at,withheld,location,public_metrics,url,verified,protected,entities",
+  params = {}
+) => {
+  try {
+    const { data } = await axiosInstance.get(
+      `${TWEET_API_URL}/${tweetId}/liking_users`,
+      {
+        params: {
+          max_results: 100,
+          pagination_token: pagination_token ? pagination_token : undefined,
+          expansions: expansions ? expansions : undefined,
+          "user.fields": userFields,
+          ...params,
+        },
+      }
+    );
+    return data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 const isTweetLengthValid = (data, min = 0, max = 350) => {
   const text = get(data, "full_text", "") || get(data, "text", "");
   return size(text) >= min && size(text) <= max;
@@ -128,4 +153,5 @@ module.exports = {
   getTweetData,
   getUserLikedTweets,
   isTweetLengthValid,
+  getTweetLikedUsers,
 };
