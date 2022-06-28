@@ -128,7 +128,11 @@ const connect = (provider, query) => {
             "users-permissions"
           ].services.user.createHunterOrProjectOwner(userType, createdUser);
 
-          let afterRemovePrivateDataUser = createdUser;
+          const afterCreatedUser = await strapi
+            .query("user", "users-permissions")
+            .findOne({ id: createdUser.id });
+
+          let afterRemovePrivateDataUser = afterCreatedUser;
           delete afterRemovePrivateDataUser.accessToken;
           delete afterRemovePrivateDataUser.accessTokenSecret;
 
