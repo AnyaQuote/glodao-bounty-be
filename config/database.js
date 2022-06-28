@@ -8,7 +8,7 @@ module.exports = ({ env }) => ({
       connector: "mongoose",
       settings: {
         client: "mongo",
-        uri: "mongodb+srv://admin:123qwert@glodaodb.lenil.mongodb.net/dev_voting?retryWrites=true&w=majority",
+        uri: "mongodb+srv://admin:123qwert@glodaodb.lenil.mongodb.net/dev?retryWrites=true&w=majority",
       },
       options: {
         ssl: true,
