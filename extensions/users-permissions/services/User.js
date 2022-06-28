@@ -41,7 +41,7 @@ const createHunter = async (user) => {
     code: referrerCode,
   });
   let hunter;
-  if (campaign) {
+  if (!isEmpty(campaign)) {
     hunter = await strapi.services.hunter.create({
       name: username,
       status: "active",
@@ -141,7 +141,7 @@ module.exports = {
     } else {
       const hunter = await strapi.services.hunter.find({
         user: user.id,
-        limit: 1,
+        _limit: 1,
       });
       if (isEmpty(hunter)) {
         await createHunter(user);
