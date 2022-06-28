@@ -41,19 +41,16 @@ const connect = (provider, query) => {
         return reject([null, err]);
       }
 
-      // We need at least the mail.
-      // if (!profile.email) {
-      //   return reject([null, { message: "Email was not available." }]);
-      // }
-
       try {
-        if (
-          !(await strapi.plugins["users-permissions"].services.user.isRefExist(
-            referrerCode
-          )) &&
-          (await strapi.services.campaign.count({ code: referrerCode })) === 0
-        )
+        const isRefExist = await strapi.plugins[
+          "users-permissions"
+        ].services.user.isRefExist(referrerCode);
+        const referrerCampaignCount = await strapi.services.campaign.count({
+          code: referrerCode,
+        });
+        if (!isRefExist && referrerCampaignCount === 0) {
           referrerCode = "######";
+        }
 
         const users = await strapi.query("user", "users-permissions").find({
           twitterId: profile.twitterId,
@@ -78,6 +75,7 @@ const connect = (provider, query) => {
           ]);
         }
 
+        // Second time sign in through provider, user is existed
         if (!_.isEmpty(user)) {
           const { accessToken, accessTokenSecret } = profile;
           let updatedTokenUser = user;
@@ -89,51 +87,54 @@ const connect = (provider, query) => {
                 accessTokenSecret
               );
             } catch (error) {
-              console.log(error);
+              return reject([null, error]);
             }
           }
-          return resolve([updatedTokenUser, null]);
-        }
-
-        if (
-          !_.isEmpty(_.find(users, (user) => user.provider !== provider)) &&
-          advanced.unique_email
-        ) {
-          return resolve([
-            null,
-            [{ messages: [{ id: "Auth.form.error.email.taken" }] }],
-            "Email is already taken.",
-          ]);
-        }
-
-        // Retrieve default role.
-        const defaultRole = await strapi
-          .query("role", "users-permissions")
-          .findOne({ type: advanced.default_role }, []);
-
-        // Create the new user.
-        const params = _.assign(profile, {
-          provider: provider,
-          role: defaultRole.id,
-          confirmed: true,
-          referralCode: generateReferralCode(profile.username),
-          referrerCode,
-        });
-
-        const createdUser = await strapi
-          .query("user", "users-permissions")
-          .create(params);
-
-        try {
-          if (userType === "voting") {
-            await strapi.plugins[
-              "users-permissions"
-            ].services.user.createProjectOwner(createdUser);
-          } else {
-            await strapi.plugins[
-              "users-permissions"
-            ].services.user.createHunter(createdUser);
+          let afterUpdatedUser = updatedTokenUser;
+          const res = await strapi.plugins[
+            "users-permissions"
+          ].services.user.createHunterOrProjectOwner(
+            userType,
+            updatedTokenUser
+          );
+          if (res) {
+            afterUpdatedUser = await strapi
+              .query("user", "users-permissions")
+              .findOne({ id: updatedTokenUser.id });
           }
+          return resolve([afterUpdatedUser, null]);
+        } else {
+          if (
+            !_.isEmpty(_.find(users, (user) => user.provider !== provider)) &&
+            advanced.unique_email
+          ) {
+            return resolve([
+              null,
+              [{ messages: [{ id: "Auth.form.error.email.taken" }] }],
+              "Email is already taken.",
+            ]);
+          }
+
+          // Retrieve default role.
+          const defaultRole = await strapi
+            .query("role", "users-permissions")
+            .findOne({ type: advanced.default_role }, []);
+
+          const params = _.assign(profile, {
+            provider: provider,
+            role: defaultRole.id,
+            confirmed: true,
+            referralCode: generateReferralCode(profile.username),
+            referrerCode,
+          });
+
+          const createdUser = await strapi
+            .query("user", "users-permissions")
+            .create(params);
+
+          await strapi.plugins[
+            "users-permissions"
+          ].services.user.createHunterOrProjectOwner(userType, createdUser);
 
           const afterCreatedUser = await strapi
             .query("user", "users-permissions")
@@ -144,18 +145,9 @@ const connect = (provider, query) => {
           delete afterRemovePrivateDataUser.accessTokenSecret;
 
           return resolve([afterRemovePrivateDataUser, null]);
-        } catch (error) {
-          await strapi
-            .query("user", "users-permissions")
-            .delete({ id: createdUser.id });
-          throw new Error(
-            "[INFO]Cannot create user right now. Please try again!"
-          );
         }
       } catch (err) {
-        if (err.message.includes("[INFO]")) {
-          reject([null, err.message.match(/[^(\[INFO\])]+/)[0]]);
-        } else reject([null, err]);
+        reject([null, err]);
       }
     });
   });

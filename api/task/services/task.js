@@ -51,7 +51,7 @@ const updateTaskTotalParticipantsById = async (id) => {
   return await strapi.services.task.update(
     { id },
     {
-      totalParticipants,
+      totalParticipants: Math.floor(totalParticipants * 1.1),
     }
   );
 };

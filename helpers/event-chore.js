@@ -5,8 +5,10 @@ const { exportDataToCsv } = require("./csv-helper");
 const { FixedNumber } = require("@ethersproject/bignumber");
 const { FIXED_NUMBER } = require("../constants");
 const { isValidStaker } = require("../helpers/blockchainHelpers/farm-helper");
-
+const csvToJson = require("csvtojson");
 const _ = require("lodash");
+const moment = require("moment");
+const { ZERO } = require("../constants/fixedNumber");
 
 const argv = yargs(hideBin(process.argv)).argv;
 const glodaoAddress = "0x7a05CE29a44cA8dD49D967367F98D3F07E204faC";
@@ -22,17 +24,215 @@ let optionalTokenArr = [];
 let task = {};
 let filename = "data";
 const priorityPoolMap = new Map();
+
 let allHunterArr = [];
+let applies = [];
+let allTasks = [];
 
 const everyRewardMap = new Map();
 
+const allReferralPriceMap = new Map();
+
+const resetAllCache = () => {
+  rewardAddressMap.clear();
+  basePriorityReward = FIXED_NUMBER.ZERO;
+  baseCommunityReward = FIXED_NUMBER.ZERO;
+  optionalTokenPriorityReward.clear();
+  optionalTokenCommunityReward.clear();
+  optionalTokenMap.clear();
+  optionalTokenArr = [];
+  task = {};
+  filename = "data";
+  priorityPoolMap.clear();
+};
+
+fetchAllNeededData = async () => {
+  allHunterArr = await strapi.services.hunter.find({
+    _limit: -1,
+    participationStatus: "newbie",
+  });
+
+  const tasks = await strapi.services.task.find({
+    _limit: -1,
+    id_ne: "628f9e2be57ee96d97ac2b25",
+    startTime_gte: moment("2022-05-04 19:00").toISOString(),
+    startTime_lte: moment("2022-06-20 19:00").toISOString(),
+    type: "bounty",
+  });
+  console.log(tasks.length);
+  allTasks = tasks;
+  let miniApplies = [];
+
+  const _limit = 5000;
+  let _start = 0;
+  do {
+    const res = await strapi.services.apply.find({
+      _limit,
+      status_ne: "processing",
+      _start,
+      task_ne: "628f9e2be57ee96d97ac2b25",
+      createdAt_gte: moment("2022-05-04 19:00").toISOString(),
+      createdAt_lte: moment("2022-06-20 19:00").toISOString(),
+    });
+    console.log(res.length);
+    res
+      .filter(
+        (apply) =>
+          !moment(apply.task.startTime).isBefore(moment("2022-05-04 19:00"))
+      )
+      .forEach((apply) => {
+        for (let index = 0; index < allTasks.length; index++) {
+          const task = allTasks[index];
+          if (task.id === apply.task.id) applies.push(apply);
+        }
+      });
+    miniApplies = miniApplies.concat(
+      res.filter(
+        (apply) =>
+          !moment(apply.task.startTime).isBefore(moment("2022-05-04 19:00"))
+      )
+    );
+    _start += _limit;
+    if (res.length < _limit) break;
+  } while (true);
+  console.log(applies.length);
+  console.log(miniApplies.length);
+};
+
 async function main(argv) {
+  // {
+  //   "tokenAddress": "GLD-contract-address",
+  //   "token": "GLD",
+  //   "rewardAmount": "1.712030",
+  //   "decimals": "18",
+  //   "tokenBasePrice": "0.018"
+  // }
+  const rewards = await csvToJson().fromFile("events/temp-lucky-winner.csv");
+  console.log(rewards);
+  console.log(rewards.length);
+  rewards.forEach((reward) => {
+    console.log(
+      (
+        Math.floor(
+          _.toNumber(
+            FixedNumber.from(`${reward.Reward}`)
+              .divUnsafe(FixedNumber.from("0.018"))
+              ._value.substring(0, 14)
+          ) * 1000000
+        ) / 1000000
+      ).toString(),
+      FixedNumber.from(`${reward.Reward}`).divUnsafe(FixedNumber.from("0.018"))
+        ._value
+    );
+  });
+  const bounty = rewards.map((reward) => ({
+    walletAddress: reward.WalletAddress,
+    tokenAddress: "GLD-contract-address",
+    token: "GLD",
+    rewardAmount: (
+      Math.floor(
+        _.toNumber(
+          FixedNumber.from(`${reward.Reward}`)
+            .divUnsafe(FixedNumber.from("0.018"))
+            ._value.substring(0, 14)
+        ) * 1000000
+      ) / 1000000
+    ).toString(),
+    decimals: "18",
+    tokenBasePrice: "0.018",
+  }));
+  console.log(bounty);
   await initialize();
-  await getAllNeededData();
+  let index = 0;
+  const chunks = _.chunk(bounty, 10);
+  for (const subChunks of chunks) {
+    try {
+      await Promise.all(
+        subChunks.map((bountyReward) => {
+          return strapi.services["bounty-reward"].recordReward(
+            bountyReward.walletAddress,
+            bountyReward.tokenAddress,
+            bountyReward.token,
+            bountyReward.rewardAmount,
+            bountyReward.decimals,
+            bountyReward.tokenBasePrice
+          );
+        })
+      ).then(() => {
+        console.log("batch completed bounty", index++);
+      });
+    } catch (error) {
+      console.log("\x1b[31m", "Wasted");
+      console.log("\x1b[37m", error);
+      console.log("\x1b[31m", "Wasted");
+    }
+  }
+  return;
+
+  await fetchAllNeededData();
+
+  // return
+  let finalArr = [];
+  const hunters = allHunterArr;
+
+  for (let index = 0; index < hunters.length; index++) {
+    const hunter = hunters[index];
+    console.log(hunter.name, index, hunters.length);
+    const allMission = applies.filter((apply) => apply.hunter.id === hunter.id);
+    const priorityCount = allMission.filter(
+      (apply) => apply.hunter.id === hunter.id && apply.poolType === "priority"
+    ).length;
+
+    const allMissionCount = allMission.length;
+
+    console.log(priorityCount, allMissionCount);
+    finalArr.push({
+      ...hunter,
+      name: hunter.name,
+      missionCount: allMissionCount,
+      priorityCount,
+    });
+  }
+  const headers = [
+    {
+      id: "name",
+      title: "name",
+    },
+    {
+      id: "missionCount",
+      title: "missionCount",
+    },
+    {
+      id: "priorityCount",
+      title: "priorityCount",
+    },
+    {
+      id: "address",
+      title: "walletAddress",
+    },
+  ];
+  await exportDataToCsv(
+    _.orderBy(finalArr, ["missionCount", "priorityCount"], ["desc", "desc"]),
+    headers,
+    "temp-active-event-4.csv"
+  );
+  // await exportApply(argv);
+  // for (let index = 0; index < allTasks.length; index++) {
+  //   const task = allTasks[index];
+  //   await exportApply({ task: task.id });
+  //   resetAllCache();
+  // }
+  // await exportMapToCsvWithName(allReferralPriceMap, "ref-test-2");
+}
+async function exportApply(argv) {
+  // await initialize();
+  // await getAllNeededData();
   const tempApplies = _.sortBy(
-    await getRelatedCompleteApplies(argv.task),
+    applies.filter((apply) => apply.task.id === argv.task),
     "completeTime"
   );
+  console.log(tempApplies.length);
+  if (tempApplies.length === 0) return;
   await calculatePoolReward(argv.task, tempApplies);
   let rewardCalculatedArr = [];
   let optionalRewardCalculatedArr = [];
@@ -176,12 +376,12 @@ async function main(argv) {
       );
     });
   });
+  return;
 
   const chunks = _.chunk(rewardCalculatedArr, 10);
   switch (argv.option) {
     case "updateBounty":
       for (const subChunksOfApplies of chunks) {
-        let indexBatch = 0;
         try {
           await Promise.all(
             subChunksOfApplies.map((apply) => {
@@ -207,7 +407,7 @@ async function main(argv) {
               );
             })
           ).then(() => {
-            console.log("batch completed", indexBatch++);
+            console.log("batch completed");
           });
         } catch (error) {
           console.log("\x1b[31m", "Wasted");
@@ -290,8 +490,6 @@ async function main(argv) {
       break;
     case "recordReward":
       let bountyRewardArr = [];
-      let index = 0;
-      let finishWalletAddress = [];
       for (const [key, value] of everyRewardMap) {
         for (let index = 0; index < value.length; index++) {
           const element = value[index];
@@ -304,9 +502,6 @@ async function main(argv) {
       }
       const bountyRewardChunks = _.chunk(bountyRewardArr, 1);
       for (const subBountyRewards of bountyRewardChunks) {
-        const finishedAddress = subBountyRewards.map((bountyReward) => ({
-          walletAddress: bountyReward.walletAddress,
-        }));
         try {
           await Promise.all(
             subBountyRewards.map((bountyReward) => {
@@ -320,22 +515,9 @@ async function main(argv) {
               );
             })
           ).then(() => {
-            finishWalletAddress = finishWalletAddress.concat(finishedAddress);
-            console.log("batch completed bounty", index++);
+            console.log("batch completed bounty");
           });
         } catch (error) {
-          const header = [
-            {
-              id: "walletAddress",
-              title: "walletAddress",
-            },
-          ];
-          await exportDataToCsv(
-            finishWalletAddress,
-            header,
-            `$finishedWithoutErrorAddress.csv`
-          );
-
           console.log("\x1b[31m", "Wasted");
           console.log("\x1b[37m", error);
           console.log("\x1b[31m", "Wasted");
@@ -385,6 +567,19 @@ accumulateAddressReward = (
           .divUnsafe(FIXED_NUMBER.HUNDRED)
       )
     );
+    // if (rate !== "100") {
+    const refPreviousReward = allReferralPriceMap.get(address)
+      ? allReferralPriceMap.get(address)
+      : FIXED_NUMBER.ZERO;
+    allReferralPriceMap.set(
+      address,
+      refPreviousReward.addUnsafe(
+        bounty
+          .mulUnsafe(FixedNumber.from(`${rate}`))
+          .divUnsafe(FIXED_NUMBER.HUNDRED)
+      )
+    );
+    // }
   }
 
   const everyPreviousReward = everyRewardMap.get(address)
@@ -405,7 +600,7 @@ accumulateAddressReward = (
       });
     } else everyAfterReward.push(token);
   });
-  if (!existedFlag)
+  if (!existedFlag && token !== "BUSD")
     everyAfterReward.push({
       decimals,
       tokenAddress,
@@ -432,11 +627,7 @@ getRootHunter = (referrerCode) => {
 calculatePoolReward = async (taskId, relatedCompleteApplies) => {
   const task = await strapi.services.task.findOne({ id: taskId });
   const countTotla = await strapi.services.apply.count({ task: taskId });
-  console.log(task.name);
-  console.log(task.missionIndex);
   filename = task.name + "-" + task.missionIndex;
-  console.log("total par:" + task.totalParticipants);
-  console.log("total par:" + countTotla);
   const allPriorityPool = relatedCompleteApplies.slice(
     0,
     task.maxPriorityParticipants
@@ -448,37 +639,53 @@ calculatePoolReward = async (taskId, relatedCompleteApplies) => {
   console.log(priorityCount);
   console.log(relatedCompleteApplies.length);
   this.task = task;
-  if (task.maxPriorityParticipants === 0)
-    basePriorityReward = priorityCount = 0;
-  else
-    basePriorityReward = FixedNumber.from(
-      _.get(task, "priorityRewardAmount", "0")
-    ).divUnsafe(FixedNumber.from(_.get(task, "maxPriorityParticipants", "1")));
-  const totalCommunityReward = FixedNumber.from(
-    _.get(task, "rewardAmount", "0")
-  )
-    .mulUnsafe(FixedNumber.from("93"))
-    .divUnsafe(FIXED_NUMBER.HUNDRED)
-    .subUnsafe(FixedNumber.from(_.get(task, "priorityRewardAmount", "0")));
+  if (task.maxPriorityParticipants === 0) {
+    basePriorityReward = FIXED_NUMBER.ZERO;
+    priorityCount = 0;
+  } else
+    try {
+      basePriorityReward = FixedNumber.from(
+        _.get(task, "priorityRewardAmount", "0")
+      ).divUnsafe(
+        FixedNumber.from(_.get(task, "maxPriorityParticipants", "1"))
+      );
+    } catch (error) {
+      basePriorityReward = FIXED_NUMBER.ZERO;
+    }
   const optionalTokens = _.get(task, "optionalTokens", []);
+  let totalCommunityReward = FIXED_NUMBER.ZERO;
+  try {
+    totalCommunityReward = FixedNumber.from(_.get(task, "rewardAmount", "0"))
+      .mulUnsafe(FixedNumber.from("93"))
+      .divUnsafe(FIXED_NUMBER.HUNDRED)
+      .subUnsafe(FixedNumber.from(_.get(task, "priorityRewardAmount", "0")));
+  } catch (error) {
+    totalCommunityReward = FIXED_NUMBER.ZERO;
+  }
   optionalTokenArr = optionalTokens;
   const totalCommunityParticipants =
     relatedCompleteApplies.length - priorityCount;
   optionalTokens.forEach((token) => {
     optionalTokenMap.set(token.tokenContractAddress, token);
-    let optionPriorityReward = 0;
-    let optionCommunityReward = 0;
+    let optionPriorityReward = FIXED_NUMBER.ZERO;
+    let optionCommunityReward = FIXED_NUMBER.ZERO;
     if (task.maxPriorityParticipants !== 0)
-      optionPriorityReward = FixedNumber.from(
-        _.get(token, "priorityRewardAmount", "0")
-      ).divUnsafe(
-        FixedNumber.from(_.get(task, "maxPriorityParticipants", "1"))
-      );
-    optionCommunityReward = FixedNumber.from(_.get(token, "rewardAmount", "0"))
-      .mulUnsafe(FixedNumber.from("93"))
-      .divUnsafe(FIXED_NUMBER.HUNDRED)
-      .subUnsafe(FixedNumber.from(_.get(token, "priorityRewardAmount", "0")))
-      .divUnsafe(FixedNumber.from(`${totalCommunityParticipants}`));
+      try {
+        optionPriorityReward = FixedNumber.from(
+          _.get(token, "priorityRewardAmount", "0")
+        ).divUnsafe(
+          FixedNumber.from(_.get(task, "maxPriorityParticipants", "1"))
+        );
+      } catch (error) {}
+    try {
+      optionCommunityReward = FixedNumber.from(
+        _.get(token, "rewardAmount", "0")
+      )
+        .mulUnsafe(FixedNumber.from("93"))
+        .divUnsafe(FIXED_NUMBER.HUNDRED)
+        .subUnsafe(FixedNumber.from(_.get(token, "priorityRewardAmount", "0")))
+        .divUnsafe(FixedNumber.from(`${totalCommunityParticipants}`));
+    } catch (error) {}
     optionalTokenPriorityReward.set(
       token.tokenContractAddress,
       optionPriorityReward
@@ -488,9 +695,13 @@ calculatePoolReward = async (taskId, relatedCompleteApplies) => {
       optionCommunityReward
     );
   });
-  baseCommunityReward = totalCommunityReward.divUnsafe(
-    FixedNumber.from(`${totalCommunityParticipants}`)
-  );
+  try {
+    baseCommunityReward = totalCommunityReward.divUnsafe(
+      FixedNumber.from(`${totalCommunityParticipants}`)
+    );
+  } catch (error) {
+    baseCommunityReward = FIXED_NUMBER.ZERO;
+  }
 };
 
 getRelatedCompleteApplies = async (task) => {
