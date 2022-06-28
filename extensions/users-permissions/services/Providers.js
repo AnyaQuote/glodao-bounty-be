@@ -28,6 +28,7 @@ const { generateRandomString } = require("../../../helpers");
 const connect = (provider, query) => {
   const access_token = query.access_token || query.code || query.oauth_token;
   let referrerCode = _.get(query, "referrerCode", "######");
+  const userType = _.get(query, "userType");
 
   return new Promise((resolve, reject) => {
     if (!access_token) {
