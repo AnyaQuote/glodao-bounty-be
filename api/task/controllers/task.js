@@ -7,6 +7,10 @@ const { get } = require("lodash");
  */
 
 module.exports = {
+  createTask: async (ctx) => {
+    const missionData = ctx.request.body;
+    return await strapi.services.task.createTask(ctx, missionData);
+  },
   getAverageCommunityReward: async (ctx) => {
     try {
       const limit =

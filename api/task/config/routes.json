@@ -49,6 +49,14 @@
       }
     },
     {
+      "method": "POST",
+      "path": "/tasks/createTask",
+      "handler": "task.createTask",
+      "config": {
+        "policies": ["global::is-address-owner"]
+      }
+    },
+    {
       "method": "GET",
       "path": "/tasks/getAverageCommunityReward/:limit",
       "handler": "task.getAverageCommunityReward",
