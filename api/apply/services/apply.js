@@ -284,6 +284,8 @@ const verifyCommentLink = (data, baseRequirement) => {
     !isHashtagIncluded(data.entities.hashtags, baseRequirement.hashtag)
   )
     return "Tweet link missing required hashtag";
+  console.log(_.get(baseRequirement, "mentions", ""));
+  console.log(_.get(data, "entities.user_mentions", []));
   if (
     !_.isEmpty(_.get(baseRequirement, "mentions", "")) &&
     !isUserMentionsIncluded(
@@ -384,7 +386,14 @@ const isHashtagIncluded = (hashtags, requiredHashtag) => {
  * @returns {boolean} true if user mentions are included in the tweet else false
  */
 const isUserMentionsIncluded = (mentions, requiredMentions) => {
-  return isArrayIncluded(toLower(requiredMentions), toLower(mentions));
+  return isArrayIncluded(
+    toLower(requiredMentions),
+    toLower(
+      mentions.map((mention) => {
+        return mention.screen_name;
+      })
+    )
+  );
 };
 
 /**
