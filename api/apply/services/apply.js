@@ -384,7 +384,14 @@ const isHashtagIncluded = (hashtags, requiredHashtag) => {
  * @returns {boolean} true if user mentions are included in the tweet else false
  */
 const isUserMentionsIncluded = (mentions, requiredMentions) => {
-  return isArrayIncluded(toLower(requiredMentions), toLower(mentions));
+  return isArrayIncluded(
+    toLower(requiredMentions),
+    toLower(
+      mentions.map((mention) => {
+        return mention.screen_name;
+      })
+    )
+  );
 };
 
 /**
