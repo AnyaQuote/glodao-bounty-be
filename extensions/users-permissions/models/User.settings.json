@@ -92,6 +92,10 @@
       "private": true,
       "required": false
     },
+    "projectOwner": {
+      "via": "user",
+      "model": "project-owner"
+    },
     "telegramId": {
       "type": "string"
     },
