@@ -40,19 +40,16 @@ const connect = (provider, query) => {
         return reject([null, err]);
       }
 
-      // We need at least the mail.
-      // if (!profile.email) {
-      //   return reject([null, { message: "Email was not available." }]);
-      // }
-
       try {
-        if (
-          !(await strapi.plugins["users-permissions"].services.user.isRefExist(
-            referrerCode
-          )) &&
-          (await strapi.services.campaign.count({ code: referrerCode })) === 0
-        )
+        const isRefExist = await strapi.plugins[
+          "users-permissions"
+        ].services.user.isRefExist(referrerCode);
+        const referrerCampaignCount = await strapi.services.campaign.count({
+          code: referrerCode,
+        });
+        if (!isRefExist && referrerCampaignCount === 0) {
           referrerCode = "######";
+        }
 
         const users = await strapi.query("user", "users-permissions").find({
           twitterId: profile.twitterId,
