@@ -58,8 +58,9 @@ const createHunter = async (user) => {
       },
     };
   } else {
-    let root = "######";
-    let campaignCode = "######";
+    const EMPTY_CODE = "######";
+    let root = EMPTY_CODE;
+    let campaignCode = EMPTY_CODE;
     if (referrerCode !== EMPTY_CODE) {
       const referrer = await strapi.services.hunter.findOne({
         referralCode: referrerCode,
