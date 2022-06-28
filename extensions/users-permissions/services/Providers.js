@@ -85,54 +85,57 @@ const connect = (provider, query) => {
                 accessTokenSecret
               );
             } catch (error) {
-              console.log(error);
+              return reject([null, error]);
             }
           }
+          await strapi.plugins[
+            "users-permissions"
+          ].services.user.createHunterOrProjectOwner(
+            userType,
+            updatedTokenUser
+          );
           return resolve([updatedTokenUser, null]);
+        } else {
+          if (
+            !_.isEmpty(_.find(users, (user) => user.provider !== provider)) &&
+            advanced.unique_email
+          ) {
+            return resolve([
+              null,
+              [{ messages: [{ id: "Auth.form.error.email.taken" }] }],
+              "Email is already taken.",
+            ]);
+          }
+
+          // Retrieve default role.
+          const defaultRole = await strapi
+            .query("role", "users-permissions")
+            .findOne({ type: advanced.default_role }, []);
+
+          const params = _.assign(profile, {
+            provider: provider,
+            role: defaultRole.id,
+            confirmed: true,
+            referralCode: generateReferralCode(profile.username),
+            referrerCode,
+          });
+
+          const createdUser = await strapi
+            .query("user", "users-permissions")
+            .create(params);
+
+          await strapi.plugins[
+            "users-permissions"
+          ].services.user.createHunterOrProjectOwner(userType, createdUser);
+
+          let afterRemovePrivateDataUser = createdUser;
+          delete afterRemovePrivateDataUser.accessToken;
+          delete afterRemovePrivateDataUser.accessTokenSecret;
+
+          return resolve([afterRemovePrivateDataUser, null]);
         }
-
-        if (
-          !_.isEmpty(_.find(users, (user) => user.provider !== provider)) &&
-          advanced.unique_email
-        ) {
-          return resolve([
-            null,
-            [{ messages: [{ id: "Auth.form.error.email.taken" }] }],
-            "Email is already taken.",
-          ]);
-        }
-
-        // Retrieve default role.
-        const defaultRole = await strapi
-          .query("role", "users-permissions")
-          .findOne({ type: advanced.default_role }, []);
-
-        // Create the new user.
-        const params = _.assign(profile, {
-          provider: provider,
-          role: defaultRole.id,
-          confirmed: true,
-          referralCode: generateReferralCode(profile.username),
-          referrerCode,
-        });
-
-        const { id: userId } = await strapi
-          .query("user", "users-permissions")
-          .create(params);
-
-        const afterCreatedUser = await strapi
-          .query("user", "users-permissions")
-          .findOne({ id: userId });
-
-        let afterRemovePrivateDataUser = afterCreatedUser;
-        delete afterRemovePrivateDataUser.accessToken;
-        delete afterRemovePrivateDataUser.accessTokenSecret;
-
-        return resolve([afterRemovePrivateDataUser, null]);
       } catch (err) {
-        if (err.message.includes("[INFO]")) {
-          reject([null, err.message.match(/[^(\[INFO\])]+/)[0]]);
-        } else reject([null, err]);
+        reject([null, err]);
       }
     });
   });
