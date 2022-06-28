@@ -74,6 +74,9 @@
       "type": "integer",
       "default": 0
     },
+    "poolId": {
+      "type": "string"
+    },
     "finishMessage": {
       "type": "string"
     },
