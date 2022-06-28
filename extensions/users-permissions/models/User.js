@@ -8,7 +8,12 @@ const _ = require("lodash");
 module.exports = {
   lifecycles: {
     async afterDelete(result) {
-      await strapi.services.hunter.delete({ id: result.hunter.id });
+      if (_.get(result, "hunter.id"))
+        await strapi.services.hunter.delete({ id: result.hunter.id });
+      if (_.get(result, "projectOwner.id"))
+        await strapi.services["project-owner"].delete({
+          id: result.projectOwner.id,
+        });
     },
   },
 };

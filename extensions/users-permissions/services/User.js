@@ -1,5 +1,4 @@
 "use strict";
-
 /**
  * User.js service
  *
