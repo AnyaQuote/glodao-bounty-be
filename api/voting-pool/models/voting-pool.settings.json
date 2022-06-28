@@ -1,0 +1,81 @@
+{
+  "kind": "collectionType",
+  "collectionName": "voting_pools",
+  "info": {
+    "name": "VotingPool",
+    "description": ""
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "projectName": {
+      "type": "string",
+      "unique": true
+    },
+    "data": {
+      "type": "json"
+    },
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "bounty",
+        "launchpad"
+      ]
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "pending",
+        "voting",
+        "approved",
+        "rejected",
+        "cancelled"
+      ]
+    },
+    "startDate": {
+      "type": "datetime"
+    },
+    "ownerAddress": {
+      "type": "string"
+    },
+    "endDate": {
+      "type": "datetime"
+    },
+    "tokenAddress": {
+      "type": "string"
+    },
+    "poolId": {
+      "type": "string",
+      "unique": true
+    },
+    "unicodeName": {
+      "type": "string",
+      "unique": true
+    },
+    "totalMission": {
+      "type": "string"
+    },
+    "tokenName": {
+      "type": "string"
+    },
+    "chain": {
+      "type": "string"
+    },
+    "chainId": {
+      "type": "string"
+    },
+    "rewardAmount": {
+      "type": "string"
+    },
+    "votingStart": {
+      "type": "datetime"
+    },
+    "votingEnd": {
+      "type": "datetime"
+    }
+  }
+}
