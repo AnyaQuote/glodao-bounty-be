@@ -1,0 +1,60 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/project-owners",
+      "handler": "project-owner.find",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/project-owners/count",
+      "handler": "project-owner.count",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/project-owners/:id",
+      "handler": "project-owner.findOne",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/project-owners",
+      "handler": "project-owner.create",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/project-owners/:id",
+      "handler": "project-owner.update",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/project-owners/:id",
+      "handler": "project-owner.delete",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "PATCH",
+      "path": "/project-owners/updateProjectOwnerAddress",
+      "handler": "project-owner.updateProjectOwnerAddress",
+      "config": {
+        "policies": ["isOwner", "isWalletUnique", "signMessage"]
+      }
+    }
+  ]
+}
