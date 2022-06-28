@@ -24,7 +24,7 @@ const isSolidityAddress = (address) => {
  * @returns true - the wallet address match the signature
  */
 const verifySoliditySignature = (walletAddress, signature, nonce) => {
-  const msg = `https://glodao.io/bounty wants to: \n Sign message with account \n ${walletAddress} - One time nonce: ${nonce}`;
+  const msg = `https://glodao.io wants to: \n Sign message with account \n ${walletAddress} - One time nonce: ${nonce}`;
   const msgBufferHex = bufferToHex(Buffer.from(msg, "utf8"));
   const address = recoverPersonalSignature({
     data: msgBufferHex,
