@@ -1,8 +1,4 @@
 "use strict";
-const { generateRandomNonce } = require("../../../helpers/wallet-helper");
-const { isEmpty } = require("lodash");
-const EMPTY_CODE = "######";
-
 /**
  * User.js service
  *
