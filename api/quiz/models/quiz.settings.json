@@ -30,6 +30,9 @@
     },
     "metadata": {
       "type": "json"
+    },
+    "userId": {
+      "type": "string"
     }
   }
 }

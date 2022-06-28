@@ -63,6 +63,22 @@
       "config": {
         "policies": []
       }
+    },
+    {
+      "method": "POST",
+      "path": "/quizzes/createQuiz",
+      "handler": "quiz.createQuiz",
+      "config": {
+        "policies": ["global::is-address-owner"]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/quizzes/getOwnerQuiz/:id",
+      "handler": "quiz.getOwnerQuiz",
+      "config": {
+        "policies": []
+      }
     }
   ]
 }
