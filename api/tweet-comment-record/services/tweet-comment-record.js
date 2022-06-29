@@ -9,7 +9,7 @@ const {
   split,
 } = require("lodash");
 const { similarity } = require("../../../helpers");
-const MAX_SIMILARITY = 0.8;
+const MAX_SIMILARITY = 1.1;
 
 /**
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-services)
