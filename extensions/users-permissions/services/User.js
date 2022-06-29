@@ -126,30 +126,28 @@ module.exports = {
 
   /**
    * Create hunter or projectOwner related to created user
-   * If userType is voting, check projectOwner
-   * Else check for hunter
-   * @param {*} userType voting or undefined
+   * @param {*} userType can be "voting" | "both" | "bounty"
    * @param {*} user created user
+   * @returns {boolean} true if either a hunter or projectOwner is created
    */
-  async createHunterOrProjectOwner(userType, user) {
-    let result = null;
-    if (userType === "voting") {
-      const projectOwner = await strapi.services["project-owner"].find({
-        user: user.id,
-        _limit: 1,
-      });
-      if (_.isEmpty(projectOwner)) {
-        result = await createProjectOwner(user);
+  async createHunterOrProjectOwner(type, user) {
+    let isCreated = false;
+    if (type === "voting" || type === "both") {
+      // Get project owner in user model, return null unless projectOwner is empty
+      const linkedProjectOwner = _.get(user, "projectOwner", null);
+      if (!linkedProjectOwner) {
+        await createProjectOwner(user);
+        isCreated = true;
       }
-    } else {
-      const hunter = await strapi.services.hunter.find({
-        user: user.id,
-        _limit: 1,
-      });
-      if (_.isEmpty(hunter)) {
-        result = await createHunter(user);
-      }
-      return result;
     }
+    if (type === "bounty" || type === "both") {
+      // Get hunter property in user model, return null unless hunter is empty
+      const linkedHunter = _.get(user, "hunter", null);
+      if (!linkedHunter) {
+        await createHunter(user);
+        isCreated = true;
+      }
+    }
+    return isCreated;
   },
 };
