@@ -266,7 +266,7 @@ const verifyTweetLink = (data, baseRequirement) => {
   )
     return "Tweet link missing required user mentions";
   if (
-    isHashtagIncluded(
+    isHashtagsIncluded(
       _.get(data, "entities.hashtags", []),
       baseRequirement.hashtag
     )
@@ -281,7 +281,10 @@ const verifyCommentLink = (data, baseRequirement) => {
     return "The length of the submitted tweet is not valid";
   if (
     !_.isEmpty(_.get(baseRequirement, "hashtag", "")) &&
-    !isHashtagIncluded(data.entities.hashtags, baseRequirement.hashtag)
+    !isHashtagsIncluded(
+      _.get(data, "entities.hashtags", []),
+      baseRequirement.hashtag
+    )
   )
     return "Tweet link missing required hashtag";
   if (
@@ -313,7 +316,10 @@ const verifyRetweetLink = (data, baseRequirement) => {
     return "The length of the submitted tweet is not valid";
   if (
     !_.isEmpty(_.get(baseRequirement, "hashtag", "")) &&
-    !isHashtagIncluded(data.entities.hashtags, baseRequirement.hashtag)
+    !isHashtagsIncluded(
+      _.get(data, "entities.hashtags", []),
+      baseRequirement.hashtag
+    )
   )
     return "Tweet link missing required hashtag";
   // if mission users mentioned the tweet from entities.user_mentions
@@ -374,6 +380,17 @@ const isHashtagIncluded = (hashtags, requiredHashtag) => {
     _.findIndex(hashtags, (hashtag) =>
       _.isEqual(_.toLower(hashtag.text), _.toLower(requiredHashtag))
     ) > -1
+  );
+};
+
+const isHashtagsIncluded = (hashtags, requiredHashtags) => {
+  return isArrayIncluded(
+    toLower(requiredHashtags),
+    toLower(
+      hashtags.map((hashtag) => {
+        return hashtag.text;
+      })
+    )
   );
 };
 
