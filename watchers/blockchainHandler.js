@@ -143,10 +143,10 @@ const getVotingContract = (chainId) => {
       return "";
     case 56:
     case "56":
-      return "0xCEb2E361B1B3fB0E44BC337D459A36f4CA467869";
+      return "0x27115b06568443c5000057C7d06A7743201AB507";
     case 97:
     case "97":
-      return "0xCEb2E361B1B3fB0E44BC337D459A36f4CA467869";
+      return "0x27115b06568443c5000057C7d06A7743201AB507";
   }
   return null;
 };
