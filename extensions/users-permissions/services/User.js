@@ -134,19 +134,13 @@ module.exports = {
   async createHunterOrProjectOwner(userType, user) {
     let result = null;
     if (userType === "voting") {
-      const projectOwner = await strapi.services["project-owner"].find({
-        user: user.id,
-        _limit: 1,
-      });
-      if (_.isEmpty(projectOwner)) {
+      const hasLinkedProjectOwner = _.has(user, "projectOwner");
+      if (!hasLinkedProjectOwner) {
         result = await createProjectOwner(user);
       }
     } else {
-      const hunter = await strapi.services.hunter.find({
-        user: user.id,
-        _limit: 1,
-      });
-      if (_.isEmpty(hunter)) {
+      const hasLinkedHunter = _.has(user, "hunter");
+      if (!hasLinkedHunter) {
         result = await createHunter(user);
       }
       return result;
