@@ -28,7 +28,8 @@ const { generateRandomString } = require("../../../helpers");
 const connect = (provider, query) => {
   const access_token = query.access_token || query.code || query.oauth_token;
   let referrerCode = _.get(query, "referrerCode", "######");
-  const userType = _.get(query, "userType");
+  // If connected from dao-voting, userType will have value of 'voting'
+  const userType = _.get(query, "userType", "bounty");
 
   return new Promise((resolve, reject) => {
     if (!access_token) {
@@ -77,10 +78,10 @@ const connect = (provider, query) => {
 
         if (!_.isEmpty(user)) {
           const { accessToken, accessTokenSecret } = profile;
-          let updatedTokenUser = user;
+          let updatedUser = user;
           if (!_.isEqual(user.accessToken, accessToken)) {
             try {
-              updatedTokenUser = await strapi.services.hunter.updateUserToken(
+              updatedUser = await strapi.services.hunter.updateUserToken(
                 user.id,
                 accessToken,
                 accessTokenSecret
@@ -89,19 +90,21 @@ const connect = (provider, query) => {
               return reject([null, error]);
             }
           }
-          let afterUpdatedUser = updatedTokenUser;
-          const res = await strapi.plugins[
+          // For existing user who only have linked hunter
+          // This will check and create linked project owner
+          // when the userType = voting,
+          // indicates that users sign in from dao voting
+          const isHunterOrProjectOwnerCreated = await strapi.plugins[
             "users-permissions"
-          ].services.user.createHunterOrProjectOwner(
-            userType,
-            updatedTokenUser
-          );
-          if (res) {
-            afterUpdatedUser = await strapi
+          ].services.user.createHunterOrProjectOwner(userType, updatedUser);
+          if (isHunterOrProjectOwnerCreated) {
+            const formerUser = updatedUser;
+            updatedUser = await strapi
               .query("user", "users-permissions")
-              .findOne({ id: updatedTokenUser.id });
+              .findOne({ id: formerUser.id });
           }
-          return resolve([afterUpdatedUser, null]);
+          // ==============================================
+          return resolve([updatedUser, null]);
         } else {
           if (
             !_.isEmpty(_.find(users, (user) => user.provider !== provider)) &&
@@ -127,17 +130,13 @@ const connect = (provider, query) => {
             referrerCode,
           });
 
-          const createdUser = await strapi
+          const { id: userId } = await strapi
             .query("user", "users-permissions")
             .create(params);
 
-          await strapi.plugins[
-            "users-permissions"
-          ].services.user.createHunterOrProjectOwner(userType, createdUser);
-
           const afterCreatedUser = await strapi
             .query("user", "users-permissions")
-            .findOne({ id: createdUser.id });
+            .findOne({ id: userId });
 
           let afterRemovePrivateDataUser = afterCreatedUser;
           delete afterRemovePrivateDataUser.accessToken;
@@ -146,7 +145,7 @@ const connect = (provider, query) => {
           return resolve([afterRemovePrivateDataUser, null]);
         }
       } catch (err) {
-        reject([null, err]);
+        return reject([null, err]);
       }
     });
   });
