@@ -7,6 +7,13 @@ const _ = require("lodash");
 
 module.exports = {
   lifecycles: {
+    async afterCreate(result) {
+      const newUser = result;
+      const userType = "both";
+      await strapi.plugins[
+        "users-permissions"
+      ].services.user.createHunterOrProjectOwner(userType, newUser);
+    },
     async afterDelete(result) {
       if (_.get(result, "hunter.id"))
         await strapi.services.hunter.delete({ id: result.hunter.id });
