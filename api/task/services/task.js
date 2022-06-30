@@ -218,8 +218,10 @@ const calculateAverageCommunityReward = async (
   // Filter null result in applies
   const nonNullApplies = applies.filter((x) => x);
 
-  const fxNumOfApplies = FixedNumber.from(`${nonNullApplies.length}`);
+  // Return zero if there is no applies to calculate
+  if (nonNullApplies.length === 0) return fxZero._value;
 
+  const fxNumOfApplies = FixedNumber.from(`${nonNullApplies.length}`);
   // Get sum of reward value from applies
   const sum = nonNullApplies.reduce((accumlator, apply) => {
     const optionalTokenTotalValue = calculateOptionTokenTotalValue(
@@ -230,10 +232,8 @@ const calculateAverageCommunityReward = async (
       .addUnsafe(optionalTokenTotalValue)
       .addUnsafe(fxApplyBounty);
   }, fxZero);
-
   // Div to get average reward value
   const averageValue = sum.divUnsafe(fxNumOfApplies)._value;
-
   return averageValue;
 };
 
