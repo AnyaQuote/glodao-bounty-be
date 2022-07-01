@@ -76,6 +76,9 @@
     },
     "votingEnd": {
       "type": "datetime"
+    },
+    "owner": {
+      "model": "project-owner"
     }
   }
 }
