@@ -77,7 +77,7 @@
     "votingEnd": {
       "type": "datetime"
     },
-    "owner": {
+    "projectOwner": {
       "model": "project-owner"
     }
   }
