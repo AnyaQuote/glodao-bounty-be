@@ -31,9 +31,6 @@
     "maxParticipants": {
       "type": "integer"
     },
-    "hunter": {
-      "model": "hunter"
-    },
     "data": {
       "type": "json"
     },
@@ -85,6 +82,9 @@
     },
     "optionalTokens": {
       "type": "json"
+    },
+    "pool": {
+      "model": "voting-pool"
     }
   }
 }
