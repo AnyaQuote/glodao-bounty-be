@@ -83,7 +83,7 @@
     "optionalTokens": {
       "type": "json"
     },
-    "pool": {
+    "votingPool": {
       "model": "voting-pool"
     }
   }
