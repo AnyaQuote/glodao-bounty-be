@@ -1,5 +1,5 @@
 "use strict";
-const { get } = require("lodash");
+const { get, isEqual } = require("lodash");
 
 /**
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-controllers)
@@ -9,6 +9,9 @@ const { get } = require("lodash");
 module.exports = {
   createTask: async (ctx) => {
     const missionData = ctx.request.body;
+    const type = get(ctx, "request.body", "bounty");
+    if (isEqual(type, "iat"))
+      return await strapi.services.task.createInAppTrialTask(ctx, missionData);
     return await strapi.services.task.createTask(ctx, missionData);
   },
   getAverageCommunityReward: async (ctx) => {
