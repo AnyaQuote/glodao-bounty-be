@@ -46,6 +46,27 @@ const generateApiKeyWithRoutes = async (
   return apiKey;
 };
 
+const updateApiKeyTaskListByProjectOwner = async (projectOwner, taskIds) => {
+  const apiKey = await strapi.services["api-key"].findOne({
+    projectOwner,
+    isActive: true,
+  });
+  if (apiKey) {
+    return await strapi.services["api-key"].update(
+      { id: apiKey.id },
+      {
+        tasks: [
+          ...apiKey.tasks,
+          ...taskIds.map((id) => ({ id: id, code: generateRandomString() })),
+        ],
+      }
+    );
+  } else {
+    return await generateApiKeyWithRoutes(projectOwner, taskIds);
+  }
+};
+
 module.exports = {
   generateApiKeyWithRoutes,
+  updateApiKeyTaskListByProjectOwner,
 };
