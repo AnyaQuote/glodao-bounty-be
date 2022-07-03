@@ -67,7 +67,7 @@ const updateApiKeyTaskListByProjectOwner = async (projectOwner, taskIds) => {
   }
 };
 
-const isApiKeyAuthorized = async (key, secret, request, taskCode) => {
+const isApiKeyAuthorized = async (key, secret, request, taskCode = "") => {
   const apiKey = await strapi.services["api-key"].findOne({
     key,
     secret,
@@ -86,9 +86,11 @@ const isApiKeyAuthorized = async (key, secret, request, taskCode) => {
   if (isEmpty(route)) {
     return false;
   }
-  const task = apiKey.tasks.find((task) => isEqual(task.code, taskCode));
-  if (isEmpty(task)) {
-    return false;
+  if (!isEmpty(taskCode)) {
+    const task = apiKey.tasks.find((task) => isEqual(task.code, taskCode));
+    if (isEmpty(task)) {
+      return false;
+    }
   }
   return true;
 };
