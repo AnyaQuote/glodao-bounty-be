@@ -95,8 +95,32 @@ const isApiKeyAuthorized = async (key, secret, request, taskCode = "") => {
   return true;
 };
 
+const isApiKeyAuthorizedByObject = async (apiKey, request, taskCode = "") => {
+  if (isEmpty(apiKey)) {
+    return false;
+  }
+  const { path, method } = request;
+  const route = apiKey.routes.find((route) => {
+    return (
+      isEqualWith(route.path, path, toLower) &&
+      isEqualWith(route.method, method, toLower)
+    );
+  });
+  if (isEmpty(route)) {
+    return false;
+  }
+  if (!isEmpty(taskCode)) {
+    const task = apiKey.tasks.find((task) => isEqual(task.code, taskCode));
+    if (isEmpty(task)) {
+      return false;
+    }
+  }
+  return true;
+};
+
 module.exports = {
   generateApiKeyWithRoutes,
   updateApiKeyTaskListByProjectOwner,
   isApiKeyAuthorized,
+  isApiKeyAuthorizedByObject,
 };
