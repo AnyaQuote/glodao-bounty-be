@@ -1,5 +1,5 @@
 "use strict";
-const { get, isEqual } = require("lodash");
+const { get, isEqual, isEmpty } = require("lodash");
 
 /**
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-controllers)
@@ -36,5 +36,44 @@ module.exports = {
         error: error,
       };
     }
+  },
+  updateInAppTrial: async (ctx) => {
+    // get route from ctx
+    const request = get(ctx, "request", {});
+    const { api_key, secret_key } = get(request, "query", {});
+    const { taskCode, walletAddress, stepCode } = get(request, "body", {});
+    if (
+      isEmpty(api_key) ||
+      isEmpty(secret_key) ||
+      isEmpty(taskCode) ||
+      isEmpty(walletAddress) ||
+      isEmpty(stepCode)
+    )
+      return ctx.badRequest("Missing required fields");
+    const apiKey = await strapi.services["api-key"].findOne({
+      key: api_key,
+      secret: secret_key,
+      isActive: true,
+    });
+    const isApiKeyAuthorized = await strapi.services[
+      "api-key"
+    ].isApiKeyAuthorizedByObject(apiKey, request, taskCode);
+    if (!isApiKeyAuthorized)
+      return ctx.unauthorized(
+        "The server understands the request but the API key is not authorized to access this resource"
+      );
+
+    const task = apiKey.tasks.find((task) => isEqual(task.code, taskCode));
+    if (isEmpty(task))
+      return ctx.unauthorized(
+        "The server understands the request but the API key is not authorized to access this resource"
+      );
+    const hunter = await strapi.services.hunter.findOne({
+      address: walletAddress,
+    });
+    const apply = await strapi.services.apply.findOne({
+      hunter: hunter.id,
+      task: task.id,
+    });
   },
 };
