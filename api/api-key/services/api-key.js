@@ -5,6 +5,7 @@ const {
   BASE_API_KEY_LENGTH,
   BASE_API_SECRET_KEY_LENGTH,
 } = require("../../../constants");
+const { isEmpty, toLower, isEqual, isEqualWith } = require("lodash");
 
 /**
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-services)
@@ -66,7 +67,34 @@ const updateApiKeyTaskListByProjectOwner = async (projectOwner, taskIds) => {
   }
 };
 
+const isApiKeyAuthorized = async (key, secret, request, taskCode) => {
+  const apiKey = await strapi.services["api-key"].findOne({
+    key,
+    secret,
+    isActive: true,
+  });
+  if (isEmpty(apiKey)) {
+    return false;
+  }
+  const { path, method } = request;
+  const route = apiKey.routes.find((route) => {
+    return (
+      isEqualWith(route.path, path, toLower) &&
+      isEqualWith(route.method, method, toLower)
+    );
+  });
+  if (isEmpty(route)) {
+    return false;
+  }
+  const task = apiKey.tasks.find((task) => isEqual(task.code, taskCode));
+  if (isEmpty(task)) {
+    return false;
+  }
+  return true;
+};
+
 module.exports = {
   generateApiKeyWithRoutes,
   updateApiKeyTaskListByProjectOwner,
+  isApiKeyAuthorized,
 };
