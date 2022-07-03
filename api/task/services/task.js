@@ -274,7 +274,12 @@ const createInAppTrialTask = async (ctx, missionData) => {
   const apiKey = await strapi.services[
     "api-key"
   ].updateApiKeyTaskListByProjectOwner(projectOwner, [task.id]);
-  return { ...task, api_key: apiKey.key, secret_key: apiKey.secret };
+  return {
+    ...task,
+    api_key: apiKey.key,
+    secret_key: apiKey.secret,
+    tasks: apiKey.tasks,
+  };
 };
 
 module.exports = {
