@@ -278,6 +278,7 @@ const createInAppTrialTask = async (ctx, missionData) => {
 
   const task = await strapi.services.task.create({
     votingPool: pool.id,
+    poolId,
     name,
     type,
     status,
