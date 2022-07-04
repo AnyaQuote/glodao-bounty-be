@@ -150,6 +150,7 @@ const createTask = async (ctx, missionData) => {
   }
 
   return await strapi.services.task.create({
+    votingPool: pool.id,
     poolId,
     name,
     type,
