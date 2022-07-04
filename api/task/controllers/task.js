@@ -77,7 +77,6 @@ module.exports = {
     const task = await strapi.services.task.findOne({ id: keyTask.id });
     if (isEmpty(task))
       return { status: false, code: 404, error: "Task not found" };
-
     const apply = await strapi.services.apply.findOne({
       hunter: hunter.id,
       task: task.id,
@@ -86,6 +85,7 @@ module.exports = {
       const newApply = await strapi.services.apply.create({
         hunter: hunter.id,
         task: task.id,
+        ID: `${task.id}_${hunter.id}`,
       });
       updatedTaskData = get(newApply, "data");
       for (let i = 0; i < task.data.length; i++) {

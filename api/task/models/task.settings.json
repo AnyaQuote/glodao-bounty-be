@@ -63,7 +63,15 @@
     },
     "type": {
       "type": "enumeration",
-      "enum": ["learn", "bounty", "event", "referral", "lucky", "active"],
+      "enum": [
+        "learn",
+        "bounty",
+        "event",
+        "referral",
+        "lucky",
+        "active",
+        "iat"
+      ],
       "default": "bounty",
       "required": true
     },
