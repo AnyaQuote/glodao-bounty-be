@@ -237,6 +237,51 @@ const calculateAverageCommunityReward = async (
   return averageValue;
 };
 
+const createInAppTrialTask = async (ctx, missionData) => {
+  const {
+    projectOwner,
+    poolId,
+    name,
+    type,
+    status,
+    tokenBasePrice,
+    rewardAmount,
+    startTime,
+    endTime,
+    maxParticipants,
+    maxPriorityParticipants,
+    priorityRewardAmount,
+    data,
+    metadata,
+  } = missionData;
+  const task = await strapi.services.task.create({
+    poolId,
+    name,
+    type,
+    status,
+    chainId: pool.chainId,
+    tokenBasePrice,
+    rewardAmount,
+    startTime,
+    endTime,
+    maxParticipants,
+    priorityRewardAmount,
+    maxPriorityParticipants,
+    data,
+    metadata,
+    projectOwner,
+  });
+  const apiKey = await strapi.services[
+    "api-key"
+  ].updateApiKeyTaskListByProjectOwner(projectOwner, [task.id]);
+  return {
+    ...task,
+    api_key: apiKey.key,
+    secret_key: apiKey.secret,
+    tasks: apiKey.tasks,
+  };
+};
+
 module.exports = {
   increaseTaskTotalParticipants,
   increaseTaskTotalParticipantsById,
@@ -246,4 +291,5 @@ module.exports = {
   updateTaskCompletedParticipantsById,
   createTask,
   calculateAverageCommunityReward,
+  createInAppTrialTask,
 };

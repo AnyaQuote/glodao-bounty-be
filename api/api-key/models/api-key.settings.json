@@ -1,0 +1,49 @@
+{
+  "kind": "collectionType",
+  "collectionName": "api_keys",
+  "info": {
+    "name": "APIKey",
+    "description": ""
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "key": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "routes": {
+      "type": "json"
+    },
+    "tasks": {
+      "type": "json"
+    },
+    "projectOwner": {
+      "model": "project-owner"
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": true,
+      "required": true
+    },
+    "totalAPICalls": {
+      "type": "integer",
+      "default": 0,
+      "required": true
+    },
+    "logs": {
+      "type": "json"
+    },
+    "clientId": {
+      "type": "string"
+    },
+    "secret": {
+      "type": "string"
+    }
+  }
+}

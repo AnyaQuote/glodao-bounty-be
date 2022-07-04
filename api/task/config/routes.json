@@ -63,6 +63,14 @@
       "config": {
         "policies": []
       }
+    },
+    {
+      "method": "POST",
+      "path": "/tasks/updateInAppTrial",
+      "handler": "task.updateInAppTrial",
+      "config": {
+        "policies": []
+      }
     }
   ]
 }
