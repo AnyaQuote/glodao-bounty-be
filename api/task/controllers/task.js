@@ -75,5 +75,49 @@ module.exports = {
       hunter: hunter.id,
       task: task.id,
     });
+    if (isEmpty(apply)) {
+      const newApply = await strapi.services.apply.create({
+        hunter: hunter.id,
+        task: task.id,
+      });
+      updatedTaskData = get(newApply, "data");
+      for (let i = 0; i < task.data.length; i++) {
+        if (isEqual(task.data[i].code, stepCode)) {
+          updatedTaskData["iat"].finished = true;
+          break;
+        }
+      }
+      await strapi.services.apply.update({
+        id: newApply.id,
+        data: updatedTaskData,
+      });
+      return {
+        status: true,
+        code: 200,
+        data: {
+          walletAddress,
+          task: taskCode,
+        },
+      };
+    } else {
+      for (let i = 0; i < task.data.length; i++) {
+        if (isEqual(task.data[i].code, stepCode)) {
+          apply.data["iat"].finished = true;
+          break;
+        }
+      }
+      await strapi.services.apply.update({
+        id: apply.id,
+        data: apply.data,
+      });
+      return {
+        status: true,
+        code: 200,
+        data: {
+          walletAddress,
+          task: taskCode,
+        },
+      };
+    }
   },
 };
