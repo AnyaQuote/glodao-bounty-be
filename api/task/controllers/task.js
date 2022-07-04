@@ -9,10 +9,12 @@ const { get, isEqual, isEmpty } = require("lodash");
 module.exports = {
   createTask: async (ctx) => {
     const missionData = ctx.request.body;
-    const type = get(ctx, "request.body", "bounty");
-    if (isEqual(type, "iat"))
+    const type = get(ctx, "request.body.type", "bounty");
+    if (isEqual(type, "iat")) {
       return await strapi.services.task.createInAppTrialTask(ctx, missionData);
-    return await strapi.services.task.createTask(ctx, missionData);
+    } else {
+      return await strapi.services.task.createTask(ctx, missionData);
+    }
   },
   getAverageCommunityReward: async (ctx) => {
     try {
