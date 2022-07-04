@@ -265,25 +265,27 @@ const createInAppTrialTask = async (ctx, missionData) => {
   }
 
   if (
-    moment(startTime).isBefore(moment(pool.startDate)) ||
-    moment(endTime).isAfter(moment(pool.endDate))
+    moment(startTime).isBefore(moment(votingPool.startDate)) ||
+    moment(endTime).isAfter(moment(votingPool.endDate))
   ) {
     ctx.badRequest(INVALID_DATE_RANGE);
   }
 
-  const numberOfCreatedMissions = await strapi.services.task.count({ poolId });
+  const numberOfCreatedMissions = await strapi.services.task.count({
+    votingPool: votingPool.id,
+  });
 
-  if (numberOfCreatedMissions >= pool.totalMission) {
+  if (numberOfCreatedMissions >= votingPool.totalMission) {
     ctx.forbidden(EXCEEDED_MISSION_LIMIT);
   }
 
   const task = await strapi.services.task.create({
-    votingPool: pool.id,
+    votingPool: votingPool.id,
     poolId,
     name,
     type,
     status,
-    chainId: pool.chainId,
+    chainId: votingPool.chainId,
     tokenBasePrice,
     rewardAmount,
     startTime,
@@ -294,11 +296,9 @@ const createInAppTrialTask = async (ctx, missionData) => {
     data,
     metadata,
   });
-
   const apiKey = await strapi.services[
     "api-key"
   ].updateApiKeyTaskListByProjectOwner(projectOwner, [task.id]);
-
   return {
     ...task,
     api_key: apiKey.key,
