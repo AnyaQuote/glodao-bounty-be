@@ -63,14 +63,21 @@ module.exports = {
         "The server understands the request but the API key is not authorized to access this resource"
       );
 
-    const task = apiKey.tasks.find((task) => isEqual(task.code, taskCode));
-    if (isEmpty(task))
+    const keyTask = apiKey.tasks.find((task) => isEqual(task.code, taskCode));
+    if (isEmpty(keyTask))
       return ctx.unauthorized(
         "The server understands the request but the API key is not authorized to access this resource"
       );
     const hunter = await strapi.services.hunter.findOne({
       address: walletAddress,
     });
+
+    if (isEmpty(hunter))
+      return { status: false, code: 404, error: "Hunter not found" };
+    const task = await strapi.services.task.findOne({ id: keyTask.id });
+    if (isEmpty(task))
+      return { status: false, code: 404, error: "Task not found" };
+
     const apply = await strapi.services.apply.findOne({
       hunter: hunter.id,
       task: task.id,
