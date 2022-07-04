@@ -291,7 +291,6 @@ const createInAppTrialTask = async (ctx, missionData) => {
     maxPriorityParticipants,
     data,
     metadata,
-    projectOwner,
   });
 
   const apiKey = await strapi.services[
