@@ -50,83 +50,15 @@ module.exports = {
       isEmpty(taskCode) ||
       isEmpty(walletAddress) ||
       isEmpty(stepCode)
-    )
+    ) {
       return ctx.badRequest("Missing required fields");
-    const apiKey = await strapi.services["api-key"].findOne({
-      key: api_key,
-      secret: secret_key,
-      isActive: true,
-    });
-    const isApiKeyAuthorized = await strapi.services[
-      "api-key"
-    ].isApiKeyAuthorizedByObject(apiKey, request, taskCode);
-    if (!isApiKeyAuthorized)
-      return ctx.unauthorized(
-        "The server understands the request but the API key is not authorized to access this resource"
-      );
-
-    const keyTask = apiKey.tasks.find((task) => isEqual(task.code, taskCode));
-    if (isEmpty(keyTask))
-      return ctx.unauthorized(
-        "The server understands the request but the API key is not authorized to access this resource"
-      );
-    const hunter = await strapi.services.hunter.findOne({
-      address: walletAddress,
-    });
-
-    if (isEmpty(hunter))
-      return { status: false, code: 404, error: "Hunter not found" };
-    const task = await strapi.services.task.findOne({ id: keyTask.id });
-    if (isEmpty(task))
-      return { status: false, code: 404, error: "Task not found" };
-    const apply = await strapi.services.apply.findOne({
-      hunter: hunter.id,
-      task: task.id,
-    });
-    if (isEmpty(apply)) {
-      const newApply = await strapi.services.apply.create({
-        hunter: hunter.id,
-        task: task.id,
-        ID: `${task.id}_${hunter.id}`,
-      });
-      updatedTaskData = get(newApply, "data");
-      for (let i = 0; i < task.data.length; i++) {
-        if (isEqual(task.data[i].code, stepCode)) {
-          updatedTaskData["iat"].finished = true;
-          break;
-        }
-      }
-      await strapi.services.apply.update({
-        id: newApply.id,
-        data: updatedTaskData,
-      });
-      return {
-        status: true,
-        code: 200,
-        data: {
-          walletAddress,
-          task: taskCode,
-        },
-      };
-    } else {
-      for (let i = 0; i < task.data.length; i++) {
-        if (isEqual(task.data[i].code, stepCode)) {
-          apply.data["iat"].finished = true;
-          break;
-        }
-      }
-      await strapi.services.apply.update({
-        id: apply.id,
-        data: apply.data,
-      });
-      return {
-        status: true,
-        code: 200,
-        data: {
-          walletAddress,
-          task: taskCode,
-        },
-      };
     }
+    return await strapi.services.task.updateInAppTrialTask(ctx, request, {
+      api_key,
+      secret_key,
+      taskCode,
+      walletAddress,
+      stepCode,
+    });
   },
 };
