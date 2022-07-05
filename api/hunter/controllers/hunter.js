@@ -236,4 +236,18 @@ module.exports = {
       };
     }
   },
+  updateHunterAnswerBank: async (ctx) => {
+    const answer = _.get(ctx, "request.body.answer", {});
+    if (_.isEmpty(answer)) return ctx.badRequest("Missing answer");
+    const user = _.get(ctx, "state.user", {});
+    const hunter = await strapi.services.hunter.findOne({ id: user.hunter });
+    const answerBank = _.get(hunter, "data.answerBank", []);
+    const data = _.get(hunter, "data", {});
+    return await strapi.services.hunter.update(
+      { id: hunter.id },
+      {
+        data: { ...data, answerBank: answerBank.concat(answer) },
+      }
+    );
+  },
 };

@@ -107,6 +107,14 @@
       "config": {
         "policies": []
       }
+    },
+    {
+      "method": "POST",
+      "path": "/hunters/updateHunterAnswerBank",
+      "handler": "hunter.updateHunterAnswerBank",
+      "config": {
+        "policies": []
+      }
     }
   ]
 }
