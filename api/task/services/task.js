@@ -1,6 +1,6 @@
 "use strict";
 
-const { get, gte, isEmpty } = require("lodash");
+const { get, gte, isEmpty, isEqual } = require("lodash");
 const moment = require("moment");
 const { FixedNumber } = require("@ethersproject/bignumber");
 const fxZero = FixedNumber.from("0");
@@ -307,6 +307,107 @@ const createInAppTrialTask = async (ctx, missionData) => {
   };
 };
 
+const APP_TRIAL_TYPE = "iat";
+const unauthorizedError = (ctx, message) => ctx.unauthorized(message);
+const requestError = (code, message) => ({
+  status: false,
+  code,
+  error: message,
+});
+const successResponse = (code, data) => ({
+  status: true,
+  code,
+  data,
+});
+
+/**
+ * Update app trial task step data finished status to true
+ * @param {*} ctx
+ * @param {*} request
+ * @param {*} data {api_key, secret_key, taskCode, stepCode, walletAddress}
+ * @returns successReponse
+ */
+const updateInAppTrialTask = async (ctx, request, data) => {
+  const { api_key, secret_key, taskCode, walletAddress, stepCode } = data;
+  const apiKey = await strapi.services["api-key"].findOne({
+    key: api_key,
+    secret: secret_key,
+    isActive: true,
+  });
+
+  // Test api key is authorized
+  const isApiKeyAuthorized = await strapi.services[
+    "api-key"
+  ].isApiKeyAuthorizedByObject(apiKey, request, taskCode);
+  if (!isApiKeyAuthorized) {
+    return unauthorizedError(
+      ctx,
+      "The server understands the request but the API key is not authorized to access this resource"
+    );
+  }
+
+  // Test in authorized api key contains requested task code
+  const keyTask = apiKey.tasks.find((task) => isEqual(task.code, taskCode));
+  if (isEmpty(keyTask)) {
+    return unauthorizedError(
+      ctx,
+      "The server understands the request but the API key is not authorized to access this resource"
+    );
+  }
+
+  // Test hunter wallet address matched with requested wallet address
+  const hunter = await strapi.services.hunter.findOne({
+    address: walletAddress,
+  });
+  if (isEmpty(hunter)) {
+    return requestError(404, "Hunter not found");
+  }
+
+  // Test there is task existed with requested keyTask
+  const task = await strapi.services.task.findOne({ id: keyTask.id });
+  if (isEmpty(task)) {
+    return requestError(404, "Task not found");
+  }
+
+  let apply;
+  // Get existed apply with hunter and task above
+  apply = await strapi.services.apply.findOne({
+    hunter: hunter.id,
+    task: task.id,
+  });
+  // If task not exists, create new apply with the supplied hunter and task above
+  if (isEmpty(apply)) {
+    const newApply = await strapi.services.apply.create({
+      hunter: hunter.id,
+      task: task.id,
+      ID: `${task.id}_${hunter.id}`,
+    });
+    apply = newApply;
+  }
+
+  const appTrialDataWithUpdatedStep = apply.data[APP_TRIAL_TYPE].map(
+    (step, index) => {
+      const currentReferStepCode = task.data[APP_TRIAL_TYPE][index].code;
+      if (currentReferStepCode === stepCode) {
+        return { ...step, finished: true };
+      } else return step;
+    }
+  );
+  const updatedData = { [APP_TRIAL_TYPE]: appTrialDataWithUpdatedStep };
+  // Sync updated apply data with database
+  const res = await strapi.services.apply.update(
+    { id: apply.id },
+    { data: updatedData }
+  );
+
+  console.log(res);
+
+  return successResponse(200, {
+    walletAddress,
+    task: taskCode,
+  });
+};
+
 module.exports = {
   increaseTaskTotalParticipants,
   increaseTaskTotalParticipantsById,
@@ -317,4 +418,5 @@ module.exports = {
   createTask,
   calculateAverageCommunityReward,
   createInAppTrialTask,
+  updateInAppTrialTask,
 };
