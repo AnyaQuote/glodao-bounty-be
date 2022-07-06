@@ -128,6 +128,29 @@ const recordReward = async (
   }
 };
 
+const recordRewards = async (walletAddress, rewardArr) => {
+  try {
+    for (let index = 0; index < rewardArr.length; index++) {
+      const rewardRecord = rewardArr[index];
+      const { tokenAddress, token, rewardAmount, decimals, tokenBasePrice } =
+        rewardRecord;
+      await recordReward(
+        walletAddress,
+        tokenAddress,
+        token,
+        rewardAmount,
+        decimals,
+        tokenBasePrice
+      );
+    }
+  } catch (error) {
+    console.log("\x1b[31m", "Wasted");
+    console.log("\x1b[37m", error);
+    console.log(walletAddress);
+    console.log("\x1b[31m", "Wasted");
+  }
+};
+
 const distributeReward = async (walletAddress, tokenAddress, rewardAmount) => {
   try {
     const record = await strapi.services["bounty-reward"].findOne({
@@ -204,4 +227,5 @@ const distributeReward = async (walletAddress, tokenAddress, rewardAmount) => {
 module.exports = {
   recordReward,
   distributeReward,
+  recordRewards,
 };

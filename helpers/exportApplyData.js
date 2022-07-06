@@ -290,9 +290,11 @@ async function main(argv) {
       break;
     case "recordReward":
       let bountyRewardArr = [];
+      let secondBountyRewardArr = [];
       let index = 0;
       let finishWalletAddress = [];
       for (const [key, value] of everyRewardMap) {
+        let rewardArr = [];
         for (let index = 0; index < value.length; index++) {
           const element = value[index];
           bountyRewardArr.push({
@@ -300,9 +302,16 @@ async function main(argv) {
             ...element,
             rewardAmount: element.rewardAmount._value.substring(0, 8),
           });
+          rewardArr.push({
+            walletAddress: key,
+            ...element,
+            rewardAmount: element.rewardAmount._value.substring(0, 8),
+          });
         }
+        console.log(rewardArr)
+        secondBountyRewardArr.push({ walletAddress: key, rewardArr });
       }
-      const bountyRewardChunks = _.chunk(bountyRewardArr, 1);
+      const bountyRewardChunks = _.chunk(secondBountyRewardArr, 10);
       for (const subBountyRewards of bountyRewardChunks) {
         const finishedAddress = subBountyRewards.map((bountyReward) => ({
           walletAddress: bountyReward.walletAddress,
@@ -310,13 +319,9 @@ async function main(argv) {
         try {
           await Promise.all(
             subBountyRewards.map((bountyReward) => {
-              return strapi.services["bounty-reward"].recordReward(
+              return strapi.services["bounty-reward"].recordRewards(
                 bountyReward.walletAddress,
-                bountyReward.tokenAddress,
-                bountyReward.token,
-                bountyReward.rewardAmount,
-                bountyReward.decimals,
-                bountyReward.tokenBasePrice
+                bountyReward.rewardArr
               );
             })
           ).then(() => {
@@ -337,6 +342,7 @@ async function main(argv) {
           );
 
           console.log("\x1b[31m", "Wasted");
+          console.log(finishedAddress);
           console.log("\x1b[37m", error);
           console.log("\x1b[31m", "Wasted");
         }
