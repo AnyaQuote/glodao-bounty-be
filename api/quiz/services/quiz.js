@@ -29,8 +29,15 @@ const NOT_AUTHORIZED = "You are not authorize to do this";
  */
 const createQuiz = async (ctx, quizData) => {
   const userId = ctx.state.user.id;
-  const { name, description, learningInformation, data, answer, metadata } =
-    quizData;
+  const {
+    name,
+    description,
+    learningInformation,
+    data,
+    answer,
+    metadata,
+    projectOwner,
+  } = quizData;
   const res = await strapi.services.quiz.create({
     name,
     userId,
@@ -39,6 +46,7 @@ const createQuiz = async (ctx, quizData) => {
     data,
     answer,
     metadata,
+    projectOwner,
   });
   return res;
 };
