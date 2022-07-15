@@ -308,7 +308,7 @@ async function main(argv) {
             rewardAmount: element.rewardAmount._value.substring(0, 8),
           });
         }
-        console.log(rewardArr)
+        // console.log(rewardArr)
         secondBountyRewardArr.push({ walletAddress: key, rewardArr });
       }
       const bountyRewardChunks = _.chunk(secondBountyRewardArr, 10);
@@ -468,8 +468,12 @@ calculatePoolReward = async (taskId, relatedCompleteApplies) => {
     .subUnsafe(FixedNumber.from(_.get(task, "priorityRewardAmount", "0")));
   const optionalTokens = _.get(task, "optionalTokens", []);
   optionalTokenArr = optionalTokens;
-  const totalCommunityParticipants =
-    relatedCompleteApplies.length - priorityCount;
+
+  // const totalCommunityParticipants =
+  // relatedCompleteApplies.length - priorityCount;
+  // UPDATE TO USING FAKE NUMBER FOR REWARD CALCULATION
+
+  const totalCommunityParticipants = task.totalParticipants - priorityCount;
   optionalTokens.forEach((token) => {
     optionalTokenMap.set(token.tokenContractAddress, token);
     let optionPriorityReward = 0;
