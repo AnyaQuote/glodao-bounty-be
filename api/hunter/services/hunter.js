@@ -1,11 +1,29 @@
 "use strict";
 const { generateRandomNonce } = require("../../../helpers/wallet-helper");
-const { isEqual, get } = require("lodash");
+const { isEqual, get, includes } = require("lodash");
 
 /**
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-services)
  * to customize this service
  */
+
+const updateHunterTaskUniqueId = async (hunter, taskUniqueId) => {
+  const data = get(hunter, "data", {});
+  const uniqueTaskIds = get(data, "uniqueTaskIds", []);
+  if (includes(uniqueTaskIds, taskUniqueId)) {
+    return;
+  } else {
+    uniqueTaskIds.push(taskUniqueId);
+    return await strapi.services.hunter.update(
+      { id: hunter.id },
+      {
+        data: {
+          uniqueTaskIds,
+        },
+      }
+    );
+  }
+};
 
 const updateUserToken = async (userId, accessToken, accessTokenSecret) => {
   return await strapi.query("user", "users-permissions").update(
@@ -116,4 +134,5 @@ module.exports = {
   updateUserDiscordId,
   updateUserDiscordIdByHunter,
   updateUserKycSessionId,
+  updateHunterTaskUniqueId,
 };
