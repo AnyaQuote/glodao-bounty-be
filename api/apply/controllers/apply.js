@@ -354,6 +354,32 @@ module.exports = {
       }
     }
 
+    if (isEqual(type, "optional")) {
+      let optionalTaskData = get(taskData, [type], []);
+      const mergedOptionalTask = merge(
+        optionalTaskData.map((step) => {
+          return {
+            ...step,
+            submitedLink: step.link,
+          };
+        }),
+        get(apply, ["task", "data", type], [])
+      );
+      for (let index = 0; index < mergedOptionalTask.length; index++) {
+        const element = mergedOptionalTask[index];
+        if (!element.finished) continue;
+        const { submitedLink, requiredContent, isLinkRequired } = element;
+        if (isLinkRequired) {
+          if (isEmpty(submitedLink))
+            return ctx.badRequest("You have not submited link");
+          //check if submited link contain requiredContent
+          if (!submitedLink.includes(requiredContent))
+            return ctx.badRequest("Invalid link");
+        }
+        updatedTaskData[type][index].finished = true;
+      }
+    }
+
     if (res || isNumber(res)) {
       if (isNumber(res)) {
         const resetedTask = get(taskData, [type], []).map((task, index) => {
