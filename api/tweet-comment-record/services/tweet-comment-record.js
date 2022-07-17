@@ -16,7 +16,12 @@ const MAX_SIMILARITY = 0.8;
  * to customize this service
  */
 
-const verifyDuplicateCommentContent = async (tweetId, commentId, data) => {
+const verifyDuplicateCommentContent = async (
+  tweetId,
+  commentId,
+  data,
+  hunter
+) => {
   try {
     const text = get(data, "full_text", "") || _.get(data, "text", "");
     if (isEmpty(text)) return false;
@@ -30,6 +35,7 @@ const verifyDuplicateCommentContent = async (tweetId, commentId, data) => {
           {
             commentId,
             text,
+            hunter,
           },
         ],
       });
@@ -55,6 +61,7 @@ const verifyDuplicateCommentContent = async (tweetId, commentId, data) => {
             {
               commentId,
               text,
+              hunter,
             },
           ],
           "commentId"

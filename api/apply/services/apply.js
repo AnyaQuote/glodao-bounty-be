@@ -145,7 +145,8 @@ const validateTwitterLinks = async (taskData, taskCreatedTime, user) => {
       ].verifyDuplicateCommentContent(
         twitterHelper.getTweetIdFromLink(currentStepObj.link),
         twitterHelper.getTweetIdFromLink(currentStepObj.submitedLink),
-        tweetData
+        tweetData,
+        _.get(user, "hunter", "")
       );
       if (!isNotDuplicated)
         return "Invalid tweet content: too similar with other tweets";
