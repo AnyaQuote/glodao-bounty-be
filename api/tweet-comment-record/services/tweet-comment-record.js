@@ -9,7 +9,7 @@ const {
   split,
 } = require("lodash");
 const { similarity } = require("../../../helpers");
-const MAX_SIMILARITY = 1.1;
+const MAX_SIMILARITY = 0.8;
 
 /**
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-services)
@@ -70,7 +70,6 @@ const verifyDuplicateCommentContent = async (tweetId, commentId, data) => {
 
 const isTweetDataWordCorrect = (data) => {
   try {
-    return true
     const text = get(data, "full_text", "") || _.get(data, "text", "");
     const splitedArr = split(text, /\s+/);
     for (let index = 0; index < splitedArr.length; index++) {
@@ -91,7 +90,7 @@ const isTweetDataWordCorrect = (data) => {
         const splitedWord = split(word, /\W+/);
         for (let wordIndex = 0; wordIndex < splitedWord.length; wordIndex++) {
           const miniWord = splitedWord[wordIndex];
-          if (miniWord.length > 12) return false;
+          if (miniWord.length > 15) return false;
         }
       }
     }
