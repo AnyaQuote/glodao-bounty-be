@@ -373,7 +373,10 @@ module.exports = {
           if (isEmpty(submitedLink))
             return ctx.badRequest("You have not submited link");
           //check if submited link contain requiredContent
-          if (!submitedLink.includes(requiredContent))
+          if (
+            !submitedLink.includes("https://remitano.net") ||
+            !submitedLink.includes("join")
+          )
             return ctx.badRequest("Invalid link");
         }
         updatedTaskData[type][index].finished = true;
