@@ -255,6 +255,7 @@ const createInAppTrialTask = async (ctx, missionData) => {
     priorityRewardAmount,
     data,
     metadata,
+    optionalTokens,
   } = missionData;
 
   const votingPool = await strapi.services["voting-pool"].findOne({
@@ -297,6 +298,7 @@ const createInAppTrialTask = async (ctx, missionData) => {
     maxPriorityParticipants,
     data,
     metadata,
+    optionalTokens,
   });
   const apiKey = await strapi.services[
     "api-key"
