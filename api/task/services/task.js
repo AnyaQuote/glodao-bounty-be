@@ -138,7 +138,8 @@ const createTask = async (ctx, missionData) => {
 
   if (
     moment(startTime).isBefore(moment(pool.startDate)) ||
-    moment(endTime).isAfter(moment(pool.endDate))
+    moment(endTime).isAfter(moment(pool.endDate)) ||
+    moment(startTime).isAfter(moment(endTime))
   ) {
     ctx.badRequest(INVALID_DATE_RANGE);
   }
@@ -266,7 +267,8 @@ const createInAppTrialTask = async (ctx, missionData) => {
 
   if (
     moment(startTime).isBefore(moment(votingPool.startDate)) ||
-    moment(endTime).isAfter(moment(votingPool.endDate))
+    moment(endTime).isAfter(moment(votingPool.endDate)) ||
+    moment(startTime).isAfter(moment(endTime))
   ) {
     ctx.badRequest(INVALID_DATE_RANGE);
   }
