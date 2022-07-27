@@ -64,6 +64,28 @@ const getUserByScreenName = async (
   }
 };
 
+const getUserByUserId = async (screenName, accessToken, accessTokenSecret) => {
+  try {
+    return new Promise((resolve, reject) => {
+      twitter
+        .query()
+        .get("users/show")
+        .qs({ user_id: screenName })
+        .auth(accessToken, accessTokenSecret)
+        .request((err, res, body) => {
+          if (err) {
+            console.log(err);
+            return reject([null, err]);
+          } else {
+            return resolve(body);
+          }
+        });
+    });
+  } catch (error) {
+    throw error;
+  }
+};
+
 const getUserFollowersByScreenName = async (
   screenName,
   accessToken,
@@ -131,4 +153,5 @@ module.exports = {
   getUserByScreenName,
   getUserFollowersByScreenName,
   getUserTimeline,
+  getUserByUserId,
 };
