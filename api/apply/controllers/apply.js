@@ -354,6 +354,24 @@ module.exports = {
       }
     }
 
+    if (isEqual(type, "facebook")) {
+      let optionalTaskData = get(taskData, [type], []);
+      const mergedOptionalTask = merge(
+        optionalTaskData.map((step) => {
+          return {
+            ...step,
+            submitedLink: step.link,
+          };
+        }),
+        get(apply, ["task", "data", type], [])
+      );
+      for (let index = 0; index < mergedOptionalTask.length; index++) {
+        const element = mergedOptionalTask[index];
+        if (!element.finished) continue;
+        updatedTaskData[type][index].finished = true;
+      }
+    }
+
     if (isEqual(type, "optional")) {
       let optionalTaskData = get(taskData, [type], []);
       const mergedOptionalTask = merge(
@@ -373,10 +391,7 @@ module.exports = {
           if (isEmpty(submitedLink))
             return ctx.badRequest("You have not submited link");
           //check if submited link contain requiredContent
-          if (
-            !submitedLink.includes("https://remitano.net") ||
-            !submitedLink.includes("join")
-          )
+          if (!submitedLink.includes(requiredContent))
             return ctx.badRequest("Invalid link");
         }
         updatedTaskData[type][index].finished = true;
