@@ -7,6 +7,20 @@ const { get, isEqual, isEmpty } = require("lodash");
  */
 
 module.exports = {
+  verifyTelegramLink: async (ctx) => {
+    const link =
+      _.get(ctx, "query.id", "") ||
+      _.get(ctx, "request.body.id", "") ||
+      _.get(ctx, "params.id", "");
+    const isValid = await strapi.services.task.verifyTelegramMissionLink(link);
+    if (!isValid) {
+      return ctx.badRequest("Invalid link or the bot is not in the chat yet");
+    }
+    return {
+      status: true,
+      code: 200,
+    };
+  },
   createTask: async (ctx) => {
     const missionData = ctx.request.body;
     const type = get(ctx, "request.body.type", "bounty");

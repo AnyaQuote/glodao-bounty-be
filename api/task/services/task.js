@@ -3,11 +3,32 @@
 const { get, gte, isEmpty, isEqual } = require("lodash");
 const moment = require("moment");
 const { FixedNumber } = require("@ethersproject/bignumber");
+const {
+  isUserFollowChat,
+  getChatFromLink,
+} = require("../../../helpers/telegram-bot-helpers");
 const fxZero = FixedNumber.from("0");
 /**
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-services)
  * to customize this service
  */
+
+/**
+ * Check if telegram link is valid and bot in the chat
+ * @param {string} link telegram link
+ * @returns true - link is valid and bot in the chat, otherwise false
+ */
+const verifyTelegramMissionLink = async (link) => {
+  try {
+    const BOT_ID = process.env.TELEGRAM_BOT_ID;
+    const isBotInLink = await isUserFollowChat(getChatFromLink(link), BOT_ID);
+    if (isBotInLink) return true;
+    else return false;
+  } catch (error) {
+    console.log(error, "verify telegram mission link error bot");
+    return false;
+  }
+};
 
 /**
  * Increase a task total participants by an increment
@@ -423,4 +444,5 @@ module.exports = {
   calculateAverageCommunityReward,
   createInAppTrialTask,
   updateInAppTrialTask,
+  verifyTelegramMissionLink
 };

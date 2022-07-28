@@ -71,6 +71,14 @@
       "config": {
         "policies": []
       }
+    },
+    {
+      "method": "GET",
+      "path": "/tasks/verifyTelegramLink/:link",
+      "handler": "task.verifyTelegramLink",
+      "config": {
+        "policies": []
+      }
     }
   ]
 }
