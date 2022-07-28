@@ -73,8 +73,8 @@
       }
     },
     {
-      "method": "GET",
-      "path": "/tasks/verifyTelegramLink/:link",
+      "method": "POST",
+      "path": "/tasks/verifyTelegramLink",
       "handler": "task.verifyTelegramLink",
       "config": {
         "policies": []
