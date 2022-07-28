@@ -148,10 +148,45 @@ const getUserTimeline = async (
   }
 };
 
+const getUserTimelineByScreenName = async (
+  screen_name,
+  accessToken,
+  accessTokenSecret,
+  count = 200,
+  max_id = "",
+  since_id = ""
+) => {
+  try {
+    return new Promise((resolve, reject) => {
+      twitter
+        .query()
+        .get("statuses/user_timeline")
+        .qs({
+          screen_name,
+          count,
+          max_id: max_id ? max_id : undefined,
+          since_id: since_id ? since_id : undefined,
+        })
+        .auth(accessToken, accessTokenSecret)
+        .request((err, res, body) => {
+          if (err) {
+            console.log(err);
+            return reject([null, err]);
+          } else {
+            return resolve(body);
+          }
+        });
+    });
+  } catch (error) {
+    console.log("error", error);
+    throw error;
+  }
+};
 module.exports = {
   getTweetData,
   getUserByScreenName,
   getUserFollowersByScreenName,
   getUserTimeline,
   getUserByUserId,
+  getUserTimelineByScreenName,
 };
