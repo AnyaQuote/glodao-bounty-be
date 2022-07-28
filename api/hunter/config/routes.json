@@ -69,7 +69,11 @@
       "path": "/hunters/updateWalletAddress",
       "handler": "hunter.updateWalletAddress",
       "config": {
-        "policies": ["global::is-owner", "isWalletUnique"]
+        "policies": [
+          "global::is-owner",
+          "isWalletUnique",
+          "global::sign-message"
+        ]
       }
     },
     {
