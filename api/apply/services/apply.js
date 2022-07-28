@@ -180,6 +180,9 @@ const validateFollowTwitterTask = async (baseRequirement, user) => {
   const { accessToken, accessTokenSecret } = user;
   const splitedArr = baseRequirement.link.split("/");
   const screenName = splitedArr[splitedArr.length - 1].split("?")[0];
+  console.log(screenName);
+  console.log(accessToken);
+  console.log(accessTokenSecret);
   try {
     const res = await twitterHelperV1.getUserByScreenName(
       screenName,
@@ -188,6 +191,7 @@ const validateFollowTwitterTask = async (baseRequirement, user) => {
     );
     if (!res.following) return "You have not completed this follow task yet";
   } catch (error) {
+    console.log(error);
     return "Can not check follow status";
   }
   return "";
