@@ -91,25 +91,25 @@
       {
         "indexed": true,
         "internalType": "address",
-        "name": "requiredErc20",
+        "name": "tokenA",
         "type": "address"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "requiredAmount",
+        "name": "tokenAAmount",
         "type": "uint256"
       },
       {
         "indexed": false,
         "internalType": "address",
-        "name": "optionalErc20",
+        "name": "tokenB",
         "type": "address"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "optionalAmount",
+        "name": "tokenBAmount",
         "type": "uint256"
       },
       {
@@ -165,12 +165,6 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "poolWeight",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
         "name": "totalWeight",
         "type": "uint256"
       }
@@ -219,6 +213,19 @@
     "inputs": [
       {
         "internalType": "address",
+        "name": "_address",
+        "type": "address"
+      }
+    ],
+    "name": "changeFundReceiver",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
         "name": "_validator",
         "type": "address"
       }
@@ -237,23 +244,33 @@
       },
       {
         "internalType": "address",
-        "name": "_requiredErc20",
+        "name": "_tokenA",
         "type": "address"
       },
       {
         "internalType": "uint256",
-        "name": "_requiredAmount",
+        "name": "_tokenAAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_missionLength",
         "type": "uint256"
       },
       {
         "internalType": "address",
-        "name": "_optionalErc20",
+        "name": "_tokenB",
         "type": "address"
       },
       {
         "internalType": "uint256",
-        "name": "_optionalAmount",
+        "name": "_tokenBAmount",
         "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "_completed",
+        "type": "bool"
       }
     ],
     "name": "createPool",
@@ -321,6 +338,25 @@
       }
     ],
     "name": "getCreationFee",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "poolType",
+        "type": "uint256"
+      }
+    ],
+    "name": "getFeePerMission",
     "outputs": [
       {
         "internalType": "uint256",
@@ -494,22 +530,27 @@
     "outputs": [
       {
         "internalType": "contract IERC20",
-        "name": "requiredErc20",
+        "name": "tokenA",
         "type": "address"
       },
       {
         "internalType": "uint256",
-        "name": "requiredAmount",
+        "name": "tokenAAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "missionLength",
         "type": "uint256"
       },
       {
         "internalType": "contract IERC20",
-        "name": "optionalErc20",
+        "name": "tokenB",
         "type": "address"
       },
       {
         "internalType": "uint256",
-        "name": "optionalAmount",
+        "name": "tokenBAmount",
         "type": "uint256"
       },
       {
@@ -524,7 +565,12 @@
       },
       {
         "internalType": "uint256",
-        "name": "votedWeight",
+        "name": "votedYesPercent",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "votedNoPercent",
         "type": "uint256"
       },
       {
@@ -559,6 +605,11 @@
       {
         "internalType": "uint256",
         "name": "creationFee",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "feePerMission",
         "type": "uint256"
       },
       {
@@ -619,6 +670,11 @@
         "internalType": "uint256",
         "name": "votedWeight",
         "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "totalStakedAmount",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -649,6 +705,29 @@
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_tokenAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "removeErc20Amount",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "renounceOwnership",
     "outputs": [],
@@ -667,6 +746,11 @@
           {
             "internalType": "uint256",
             "name": "creationFee",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "feePerMission",
             "type": "uint256"
           },
           {
@@ -740,17 +824,22 @@
       },
       {
         "internalType": "uint256",
-        "name": "requiredAmount",
+        "name": "tokenAAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "missionLength",
         "type": "uint256"
       },
       {
         "internalType": "address",
-        "name": "optionalErc20",
+        "name": "tokenB",
         "type": "address"
       },
       {
         "internalType": "uint256",
-        "name": "optionalAmount",
+        "name": "tokenBAmount",
         "type": "uint256"
       }
     ],
