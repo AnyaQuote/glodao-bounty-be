@@ -21,6 +21,9 @@ const fxZero = FixedNumber.from("0");
 const verifyTelegramMissionLink = async (link) => {
   try {
     const BOT_ID = process.env.TELEGRAM_BOT_ID;
+    console.log(link);
+    console.log(getChatFromLink(link));
+    console.log(BOT_ID);
     const isBotInLink = await isUserFollowChat(getChatFromLink(link), BOT_ID);
     if (isBotInLink) return true;
     else return false;
@@ -444,5 +447,5 @@ module.exports = {
   calculateAverageCommunityReward,
   createInAppTrialTask,
   updateInAppTrialTask,
-  verifyTelegramMissionLink
+  verifyTelegramMissionLink,
 };
