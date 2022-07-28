@@ -4,11 +4,11 @@ const { FixedNumber } = require("@ethersproject/bignumber");
 
 const CONFIG = {
   dev: {
-    votingAddress: "0x27115b06568443c5000057C7d06A7743201AB507",
+    votingAddress: "0xd5B16fd0F74725B19ce498F4cf4956421E5F63C9",
     chainId: 97,
   },
   prod: {
-    votingAddress: "",
+    votingAddress: "0x7edb25616977cDeCF9Ca7adcA2a34e1F8461A4B9",
     chainId: 56,
   },
 };
