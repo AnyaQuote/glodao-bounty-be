@@ -25,6 +25,7 @@ const verifyTelegramMissionLink = async (link) => {
     console.log(getChatFromLink(link));
     console.log(BOT_ID);
     const isBotInLink = await isUserFollowChat(getChatFromLink(link), BOT_ID);
+    console.log(isBotInLink);
     if (isBotInLink) return true;
     else return false;
   } catch (error) {
