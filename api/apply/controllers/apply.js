@@ -32,10 +32,10 @@ module.exports = {
     const { id, walletAddress } = ctx.request.body;
     const apply = await strapi.services.apply.findOne({ id });
 
-    if (!isEqual(walletAddress, get(apply, "hunter.address", "")))
-      return ctx.unauthorized(
-        "Invalid request: Wallet not matched with the pre-registered one"
-      );
+    // if (!isEqual(walletAddress, get(apply, "hunter.address", "")))
+    //   return ctx.unauthorized(
+    //     "Invalid request: Wallet not matched with the pre-registered one"
+    //   );
 
     if (!isTaskCompleted(apply.data)) return ctx.badRequest("Unfinished task");
     if (!walletAddress)
@@ -52,15 +52,15 @@ module.exports = {
     if (!walletAddress || !applyId || !hunterId || !taskId || isNil(poolId))
       return ctx.badRequest("Invalid request body: missing fields");
 
-    if (
-      !(await strapiServices.hunter.isPreRegisteredWalletMatched(
-        hunterId,
-        walletAddress
-      ))
-    )
-      return ctx.unauthorized(
-        "Invalid request: Wallet not matched with the pre-registered one"
-      );
+    // if (
+    //   !(await strapiServices.hunter.isPreRegisteredWalletMatched(
+    //     hunterId,
+    //     walletAddress
+    //   ))
+    // )
+    //   return ctx.unauthorized(
+    //     "Invalid request: Wallet not matched with the pre-registered one"
+    //   );
 
     const taskDetail = await strapi.services.task.findOne({ id: taskId });
     if (!strapi.services.task.isTaskProcessable(taskDetail))
@@ -95,13 +95,13 @@ module.exports = {
       return ctx.conflict("Now is not the right time to do this task");
 
     const walletAddress = get(optional, "walletAddress", "");
-    if (
-      !isEqual(type, "quiz") &&
-      !isEqual(walletAddress, get(apply, "hunter.address", ""))
-    )
-      return ctx.unauthorized(
-        "Invalid request: Wallet not matched with the pre-registered one"
-      );
+    // if (
+    //   !isEqual(type, "quiz") &&
+    //   !isEqual(walletAddress, get(apply, "hunter.address", ""))
+    // )
+    //   return ctx.unauthorized(
+    //     "Invalid request: Wallet not matched with the pre-registered one"
+    //   );
     if (isEqual(type, "finish")) {
       if (!isTaskCompleted(apply.data))
         return ctx.badRequest("Unfinished task");
