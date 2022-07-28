@@ -1,6 +1,9 @@
 "use strict";
 const moment = require("moment");
 const { chunk } = require("lodash");
+const {
+  getUserTimelineByScreenName,
+} = require("../../helpers/twitter-helper-v1");
 
 /**
  * Cron config that gives you an opportunity
@@ -49,6 +52,92 @@ module.exports = {
         console.log("\x1b[31m", "Wasted");
       } finally {
         console.log("End of daily message delete");
+      }
+    },
+    options: {
+      tz: "Asia/Bangkok",
+    },
+  },
+  "15 17 28 07 *": {
+    task: async () => {
+      try {
+        console.log("15 17");
+        const res = await getUserTimelineByScreenName(
+          "GloDAO_Official",
+          "1504294069195149318-nMFOwoRUXGK39KoKNFtig1QfT8DKJB",
+          "CO0dPi4gyfmLEGOOVGnwhe1oBRSCOGXClSPMCHjuYEdbi",
+          1
+        );
+        const tweetId = res[0].id_str;
+        const taskRecord = await strapi.services.task.findOne({
+          id: "62e2559a66ee9a3c5047c365",
+        });
+        const updatedTaskData = taskRecord.data;
+        updatedTaskData[
+          "twitter"
+        ][1].embedLink = `https://twitter.com/GloDAO_Official/status/${tweetId}`;
+        updatedTaskData[
+          "twitter"
+        ][1].link = `https://twitter.com/GloDAO_Official/status/${tweetId}`;
+        updatedTaskData[
+          "twitter"
+        ][2].embedLink = `https://twitter.com/GloDAO_Official/status/${tweetId}`;
+        updatedTaskData[
+          "twitter"
+        ][2].link = `https://twitter.com/GloDAO_Official/status/${tweetId}`;
+        await strapi.services.task.update(
+          { id: taskRecord.id },
+          { data: updatedTaskData }
+        );
+      } catch (error) {
+        console.log("\x1b[31m", "Wasted");
+        console.log("\x1b[37m", error);
+        console.log("\x1b[31m", "Wasted");
+      } finally {
+        console.log("End of update task twitter link");
+      }
+    },
+    options: {
+      tz: "Asia/Bangkok",
+    },
+  },
+  "50 20 28 07 *": {
+    task: async () => {
+      try {
+        console.log("50 20");
+        const res = await getUserTimelineByScreenName(
+          "GloDAO_Official",
+          "1504294069195149318-nMFOwoRUXGK39KoKNFtig1QfT8DKJB",
+          "CO0dPi4gyfmLEGOOVGnwhe1oBRSCOGXClSPMCHjuYEdbi",
+          1
+        );
+        const tweetId = res[0].id_str;
+        const taskRecord = await strapi.services.task.findOne({
+          id: "62e2559a66ee9a3c5047c365",
+        });
+        const updatedTaskData = taskRecord.data;
+        updatedTaskData[
+          "twitter"
+        ][1].embedLink = `https://twitter.com/GloDAO_Official/status/${tweetId}`;
+        updatedTaskData[
+          "twitter"
+        ][1].link = `https://twitter.com/GloDAO_Official/status/${tweetId}`;
+        updatedTaskData[
+          "twitter"
+        ][2].embedLink = `https://twitter.com/GloDAO_Official/status/${tweetId}`;
+        updatedTaskData[
+          "twitter"
+        ][2].link = `https://twitter.com/GloDAO_Official/status/${tweetId}`;
+        await strapi.services.task.update(
+          { id: taskRecord.id },
+          { data: updatedTaskData }
+        );
+      } catch (error) {
+        console.log("\x1b[31m", "Wasted");
+        console.log("\x1b[37m", error);
+        console.log("\x1b[31m", "Wasted");
+      } finally {
+        console.log("End of update task twitter link");
       }
     },
     options: {
