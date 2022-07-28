@@ -21,9 +21,9 @@ const fxZero = FixedNumber.from("0");
 const verifyTelegramMissionLink = async (link) => {
   try {
     const BOT_ID = process.env.TELEGRAM_BOT_ID;
-    console.log(link);
-    console.log(getChatFromLink(link));
-    console.log(BOT_ID);
+    console.log(link, "link");
+    console.log(getChatFromLink(link), "get chat from link");
+    console.log(BOT_ID, "botid");
     const isBotInLink = await isUserFollowChat(getChatFromLink(link), BOT_ID);
     console.log(isBotInLink);
     if (isBotInLink) return true;

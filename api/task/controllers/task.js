@@ -9,9 +9,9 @@ const { get, isEqual, isEmpty } = require("lodash");
 module.exports = {
   verifyTelegramLink: async (ctx) => {
     const link =
-      get(ctx, "query.id", "") ||
-      get(ctx, "request.body.id", "") ||
-      get(ctx, "params.id", "");
+      get(ctx, "query.link", "") ||
+      get(ctx, "request.body.link", "") ||
+      get(ctx, "params.link", "");
     const isValid = await strapi.services.task.verifyTelegramMissionLink(link);
     if (!isValid) {
       return ctx.badRequest("Invalid link or the bot is not in the chat yet");
