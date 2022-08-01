@@ -113,7 +113,7 @@ module.exports = {
         );
         const tweetId = res[0].id_str;
         const taskRecord = await strapi.services.task.findOne({
-          id: "62e2559a66ee9a3c5047c365",
+          id: "62e7c1dd449c2144ff0f0ecc",
         });
         const updatedTaskData = taskRecord.data;
         updatedTaskData[
