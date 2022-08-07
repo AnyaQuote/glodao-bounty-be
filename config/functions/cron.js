@@ -101,7 +101,7 @@ module.exports = {
       tz: "Asia/Bangkok",
     },
   },
-  "50 20 28 07 *": {
+  "50 20 07 08 *": {
     task: async () => {
       try {
         console.log("50 20");
@@ -113,7 +113,7 @@ module.exports = {
         );
         const tweetId = res[0].id_str;
         const taskRecord = await strapi.services.task.findOne({
-          id: "62e7c1dd449c2144ff0f0ecc",
+          id: "62ef94cd327c445121622593",
         });
         const updatedTaskData = taskRecord.data;
         updatedTaskData[
