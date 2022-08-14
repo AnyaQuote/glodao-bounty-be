@@ -14,7 +14,6 @@ const {
   getChatFromLink,
 } = require("./telegram-bot-helpers");
 const { getTweetIdFromLink } = require("./twitter-helper");
-const { listGuildMember } = require("./discord-api");
 const { similarity } = require("./index");
 
 const argv = yargs(hideBin(process.argv)).argv;
@@ -95,31 +94,31 @@ async function getAllPriorityBounty(taskId) {
 
 async function merge2Csv() {
   const supamap = new Map();
-  let arr = await csvToJson().fromFile("GloDAO-111-BUSD.csv");
-  console.log(arr.length);
-  arr.forEach((wallet) => {
-    const { Wallet_Address, Reward_Amount } = wallet;
-    const previousReward = supamap.get(Wallet_Address)
-      ? supamap.get(Wallet_Address)
-      : FIXED_NUMBER.ZERO;
-    supamap.set(
-      Wallet_Address,
-      previousReward.addUnsafe(FixedNumber.from(`${Reward_Amount}`))
-    );
-  });
-  arr = await csvToJson().fromFile("GloDAO-112-BUSD.csv");
-  console.log(arr.length);
-  arr.forEach((wallet) => {
-    const { Wallet_Address, Reward_Amount } = wallet;
-    const previousReward = supamap.get(Wallet_Address)
-      ? supamap.get(Wallet_Address)
-      : FIXED_NUMBER.ZERO;
-    supamap.set(
-      Wallet_Address,
-      previousReward.addUnsafe(FixedNumber.from(`${Reward_Amount}`))
-    );
-  });
-  // arr = await csvToJson().fromFile("Tubbly-59-27-28.csv");
+  // let arr = await csvToJson().fromFile("GloDAO-216-BUSD.csv");
+  // console.log(arr.length);
+  // arr.forEach((wallet) => {
+  //   const { Wallet_Address, Reward_Amount } = wallet;
+  //   const previousReward = supamap.get(Wallet_Address)
+  //     ? supamap.get(Wallet_Address)
+  //     : FIXED_NUMBER.ZERO;
+  //   supamap.set(
+  //     Wallet_Address,
+  //     previousReward.addUnsafe(FixedNumber.from(`${Reward_Amount}`))
+  //   );
+  // });
+  // arr = await csvToJson().fromFile("GloDAO-217-BUSD.csv");
+  // console.log(arr.length);
+  // arr.forEach((wallet) => {
+  //   const { Wallet_Address, Reward_Amount } = wallet;
+  //   const previousReward = supamap.get(Wallet_Address)
+  //     ? supamap.get(Wallet_Address)
+  //     : FIXED_NUMBER.ZERO;
+  //   supamap.set(
+  //     Wallet_Address,
+  //     previousReward.addUnsafe(FixedNumber.from(`${Reward_Amount}`))
+  //   );
+  // });
+  // arr = await csvToJson().fromFile("Realbox Promotion-203-BUSD.csv");
   // console.log(arr.length);
   // arr.forEach((wallet) => {
   //   const { Wallet_Address, Reward_Amount } = wallet;
@@ -150,7 +149,7 @@ async function merge2Csv() {
     });
   }
 
-  await exportDataToCsv(data, header, `consolidate-250622-260622-real.csv`);
+  // await exportDataToCsv(data, header, `consolidate-110822-120822-real.csv`);
 }
 async function revertApply() {
   const applies = await strapi.services.apply.find({
