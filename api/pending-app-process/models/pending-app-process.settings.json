@@ -1,0 +1,35 @@
+{
+  "kind": "collectionType",
+  "collectionName": "pending_app_processes",
+  "info": {
+    "name": "PendingAppProcess",
+    "description": ""
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "taskCode": {
+      "type": "string",
+      "required": true
+    },
+    "walletAddress": {
+      "type": "string"
+    },
+    "uniqueId": {
+      "type": "string"
+    },
+    "data": {
+      "type": "json"
+    },
+    "task": {
+      "model": "task"
+    },
+    "hunter": {
+      "model": "hunter"
+    }
+  }
+}
