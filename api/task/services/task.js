@@ -359,6 +359,7 @@ const mapHunterWithTaskProcessRecord = async (taskId, uniqueId, hunterId) => {
       uniqueId,
       task: taskId,
       hunter: hunterId,
+      data: [],
     });
   }
 
@@ -409,10 +410,7 @@ const mapHunterWithTaskProcessRecord = async (taskId, uniqueId, hunterId) => {
   const appTrialDataWithUpdatedStep = apply.data[APP_TRIAL_TYPE].map(
     (step, index) => {
       const currentReferStepCode = task.data[APP_TRIAL_TYPE][index].code;
-      if (
-        currentReferStepCode === stepCode ||
-        includes(processRecord.data, currentReferStepCode)
-      ) {
+      if (includes(processRecord.data, currentReferStepCode)) {
         return { ...step, finished: true };
       } else return step;
     }
@@ -497,7 +495,7 @@ const updateInApTrialTaskWithUniqueId = async (ctx, request, data) => {
     { id: processRecord.id },
     {
       taskCode,
-      data: uniq([...processRecord.data, stepCode]),
+      data: uniq([...get(processRecord, "data", []), stepCode]),
     }
   );
 
