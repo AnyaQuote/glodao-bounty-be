@@ -14,7 +14,7 @@
   "attributes": {
     "taskCode": {
       "type": "string",
-      "required": true
+      "required": false
     },
     "walletAddress": {
       "type": "string"
