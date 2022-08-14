@@ -7,6 +7,18 @@ const { get, isEqual, isEmpty } = require("lodash");
  */
 
 module.exports = {
+  updateTaskTrialUniqueId: async (ctx) => {
+    const hunterId = get(ctx, "state.user.hunter", "");
+    const { taskId, uniqueId } = get(request, "body", {});
+    if (isEmpty(hunterId) || isEmpty(taskId) || isEmpty(uniqueId)) {
+      return ctx.badRequest("Missing required fields");
+    }
+    return await strapi.services.task.mapHunterWithTaskProcessRecord(
+      taskId,
+      uniqueId,
+      hunterId
+    );
+  },
   verifyTelegramLink: async (ctx) => {
     const link =
       get(ctx, "query.link", "") ||

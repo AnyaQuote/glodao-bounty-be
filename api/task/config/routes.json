@@ -80,5 +80,14 @@
         "policies": []
       }
     }
+    ,
+    {
+      "method": "POST",
+      "path": "/tasks/updateTaskTrialUniqueId",
+      "handler": "task.updateTaskTrialUniqueId",
+      "config": {
+        "policies": []
+      }
+    }
   ]
 }

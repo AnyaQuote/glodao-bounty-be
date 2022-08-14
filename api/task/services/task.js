@@ -349,6 +349,108 @@ const successResponse = (code, data) => ({
   data,
 });
 
+const mapHunterWithTaskProcessRecord = async (taskId, uniqueId, hunterId) => {
+  const processRecord = await strapi.services["pending-app-process"].findOne({
+    task: taskId,
+    uniqueId,
+  });
+  if (isEmpty(processRecord)) {
+    return await strapi.services["pending-app-process"].create({
+      uniqueId,
+      task: taskId,
+      hunter: hunterId,
+    });
+  }
+
+  let hunter = get(processRecord, "hunter", {});
+  if (!isEmpty(hunter) && hunter.id !== hunterId) {
+    return requestError(
+      409,
+      "This unique id is already used by another hunter"
+    );
+  }
+
+  if (!isEmpty(hunter)) {
+    return successResponse(200, {
+      uniqueId,
+      hunterId,
+    });
+  }
+  hunter = await strapi.services.hunter.findOne({ id: hunterId });
+  await strapi.services["pending-app-process"].update(
+    { id: processRecord.id },
+    {
+      hunter: hunterId,
+      walletAddress: get(hunter, "address", ""),
+    }
+  );
+
+  const task = get(processRecord, "task", {});
+  if (isEmpty(task)) {
+    return requestError(500, "Internal server error");
+  }
+
+  let apply;
+  // Get existed apply with hunter and task above
+  apply = await strapi.services.apply.findOne({
+    hunter: hunterId,
+    task: taskId,
+  });
+  // If task not exists, create new apply with the supplied hunter and task above
+  if (isEmpty(apply)) {
+    const newApply = await strapi.services.apply.create({
+      hunter: hunter.id,
+      task: task.id,
+      ID: `${task.id}_${hunter.id}`,
+    });
+    apply = newApply;
+  }
+
+  const appTrialDataWithUpdatedStep = apply.data[APP_TRIAL_TYPE].map(
+    (step, index) => {
+      const currentReferStepCode = task.data[APP_TRIAL_TYPE][index].code;
+      if (
+        currentReferStepCode === stepCode ||
+        includes(processRecord.data, currentReferStepCode)
+      ) {
+        return { ...step, finished: true };
+      } else return step;
+    }
+  );
+  const updatedData = { [APP_TRIAL_TYPE]: appTrialDataWithUpdatedStep };
+  var isTaskCompleted = true;
+  for (const key in updatedData) {
+    if (Object.hasOwnProperty.call(updatedData, key)) {
+      const element = updatedData[key];
+      if (element.every((step) => step.finished)) {
+        continue;
+      } else {
+        isTaskCompleted = false;
+        break;
+      }
+    }
+  }
+
+  if (isEmpty(get(hunter, "address", ""))) {
+    isTaskCompleted = false;
+  }
+  // Sync updated apply data with database
+  const res = await strapi.services.apply.update(
+    { id: apply.id },
+    {
+      data: updatedData,
+      completeTime: isTaskCompleted ? moment().toISOString() : undefined,
+      status: isTaskCompleted ? "completed" : "processing",
+      walletAddress: get(hunter, "address", ""),
+    }
+  );
+
+  return successResponse(200, {
+    uniqueId,
+    task: get(processRecord, "taskCode", ""),
+  });
+};
+
 const updateInApTrialTaskWithUniqueId = async (ctx, request, data) => {
   const { api_key, secret_key, taskCode, stepCode, uniqueId } = data;
   const apiKey = await strapi.services["api-key"].findOne({
@@ -378,7 +480,7 @@ const updateInApTrialTaskWithUniqueId = async (ctx, request, data) => {
   }
 
   const processRecord = await strapi.services["pending-app-process"].findOne({
-    taskCode,
+    task: keyTask.id,
     uniqueId,
   });
 
@@ -394,6 +496,7 @@ const updateInApTrialTaskWithUniqueId = async (ctx, request, data) => {
   await strapi.services["pending-app-process"].update(
     { id: processRecord.id },
     {
+      taskCode,
       data: uniq([...processRecord.data, stepCode]),
     }
   );
@@ -451,8 +554,8 @@ const updateInApTrialTaskWithUniqueId = async (ctx, request, data) => {
       }
     }
   }
-  
-  if (isEmpty(get(hunter, "adddress", ""))) {
+
+  if (isEmpty(get(hunter, "address", ""))) {
     isTaskCompleted = false;
   }
   // Sync updated apply data with database
@@ -573,4 +676,5 @@ module.exports = {
   updateInAppTrialTask,
   verifyTelegramMissionLink,
   updateInApTrialTaskWithUniqueId,
+  mapHunterWithTaskProcessRecord,
 };
