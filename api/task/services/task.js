@@ -490,7 +490,7 @@ const updateInApTrialTaskWithUniqueId = async (ctx, request, data) => {
       data: [stepCode],
     });
   }
-  console.log(processRecord.data);
+
   await strapi.services["pending-app-process"].update(
     { id: processRecord.id },
     {
@@ -557,7 +557,7 @@ const updateInApTrialTaskWithUniqueId = async (ctx, request, data) => {
     isTaskCompleted = false;
   }
   // Sync updated apply data with database
-  const res = await strapi.services.apply.update(
+  await strapi.services.apply.update(
     { id: apply.id },
     {
       data: updatedData,
@@ -608,18 +608,59 @@ const updateInAppTrialTask = async (ctx, request, data) => {
     );
   }
 
+  const processRecord = await strapi.services["pending-app-process"].findOne({
+    task: keyTask.id,
+    walletAddress,
+  });
+
   // Test hunter wallet address matched with requested wallet address
-  const hunter = await strapi.services.hunter.findOne({
+  let hunter = await strapi.services.hunter.findOne({
     address: walletAddress,
   });
-  if (isEmpty(hunter)) {
-    return requestError(404, "Hunter not found");
+
+  if (isEmpty(processRecord)) {
+    if (isEmpty(hunter))
+      return await strapi.services["pending-app-process"].create({
+        taskCode,
+        walletAddress,
+        task: keyTask.id,
+        data: [stepCode],
+        hunter: !isEmpty(hunter) ? hunter.id : undefined,
+      });
+    else if (!isEmpty(hunter)) {
+      await strapi.services["pending-app-process"].create({
+        taskCode,
+        walletAddress,
+        task: keyTask.id,
+        data: [stepCode],
+        hunter: !isEmpty(hunter) ? hunter.id : undefined,
+      });
+    }
+  } else {
+    await strapi.services["pending-app-process"].update(
+      { id: processRecord.id },
+      {
+        taskCode,
+        data: uniq([...get(processRecord, "data", []), stepCode]),
+        hunter: !isEmpty(hunter) ? hunter.id : undefined,
+      }
+    );
   }
 
   // Test there is task existed with requested keyTask
   const task = await strapi.services.task.findOne({ id: keyTask.id });
   if (isEmpty(task)) {
     return requestError(500, "Task not found");
+  }
+
+  if (isEmpty(hunter)) {
+    hunter = get(processRecord, "hunter", {});
+    if (isEmpty(hunter)) {
+      return successResponse(200, {
+        walletAddress,
+        task: taskCode,
+      });
+    }
   }
 
   let apply;
@@ -641,19 +682,41 @@ const updateInAppTrialTask = async (ctx, request, data) => {
   const appTrialDataWithUpdatedStep = apply.data[APP_TRIAL_TYPE].map(
     (step, index) => {
       const currentReferStepCode = task.data[APP_TRIAL_TYPE][index].code;
-      if (currentReferStepCode === stepCode) {
+      if (
+        currentReferStepCode === stepCode ||
+        includes(get(processRecord, "data", []), currentReferStepCode)
+      ) {
         return { ...step, finished: true };
       } else return step;
     }
   );
   const updatedData = { [APP_TRIAL_TYPE]: appTrialDataWithUpdatedStep };
-  // Sync updated apply data with database
-  const res = await strapi.services.apply.update(
-    { id: apply.id },
-    { data: updatedData }
-  );
+  var isTaskCompleted = true;
+  for (const key in updatedData) {
+    if (Object.hasOwnProperty.call(updatedData, key)) {
+      const element = updatedData[key];
+      if (element.every((step) => step.finished)) {
+        continue;
+      } else {
+        isTaskCompleted = false;
+        break;
+      }
+    }
+  }
 
-  console.log(res);
+  if (isEmpty(get(hunter, "address", ""))) {
+    isTaskCompleted = false;
+  }
+  // Sync updated apply data with database
+  await strapi.services.apply.update(
+    { id: apply.id },
+    {
+      data: updatedData,
+      completeTime: isTaskCompleted ? moment().toISOString() : undefined,
+      status: isTaskCompleted ? "completed" : "processing",
+      walletAddress: get(hunter, "address", ""),
+    }
+  );
 
   return successResponse(200, {
     walletAddress,
