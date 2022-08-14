@@ -1,6 +1,6 @@
 "use strict";
 
-const { get, gte, isEmpty, isEqual } = require("lodash");
+const { get, gte, isEmpty, isEqual, includes, uniq } = require("lodash");
 const moment = require("moment");
 const { FixedNumber } = require("@ethersproject/bignumber");
 const {
@@ -349,6 +349,129 @@ const successResponse = (code, data) => ({
   data,
 });
 
+const updateInApTrialTaskWithUniqueId = async (ctx, request, data) => {
+  const { api_key, secret_key, taskCode, stepCode, uniqueId } = data;
+  const apiKey = await strapi.services["api-key"].findOne({
+    key: api_key,
+    secret: secret_key,
+    isActive: true,
+  });
+
+  // Test api key is authorized
+  const isApiKeyAuthorized = await strapi.services[
+    "api-key"
+  ].isApiKeyAuthorizedByObject(apiKey, request, taskCode);
+  if (!isApiKeyAuthorized) {
+    return unauthorizedError(
+      ctx,
+      "The server understands the request but the API key is not authorized to access this resource"
+    );
+  }
+
+  // Test in authorized api key contains requested task code
+  const keyTask = apiKey.tasks.find((task) => isEqual(task.code, taskCode));
+  if (isEmpty(keyTask)) {
+    return unauthorizedError(
+      ctx,
+      "The server understands the request but the API key is not authorized to access this resource"
+    );
+  }
+
+  const processRecord = await strapi.services["pending-app-process"].findOne({
+    taskCode,
+    uniqueId,
+  });
+
+  if (isEmpty(processRecord)) {
+    return await strapi.services["pending-app-process"].create({
+      taskCode,
+      uniqueId,
+      task: keyTask.id,
+      data: [stepCode],
+    });
+  }
+  console.log(processRecord.data);
+  await strapi.services["pending-app-process"].update(
+    { id: processRecord.id },
+    {
+      data: uniq([...processRecord.data, stepCode]),
+    }
+  );
+
+  const hunter = get(processRecord, "hunter", {});
+  if (isEmpty(hunter)) {
+    return successResponse(200, {
+      uniqueId,
+      task: taskCode,
+    });
+  }
+
+  const task = get(processRecord, "task", {});
+  if (isEmpty(task)) {
+    return requestError(500, "Internal server error");
+  }
+
+  let apply;
+  // Get existed apply with hunter and task above
+  apply = await strapi.services.apply.findOne({
+    hunter: hunter.id,
+    task: task.id,
+  });
+  // If task not exists, create new apply with the supplied hunter and task above
+  if (isEmpty(apply)) {
+    const newApply = await strapi.services.apply.create({
+      hunter: hunter.id,
+      task: task.id,
+      ID: `${task.id}_${hunter.id}`,
+    });
+    apply = newApply;
+  }
+
+  const appTrialDataWithUpdatedStep = apply.data[APP_TRIAL_TYPE].map(
+    (step, index) => {
+      const currentReferStepCode = task.data[APP_TRIAL_TYPE][index].code;
+      if (
+        currentReferStepCode === stepCode ||
+        includes(processRecord.data, currentReferStepCode)
+      ) {
+        return { ...step, finished: true };
+      } else return step;
+    }
+  );
+  const updatedData = { [APP_TRIAL_TYPE]: appTrialDataWithUpdatedStep };
+  var isTaskCompleted = true;
+  for (const key in updatedData) {
+    if (Object.hasOwnProperty.call(updatedData, key)) {
+      const element = updatedData[key];
+      if (element.every((step) => step.finished)) {
+        continue;
+      } else {
+        isTaskCompleted = false;
+        break;
+      }
+    }
+  }
+  
+  if (isEmpty(get(hunter, "adddress", ""))) {
+    isTaskCompleted = false;
+  }
+  // Sync updated apply data with database
+  const res = await strapi.services.apply.update(
+    { id: apply.id },
+    {
+      data: updatedData,
+      completeTime: isTaskCompleted ? moment().toISOString() : undefined,
+      status: isTaskCompleted ? "completed" : "processing",
+      walletAddress: get(hunter, "address", ""),
+    }
+  );
+
+  return successResponse(200, {
+    uniqueId,
+    task: taskCode,
+  });
+};
+
 /**
  * Update app trial task step data finished status to true
  * @param {*} ctx
@@ -395,7 +518,7 @@ const updateInAppTrialTask = async (ctx, request, data) => {
   // Test there is task existed with requested keyTask
   const task = await strapi.services.task.findOne({ id: keyTask.id });
   if (isEmpty(task)) {
-    return requestError(404, "Task not found");
+    return requestError(500, "Task not found");
   }
 
   let apply;
@@ -449,4 +572,5 @@ module.exports = {
   createInAppTrialTask,
   updateInAppTrialTask,
   verifyTelegramMissionLink,
+  updateInApTrialTaskWithUniqueId,
 };
