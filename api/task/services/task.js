@@ -355,11 +355,14 @@ const mapHunterWithTaskProcessRecord = async (taskId, uniqueId, hunterId) => {
     uniqueId,
   });
   if (isEmpty(processRecord)) {
-    return await strapi.services["pending-app-process"].create({
+    await strapi.services["pending-app-process"].create({
       uniqueId,
       task: taskId,
       hunter: hunterId,
       data: [],
+    });
+    return requestError(409, {
+      message: "This uniqueId had not processed this task yet",
     });
   }
 
@@ -440,12 +443,14 @@ const mapHunterWithTaskProcessRecord = async (taskId, uniqueId, hunterId) => {
       completeTime: isTaskCompleted ? moment().toISOString() : undefined,
       status: isTaskCompleted ? "completed" : "processing",
       walletAddress: get(hunter, "address", ""),
+      metadata: { uniqueId: uniqueId },
     }
   );
 
   return successResponse(200, {
     uniqueId,
     task: get(processRecord, "taskCode", ""),
+    apply: res,
   });
 };
 
@@ -483,11 +488,15 @@ const updateInApTrialTaskWithUniqueId = async (ctx, request, data) => {
   });
 
   if (isEmpty(processRecord)) {
-    return await strapi.services["pending-app-process"].create({
+    await strapi.services["pending-app-process"].create({
       taskCode,
       uniqueId,
       task: keyTask.id,
       data: [stepCode],
+    });
+    return successResponse(200, {
+      uniqueId,
+      task: taskCode,
     });
   }
 
@@ -564,6 +573,7 @@ const updateInApTrialTaskWithUniqueId = async (ctx, request, data) => {
       completeTime: isTaskCompleted ? moment().toISOString() : undefined,
       status: isTaskCompleted ? "completed" : "processing",
       walletAddress: get(hunter, "address", ""),
+      metadata: { uniqueId: uniqueId },
     }
   );
 
@@ -619,15 +629,19 @@ const updateInAppTrialTask = async (ctx, request, data) => {
   });
 
   if (isEmpty(processRecord)) {
-    if (isEmpty(hunter))
-      return await strapi.services["pending-app-process"].create({
+    if (isEmpty(hunter)) {
+      await strapi.services["pending-app-process"].create({
         taskCode,
         walletAddress,
         task: keyTask.id,
         data: [stepCode],
         hunter: !isEmpty(hunter) ? hunter.id : undefined,
       });
-    else if (!isEmpty(hunter)) {
+      return successResponse(200, {
+        walletAddress,
+        task: taskCode,
+      });
+    } else if (!isEmpty(hunter)) {
       await strapi.services["pending-app-process"].create({
         taskCode,
         walletAddress,
