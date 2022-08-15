@@ -355,14 +355,43 @@ const mapHunterWithTaskProcessRecord = async (taskId, uniqueId, hunterId) => {
     uniqueId,
   });
   if (isEmpty(processRecord)) {
-    await strapi.services["pending-app-process"].create({
+    const newRecord = await strapi.services["pending-app-process"].create({
       uniqueId,
       task: taskId,
       hunter: hunterId,
       data: [],
     });
-    return requestError(409, {
-      message: "This uniqueId had not processed this task yet",
+    let apply;
+    // Get existed apply with hunter and task above
+    apply = await strapi.services.apply.findOne({
+      hunter: hunterId,
+      task: taskId,
+    });
+    const task = get(newRecord, "task", {});
+
+    let existedUniqueId = get(apply, "metadata.uniqueId", "");
+    // If task not exists, create new apply with the supplied hunter and task above
+    if (isEmpty(apply)) {
+      const newApply = await strapi.services.apply.create({
+        hunter: hunter.id,
+        task: task.id,
+        ID: `${task.id}_${hunter.id}`,
+      });
+      apply = newApply;
+    }
+    // Sync updated apply data with database
+    const res = await strapi.services.apply.update(
+      { id: apply.id },
+      {
+        metadata: {
+          uniqueId: isEmpty(existedUniqueId) ? uniqueId : existedUniqueId,
+        },
+      }
+    );
+
+    return successResponse(200, {
+      uniqueId,
+      apply: res,
     });
   }
 
