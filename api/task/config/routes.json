@@ -83,8 +83,8 @@
     ,
     {
       "method": "POST",
-      "path": "/tasks/updateTaskTrialUniqueId",
-      "handler": "task.updateTaskTrialUniqueId",
+      "path": "/tasks/mapUniqueId",
+      "handler": "task.mapUniqueId",
       "config": {
         "policies": []
       }

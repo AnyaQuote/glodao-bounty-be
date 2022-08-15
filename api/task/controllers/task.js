@@ -7,7 +7,7 @@ const { get, isEqual, isEmpty } = require("lodash");
  */
 
 module.exports = {
-  updateTaskTrialUniqueId: async (ctx) => {
+  mapUniqueId: async (ctx) => {
     const hunterId = get(ctx, "state.user.hunter", "");
     const { taskId, uniqueId } = get(ctx, "request.body", {});
     if (isEmpty(hunterId) || isEmpty(taskId) || isEmpty(uniqueId)) {
