@@ -7,6 +7,18 @@ const { get, isEqual, isEmpty } = require("lodash");
  */
 
 module.exports = {
+  mapUniqueId: async (ctx) => {
+    const hunterId = get(ctx, "state.user.hunter", "");
+    const { taskId, uniqueId } = get(ctx, "request.body", {});
+    if (isEmpty(hunterId) || isEmpty(taskId) || isEmpty(uniqueId)) {
+      return ctx.badRequest("Missing required fields");
+    }
+    return await strapi.services.task.mapHunterWithTaskProcessRecord(
+      taskId,
+      uniqueId,
+      hunterId
+    );
+  },
   verifyTelegramLink: async (ctx) => {
     const link =
       get(ctx, "query.link", "") ||
@@ -57,16 +69,35 @@ module.exports = {
     // get route from ctx
     const request = get(ctx, "request", {});
     const { api_key, secret_key } = get(request, "query", {});
-    const { taskCode, walletAddress, stepCode } = get(request, "body", {});
+    const { taskCode, walletAddress, stepCode, uniqueId } = get(
+      request,
+      "body",
+      {}
+    );
     if (
       isEmpty(api_key) ||
       isEmpty(secret_key) ||
       isEmpty(taskCode) ||
-      isEmpty(walletAddress) ||
       isEmpty(stepCode)
     ) {
       return ctx.badRequest("Missing required fields");
     }
+    if (isEmpty(uniqueId) && isEmpty(walletAddress)) {
+      return ctx.badRequest("uniqueId or walletAddress must be provided");
+    }
+    if (!isEmpty(uniqueId))
+      return await strapi.services.task.updateInApTrialTaskWithUniqueId(
+        ctx,
+        request,
+        {
+          api_key,
+          secret_key,
+          taskCode,
+          stepCode,
+          uniqueId,
+        }
+      );
+
     return await strapi.services.task.updateInAppTrialTask(ctx, request, {
       api_key,
       secret_key,

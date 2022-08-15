@@ -80,5 +80,14 @@
         "policies": []
       }
     }
+    ,
+    {
+      "method": "POST",
+      "path": "/tasks/mapUniqueId",
+      "handler": "task.mapUniqueId",
+      "config": {
+        "policies": []
+      }
+    }
   ]
 }

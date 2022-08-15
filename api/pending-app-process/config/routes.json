@@ -1,0 +1,52 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/pending-app-processes",
+      "handler": "pending-app-process.find",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/pending-app-processes/count",
+      "handler": "pending-app-process.count",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/pending-app-processes/:id",
+      "handler": "pending-app-process.findOne",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/pending-app-processes",
+      "handler": "pending-app-process.create",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/pending-app-processes/:id",
+      "handler": "pending-app-process.update",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/pending-app-processes/:id",
+      "handler": "pending-app-process.delete",
+      "config": {
+        "policies": []
+      }
+    }
+  ]
+}
