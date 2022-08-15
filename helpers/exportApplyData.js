@@ -110,28 +110,48 @@ async function main(argv) {
       optionalTokenReward,
     } = apply;
     const tokenContractAddress = _.get(
-      task,
+      apply.task,
       "metadata.tokenContractAddress",
       "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"
     );
-    accumulateAddressReward(walletAddress, bounty, "100", tokenContractAddress);
+    const tokenBasePrice = _.get(apply.task, "tokenBasePrice", "1");
+    const decimals = _.get(apply.task, "metadata.decimals", "18");
+    const rewardToken = _.get(apply.task, "metadata.rewardToken", "BUSD");
+    accumulateAddressReward(
+      walletAddress,
+      bounty,
+      "100",
+      tokenContractAddress,
+      decimals,
+      rewardToken,
+      tokenBasePrice
+    );
     accumulateAddressReward(
       commissionAddress,
       bounty,
       commissionRate,
-      tokenContractAddress
+      tokenContractAddress,
+      decimals,
+      rewardToken,
+      tokenBasePrice
     );
     accumulateAddressReward(
       rootAddress,
       bounty,
       rootCommissionRate,
-      tokenContractAddress
+      tokenContractAddress,
+      decimals,
+      rewardToken,
+      tokenBasePrice
     );
     accumulateAddressReward(
       glodaoAddress,
       bounty,
       glodaoCommissionRate,
-      tokenContractAddress
+      tokenContractAddress,
+      decimals,
+      rewardToken,
+      tokenBasePrice
     );
     optionalTokenReward.forEach((optionalToken) => {
       accumulateAddressReward(
