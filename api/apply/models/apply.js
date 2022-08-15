@@ -32,12 +32,14 @@ module.exports = {
       // event.poolType = "community";
 
       let taskData = initEmptyStepData(task);
-      const validatedTwitterTaskData = await preValidateFollowTwitterTask(
-        _.get(taskData, "twitter", []),
-        task,
-        user
-      );
-      taskData.twitter = validatedTwitterTaskData;
+      if (!_.isEmpty(_.get(taskData, "twitter", []))) {
+        const validatedTwitterTaskData = await preValidateFollowTwitterTask(
+          _.get(taskData, "twitter", []),
+          task,
+          user
+        );
+        taskData.twitter = validatedTwitterTaskData;
+      }
       event.data = taskData;
       event.bounty = 0;
       event.referrerCode = hunter.referrerCode;
