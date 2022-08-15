@@ -400,6 +400,7 @@ const mapHunterWithTaskProcessRecord = async (taskId, uniqueId, hunterId) => {
     hunter: hunterId,
     task: taskId,
   });
+  let existedUniqueId = get(apply, "metadata.uniqueId", "");
   // If task not exists, create new apply with the supplied hunter and task above
   if (isEmpty(apply)) {
     const newApply = await strapi.services.apply.create({
@@ -443,7 +444,9 @@ const mapHunterWithTaskProcessRecord = async (taskId, uniqueId, hunterId) => {
       completeTime: isTaskCompleted ? moment().toISOString() : undefined,
       status: isTaskCompleted ? "completed" : "processing",
       walletAddress: get(hunter, "address", ""),
-      metadata: { uniqueId: uniqueId },
+      metadata: {
+        uniqueId: isEmpty(existedUniqueId) ? uniqueId : existedUniqueId,
+      },
     }
   );
 
@@ -527,6 +530,8 @@ const updateInApTrialTaskWithUniqueId = async (ctx, request, data) => {
     hunter: hunter.id,
     task: task.id,
   });
+  let existedUniqueId = get(apply, "metadata.uniqueId", "");
+
   // If task not exists, create new apply with the supplied hunter and task above
   if (isEmpty(apply)) {
     const newApply = await strapi.services.apply.create({
@@ -573,7 +578,9 @@ const updateInApTrialTaskWithUniqueId = async (ctx, request, data) => {
       completeTime: isTaskCompleted ? moment().toISOString() : undefined,
       status: isTaskCompleted ? "completed" : "processing",
       walletAddress: get(hunter, "address", ""),
-      metadata: { uniqueId: uniqueId },
+      metadata: {
+        uniqueId: isEmpty(existedUniqueId) ? uniqueId : existedUniqueId,
+      },
     }
   );
 
