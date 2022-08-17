@@ -12,7 +12,8 @@ module.exports = {
   contact: async (ctx) => {
     try {
       console.log(ctx.request.body);
-      const { fname, email, description } = ctx.request.body;
+      console.log(typeof ctx.request.body);
+      const { fname, email, description } = JSON.parse(ctx.request.body);
       console.log(fname, email, description);
       await strapi.plugins["email"].services.email.send({
         to: "hello@glodao.io",
@@ -20,7 +21,7 @@ module.exports = {
         text: `User Contact send from https://glodao.io\nFullname: ${fname}\nEmail: ${email}\nMessage: ${description}`,
         from: "noreply@glodao.io",
       });
-      console.log('send email finished')
+      console.log("send email finished");
       return {
         status: 200,
         message: "Email sent successfully",
