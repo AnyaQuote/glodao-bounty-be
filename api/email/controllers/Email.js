@@ -12,6 +12,7 @@ module.exports = {
   contact: async (ctx) => {
     try {
       const { fname, email, description } = ctx.request.body;
+      console.log(fname, email, description);
       await strapi.plugins["email"].services.email.send({
         to: "hello@glodao.io",
         subject: "User Contact",
