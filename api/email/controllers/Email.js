@@ -27,6 +27,7 @@ module.exports = {
         message: "Email sent successfully",
       };
     } catch (error) {
+      console.log(error);
       strapi.log.debug(error);
       ctx.send({ error: "Error sending mail" });
     }
