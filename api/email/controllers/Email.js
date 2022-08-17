@@ -13,7 +13,7 @@ module.exports = {
     try {
       console.log(ctx.request.body);
       console.log(typeof ctx.request.body);
-      const { fname, email, description } = JSON.parse(ctx.request.body);
+      const { fname, email, description } = ctx.request.body;
       console.log(fname, email, description);
       await strapi.plugins["email"].services.email.send({
         to: "hello@glodao.io",
