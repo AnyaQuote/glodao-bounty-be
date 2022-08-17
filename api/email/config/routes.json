@@ -1,0 +1,10 @@
+{
+  "routes": [
+    {
+      "method": "POST",
+      "path": "/emails/contact",
+      "handler": "Email.contact",
+      "config": {}
+    }
+  ]
+}
