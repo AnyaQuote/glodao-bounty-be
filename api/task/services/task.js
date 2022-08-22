@@ -13,6 +13,12 @@ const fxZero = FixedNumber.from("0");
  * to customize this service
  */
 
+/**
+ * Get array of users who have applied for a task with id
+ * @param {object} ctx context object
+ * @param {string} id task id
+ * @returns array of users who applied for the task
+ */
 const exportTaskHuntersWithoutReward = async (ctx, id) => {
   let task = null;
   try {
