@@ -7,6 +7,7 @@ const {
   isUserFollowChat,
   getChatFromLink,
 } = require("../../../helpers/telegram-bot-helpers");
+const { getTaskRewards } = require("../../../helpers/task-helper");
 const fxZero = FixedNumber.from("0");
 /**
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-services)
@@ -33,6 +34,29 @@ const exportTaskHuntersWithoutReward = async (ctx, id) => {
     status: apply.status,
     completeTime: get(apply, "completeTime", null),
   }));
+};
+
+const exportTaskRewards = async (ctx, id) => {
+  let task = null;
+  try {
+    task = await strapi.services.task.findOne({ id });
+  } catch (error) {
+    return ctx.badRequest("Task not found");
+  }
+  const applies = await strapi.services.apply.getAllTaskRelatedApplies(id);
+  const rewardAddressMap = getTaskRewards(
+    task,
+    applies.filter((apply) => apply.status !== "processing")
+  );
+
+  const result = [];
+  for (const [key, value] of rewardAddressMap) {
+    result.push({
+      walletAddress: key,
+      rewardAmount: `${value._value}`.substring(0, 8),
+    });
+  }
+  return result;
 };
 
 /**
@@ -811,4 +835,5 @@ module.exports = {
   updateInApTrialTaskWithUniqueId,
   mapHunterWithTaskProcessRecord,
   exportTaskHuntersWithoutReward,
+  exportTaskRewards,
 };
