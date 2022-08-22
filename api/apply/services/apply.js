@@ -16,6 +16,28 @@ const {
  */
 
 /**
+ * Find all applies of task with task id
+ * @param {string} task task id
+ * @returns array of related applies
+ */
+const getAllTaskRelatedApplies = async (task) => {
+  const _limit = 100;
+  let _start = 0;
+  let result = [];
+  do {
+    const res = await strapi.services.apply.find({
+      _limit,
+      _start,
+      task,
+    });
+    result = result.concat(res);
+    _start += _limit;
+    if (res.length < _limit) break;
+  } while (true);
+  return result;
+};
+
+/**
  * Update an apply to completed status
  * @param {string} id Apply id
  * @param {string} walletAddress wallet address for apply
@@ -435,4 +457,5 @@ module.exports = {
   validateFollowTwitterTask,
   updateApplyStateToComplete,
   validateQuizRecordShareTask,
+  getAllTaskRelatedApplies,
 };
