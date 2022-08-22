@@ -13,6 +13,8 @@ module.exports = {
       return ctx.badRequest("Missing required field: id is required");
     if (isEmpty(type) || isEqual(type, "user"))
       return await strapi.services.task.exportTaskHuntersWithoutReward(ctx, id);
+    if (isEqual(type, "rewards"))
+      return await strapi.services.task.exportTaskRewards(ctx, id);
     return "Not implemented";
   },
   mapUniqueId: async (ctx) => {
