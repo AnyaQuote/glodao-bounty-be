@@ -7,6 +7,14 @@ const { get, isEqual, isEmpty } = require("lodash");
  */
 
 module.exports = {
+  exportUsers: async (ctx) => {
+    const { id, type } = get(ctx, "query", {});
+    if (isEmpty(id))
+      return ctx.badRequest("Missing required field: id is required");
+    if (isEmpty(type) || isEqual(type, "user"))
+      return await strapi.services.task.exportTaskHuntersWithoutReward(ctx, id);
+    return "Not implemented";
+  },
   mapUniqueId: async (ctx) => {
     const hunterId = get(ctx, "state.user.hunter", "");
     const { taskId, uniqueId } = get(ctx, "request.body", {});
