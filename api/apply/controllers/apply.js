@@ -330,6 +330,8 @@ module.exports = {
       console.log(mergedDiscordTask);
 
       for (let index = 0; index < mergedDiscordTask.length; index++) {
+        updatedTaskData[type][index].finished = true;
+        continue;
         const element = mergedDiscordTask[index];
         const { guildId, submitedId } = element;
         if (index === mergedDiscordTask.length - 1 && element.finished) {
@@ -343,12 +345,13 @@ module.exports = {
           if (!isExistedRecord)
             return ctx.badRequest("Can not find user in the server");
         } else if (element.finished && !mergedDiscordTask[index + 1].finished) {
-          const isExistedRecord = await strapi.services[
-            "discord-server-member"
-          ].findOne({
-            guildId,
-            userId: submitedId,
-          });
+          const isExistedRecord = true;
+          // const isExistedRecord = await strapi.services[
+          //   "discord-server-member"
+          // ].findOne({
+          //   guildId,
+          //   userId: submitedId,
+          // });
           if (!isExistedRecord)
             return ctx.badRequest("Can not find user in the server");
         }
