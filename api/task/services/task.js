@@ -1,6 +1,6 @@
 "use strict";
 
-const { get, gte, isEmpty, isEqual, includes, uniq } = require("lodash");
+const { get, gte, isEmpty, isEqual, includes, uniq, isNil } = require("lodash");
 const moment = require("moment");
 const { FixedNumber } = require("@ethersproject/bignumber");
 const {
@@ -12,6 +12,22 @@ const fxZero = FixedNumber.from("0");
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-services)
  * to customize this service
  */
+
+const exportTaskHuntersWithoutReward = async (ctx, id) => {
+  let task = null;
+  try {
+    task = await strapi.services.task.findOne({ id });
+  } catch (error) {
+    return ctx.badRequest("Task not found");
+  }
+  const applies = await strapi.services.apply.getAllTaskRelatedApplies(id);
+  return applies.map((apply) => ({
+    twitter: apply.hunter.name,
+    wallet: get(apply, "hunter.address", ""),
+    status: apply.status,
+    completeTime: get(apply, "completeTime", null),
+  }));
+};
 
 /**
  * Check if telegram link is valid and bot in the chat
@@ -788,4 +804,5 @@ module.exports = {
   verifyTelegramMissionLink,
   updateInApTrialTaskWithUniqueId,
   mapHunterWithTaskProcessRecord,
+  exportTaskHuntersWithoutReward,
 };
