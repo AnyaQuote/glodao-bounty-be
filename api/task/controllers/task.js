@@ -52,6 +52,15 @@ module.exports = {
       return await strapi.services.task.createTask(ctx, missionData);
     }
   },
+  updateTask: async (ctx) => {
+    const missionData = ctx.request.body;
+    const type = get(ctx, "request.body.type", "bounty");
+    if (isEqual(type, "iat")) {
+      return await strapi.services.task.updateBaseTaskIat(ctx, missionData);
+    } else {
+      return await strapi.services.task.updateTask(ctx, missionData);
+    }
+  },
   getAverageCommunityReward: async (ctx) => {
     try {
       const limit =
