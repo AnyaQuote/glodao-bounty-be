@@ -33,6 +33,14 @@
       }
     },
     {
+      "method": "POST",
+      "path": "/tasks/updateTask",
+      "handler": "task.updateTask",
+      "config": {
+        "policies": ["global::is-address-owner"]
+      }
+    },
+    {
       "method": "GET",
       "path": "/tasks/getAverageCommunityReward/:limit",
       "handler": "task.getAverageCommunityReward",
