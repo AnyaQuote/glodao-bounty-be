@@ -240,6 +240,62 @@ const createTask = async (ctx, missionData) => {
   });
 };
 
+const updateTask = async (ctx, missionData) => {
+  const {
+    id,
+    poolId,
+    name,
+    type,
+    status,
+    tokenBasePrice,
+    rewardAmount,
+    startTime,
+    endTime,
+    maxParticipants,
+    maxPriorityParticipants,
+    priorityRewardAmount,
+    data,
+    metadata,
+  } = missionData;
+
+  const pool = await strapi.services["voting-pool"].findOne({
+    id: poolId,
+  });
+
+  if (isEmpty(pool)) {
+    ctx.badRequest(POOL_NOT_FOUND);
+  }
+
+  if (
+    moment(startTime).isBefore(moment(pool.startDate)) ||
+    moment(endTime).isAfter(moment(pool.endDate)) ||
+    moment(startTime).isAfter(moment(endTime))
+  ) {
+    ctx.badRequest(INVALID_DATE_RANGE);
+  }
+
+  return await strapi.services.task.update(
+    { id },
+    {
+      votingPool: pool.id,
+      poolId,
+      name,
+      type,
+      status,
+      chainId: pool.chainId,
+      tokenBasePrice,
+      rewardAmount,
+      startTime,
+      endTime,
+      maxParticipants,
+      priorityRewardAmount,
+      maxPriorityParticipants,
+      data,
+      metadata,
+    }
+  );
+};
+
 /**
  * Convert token to base price and sum converted value
  * @param {array} optionalTokenReward array of token
@@ -380,6 +436,65 @@ const createInAppTrialTask = async (ctx, missionData) => {
     secret_key: apiKey.secret,
     tasks: apiKey.tasks,
   };
+};
+
+const updateBaseTaskIat = async (ctx, missionData) => {
+  const {
+    id,
+    projectOwner,
+    poolId,
+    name,
+    type,
+    status,
+    tokenBasePrice,
+    rewardAmount,
+    startTime,
+    endTime,
+    maxParticipants,
+    maxPriorityParticipants,
+    priorityRewardAmount,
+    data,
+    metadata,
+    optionalTokens,
+  } = missionData;
+
+  const votingPool = await strapi.services["voting-pool"].findOne({
+    id: poolId,
+  });
+
+  if (isEmpty(votingPool)) {
+    ctx.badRequest(POOL_NOT_FOUND);
+  }
+
+  if (
+    moment(startTime).isBefore(moment(votingPool.startDate)) ||
+    moment(endTime).isAfter(moment(votingPool.endDate)) ||
+    moment(startTime).isAfter(moment(endTime))
+  ) {
+    ctx.badRequest(INVALID_DATE_RANGE);
+  }
+
+  return await strapi.services.task.update(
+    { id },
+    {
+      votingPool: votingPool.id,
+      poolId,
+      name,
+      type,
+      status,
+      chainId: votingPool.chainId,
+      tokenBasePrice,
+      rewardAmount,
+      startTime,
+      endTime,
+      maxParticipants,
+      priorityRewardAmount,
+      maxPriorityParticipants,
+      data,
+      metadata,
+      optionalTokens,
+    }
+  );
 };
 
 const APP_TRIAL_TYPE = "iat";
@@ -836,4 +951,6 @@ module.exports = {
   mapHunterWithTaskProcessRecord,
   exportTaskHuntersWithoutReward,
   exportTaskRewards,
+  updateTask,
+  updateBaseTaskIat,
 };
