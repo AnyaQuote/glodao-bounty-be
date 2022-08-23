@@ -952,4 +952,5 @@ module.exports = {
   exportTaskHuntersWithoutReward,
   exportTaskRewards,
   updateTask,
+  updateBaseTaskIat,
 };
