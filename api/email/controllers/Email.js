@@ -16,7 +16,7 @@ module.exports = {
       const { fname, email, description } = ctx.request.body;
       console.log(fname, email, description);
       await strapi.plugins["email"].services.email.send({
-        to: "hello@glodao.io",
+        to: "glodao.dev@gmail.com",
         subject: "User Contact",
         text: `User Contact send from https://glodao.io\nFullname: ${fname}\nEmail: ${email}\nMessage: ${description}`,
         from: "noreply@glodao.io",
