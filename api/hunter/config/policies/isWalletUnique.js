@@ -1,12 +1,17 @@
 "use strict";
 
 module.exports = async (ctx, next) => {
-  const { walletAddress, id } = ctx.request.body;
+  const { walletAddress, id, chain, solanaAddress } = ctx.request.body;
 
-  const anotherHunterWithAddressCount = await strapi.services.hunter.count({
+  const params = {
     id_ne: id,
-    address: walletAddress,
-  });
+  };
+  if (chain === "bsc") params.address = walletAddress;
+  else if (chain === "sol") params.solanaAddress = solanaAddress;
+
+  const anotherHunterWithAddressCount = await strapi.services.hunter.count(
+    params
+  );
 
   if (anotherHunterWithAddressCount > 0)
     return ctx.badRequest("This wallet has been used by another user");
