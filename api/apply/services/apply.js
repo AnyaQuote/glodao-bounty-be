@@ -230,7 +230,12 @@ const isNeedToValidate = (stepData) => {
 };
 
 const isLinkNotRequired = (stepData) => {
-  if (stepData.type === "like" || stepData.type === "follow") return true;
+  if (
+    stepData.type === "like" ||
+    stepData.type === "follow" ||
+    stepData.type === "retweet"
+  )
+    return true;
   return false;
 };
 
