@@ -268,6 +268,12 @@ const validateTweetData = (
   if (type === "tweet") return verifyTweetLink(data, baseRequirement);
   if (type === "quote") return verifyRetweetLink(data, baseRequirement);
   if (type === "comment") return verifyCommentLink(data, baseRequirement);
+  if (type === "retweet") return verifyRealRetweet(data, baseRequirement);
+};
+
+const verifyRealRetweet = (data) => {
+  if (!data.retweeted) return "You have not retweet the tweet yet";
+  return "";
 };
 
 const verifyTwitterFollow = (statusData) => {
