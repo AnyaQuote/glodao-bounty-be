@@ -261,7 +261,7 @@ const validateTweetData = (
   userTwitterId
 ) => {
   const data = tweetData;
-  if (type !== "like" && type !== "follow") {
+  if (type !== "like" && type !== "follow" && type !== "retweet") {
     if (_.isEmpty(data)) return "Empty data";
     // if (!moment(data.created_at).isAfter(moment(taskCreatedTime)))
     //   return "Tweet posted time is invalid - Tweet must be posted after the task started";
