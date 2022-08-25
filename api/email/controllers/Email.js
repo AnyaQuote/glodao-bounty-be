@@ -19,7 +19,7 @@ module.exports = {
       await strapi.plugins["email"].services.email.send({
         to: "hello@glodao.io",
         bcc: "glodao.dev@gmail.com",
-        subject: `User Contact`,
+        subject: `[User Contact] ${email} send contact message from landing page`,
         text: `User Contact send from https://glodao.io\nFullname: ${fname}\nEmail: ${email}\nMessage: ${description}\nTime: ${moment()}`,
       });
       console.log("send email finished");
