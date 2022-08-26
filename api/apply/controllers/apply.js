@@ -313,7 +313,7 @@ module.exports = {
     }
 
     if (isEqual(type, "discord")) {
-      // const discordId = get(user, "discordId", "");
+      const discordId = get(user, "discordId", "");
       // if (isEmpty(discordId))
       //   return ctx.badRequest("You had not linked your Discord account");
 
