@@ -67,6 +67,9 @@
     },
     "optionalTokenReward": {
       "type": "json"
+    },
+    "independentReferrerCode": {
+      "type": "string"
     }
   }
 }
