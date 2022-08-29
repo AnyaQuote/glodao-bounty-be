@@ -73,6 +73,9 @@
     "campaignCode": {
       "type": "string",
       "default": "######"
+    },
+    "solanaAddress": {
+      "type": "string"
     }
   }
 }

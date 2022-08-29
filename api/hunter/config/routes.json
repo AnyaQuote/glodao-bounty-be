@@ -73,6 +73,14 @@
       }
     },
     {
+      "method": "PATCH",
+      "path": "/hunters/updateSolanaWalletAddress",
+      "handler": "hunter.updateSolanaWalletAddress",
+      "config": {
+        "policies": ["global::is-owner", "isWalletUnique"]
+      }
+    },
+    {
       "method": "GET",
       "path": "/checkUserStaked",
       "handler": "hunter.checkUserStaked",

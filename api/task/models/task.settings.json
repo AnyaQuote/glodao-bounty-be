@@ -93,6 +93,9 @@
     },
     "votingPool": {
       "model": "voting-pool"
+    },
+    "chain": {
+      "type": "string"
     }
   }
 }

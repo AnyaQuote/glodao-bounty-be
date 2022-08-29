@@ -121,6 +121,15 @@ const updateHunterWalletAddress = async (hunter, walletAddress) => {
   );
 };
 
+const updateHunterSolanaWalletAddress = async (hunter, solanaAddress) => {
+  return await strapi.services.hunter.update(
+    { id: hunter.id },
+    {
+      solanaAddress,
+    }
+  );
+};
+
 /**
  * Update hunter's participationStatus with hunter id to new status
  * @param {string} id hunter id
@@ -157,6 +166,7 @@ const isPreRegisteredWalletMatched = async (hunterId, walletAddress) => {
 module.exports = {
   updateHunterNonce,
   updateHunterWalletAddress,
+  updateHunterSolanaWalletAddress,
   isPreRegisteredWalletMatched,
   updateHunterStatusToNewbie,
   updateUserToken,

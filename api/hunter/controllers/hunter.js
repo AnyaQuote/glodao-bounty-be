@@ -56,6 +56,18 @@ module.exports = {
       walletAddress
     );
   },
+  updateSolanaWalletAddress: async (ctx) => {
+    const { solanaAddress, id } = ctx.request.body;
+
+    const hunter = await strapi.services.hunter.findOne({
+      id: id,
+    });
+
+    return await strapi.services.hunter.updateHunterSolanaWalletAddress(
+      hunter,
+      solanaAddress
+    );
+  },
   checkUserStaked: async (ctx) => {
     const { poolId, address } = ctx.query;
     const isSolidityWallet = web3.utils.isAddress(address);
