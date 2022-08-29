@@ -51,11 +51,19 @@ module.exports = {
     // Called after an entry is created
     async afterCreate(
       params,
-      { task: taskId, hunter: hunterId, poolType, id }
+      { task: taskId, hunter: hunterId, poolType, id, independentReferrerCode }
     ) {
       await strapi.services.task.updateTaskTotalParticipantsById(taskId);
       await strapi.services.task.updateTaskCompletedParticipantsById(taskId);
       await strapi.services.hunter.updateHunterStatusToNewbie(hunterId);
+      if (
+        !_.isNil(independentReferrerCode) &&
+        !_.isEmpty(independentReferrerCode)
+      )
+        await strapi.services.hunter.updateHunterReferrerThroughMission(
+          hunterId,
+          independentReferrerCode
+        );
       // const isPriorityFull = await strapi.services.task.isPriorityPoolFullById(
       //   taskId
       // );

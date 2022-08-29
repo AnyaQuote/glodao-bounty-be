@@ -7,6 +7,35 @@ const { isEqual, get, includes } = require("lodash");
  * to customize this service
  */
 
+const updateHunterReferrerThroughMission = async (hunterId, referrer) => {
+  const hunter = await strapi.services.hunter.findOne({ id: hunterId });
+  if (
+    isEqual(hunter.referralCode, referrer) ||
+    isEqual(hunter.referrerCode, referrer) ||
+    !isEqual(hunter.referrerCode, "######")
+  )
+    return;
+  const isReferrerExisted =
+    (await strapi.services.hunter.count({
+      referralCode: referrer,
+    })) !== 0;
+  if (!isReferrerExisted) return;
+  return await updateHunterReferrer(hunterId, referrer);
+};
+
+/**
+ * Update hunter's referrerCode with hunter id to new referrerCode
+ * @param {string} hunterId Hunter id
+ * @param {string} referrer Referrer code
+ * @returns updated hunter
+ */
+const updateHunterReferrer = async (hunterId, referrer) => {
+  return await strapi.services.hunter.update(
+    { id: hunterId },
+    { referrerCode: referrer }
+  );
+};
+
 const updateHunterTaskUniqueId = async (hunter, taskUniqueId) => {
   const data = get(hunter, "data", {});
   const uniqueTaskIds = get(data, "uniqueTaskIds", []);
@@ -135,4 +164,6 @@ module.exports = {
   updateUserDiscordIdByHunter,
   updateUserKycSessionId,
   updateHunterTaskUniqueId,
+  updateHunterReferrerThroughMission,
+  updateHunterReferrer,
 };

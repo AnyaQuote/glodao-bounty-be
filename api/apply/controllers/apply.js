@@ -17,12 +17,13 @@ const {
 
 module.exports = {
   startHuntingProcess: async (ctx) => {
-    const { hunter, task } = ctx.request.body;
+    const { hunter, task, refCode } = ctx.request.body;
     try {
       return await strapi.services.apply.create({
         hunter,
         task,
         ID: `${hunter}_${task}`,
+        independentReferrerCode: !isEmpty(refCode) ? refCode : undefined,
       });
     } catch (error) {
       return ctx.badRequest(error.data.errors);
