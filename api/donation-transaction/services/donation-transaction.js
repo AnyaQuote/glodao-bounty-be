@@ -25,6 +25,8 @@ const recordDonation = async (tx, username) => {
   const res = await getTransactionReceipt(tx, web3);
   const { transactionHash, from, to, logs: baseLogs } = res;
   const logs = abiDecoder.decodeLogs(baseLogs);
+  console.log(logs)
+  console.log(logs[0].events[1])
   const amountStr = Web3.utils.fromWei(logs[0].events[2].value);
   console.log(to);
   console.log(DONATION_DESTINATION_ADDRESS);
