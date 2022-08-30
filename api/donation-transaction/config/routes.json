@@ -1,0 +1,60 @@
+{
+  "routes": [
+    {
+      "method": "POST",
+      "path": "/donation-transactions/recordDonation",
+      "handler": "donation-transaction.recordDonation",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/donation-transactions",
+      "handler": "donation-transaction.find",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/donation-transactions/count",
+      "handler": "donation-transaction.count",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/donation-transactions/:id",
+      "handler": "donation-transaction.findOne",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/donation-transactions",
+      "handler": "donation-transaction.create",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/donation-transactions/:id",
+      "handler": "donation-transaction.update",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/donation-transactions/:id",
+      "handler": "donation-transaction.delete",
+      "config": {
+        "policies": []
+      }
+    }
+  ]
+}

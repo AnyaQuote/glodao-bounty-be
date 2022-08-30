@@ -1,0 +1,34 @@
+{
+  "kind": "collectionType",
+  "collectionName": "donation_transactions",
+  "info": {
+    "name": "DonationTransaction"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "hash": {
+      "type": "string",
+      "unique": true
+    },
+    "date": {
+      "type": "datetime"
+    },
+    "wallet": {
+      "type": "string"
+    },
+    "amount": {
+      "type": "decimal"
+    },
+    "amountStr": {
+      "type": "string"
+    },
+    "hunter": {
+      "model": "hunter"
+    }
+  }
+}
