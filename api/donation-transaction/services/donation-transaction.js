@@ -26,6 +26,8 @@ const recordDonation = async (tx, username) => {
   const { transactionHash, from, to, logs: baseLogs } = res;
   const logs = abiDecoder.decodeLogs(baseLogs);
   const amountStr = Web3.utils.fromWei(logs[0].events[2].value);
+  console.log(to);
+  console.log(DONATION_DESTINATION_ADDRESS);
   if (!isEqual(toLower(to), toLower(DONATION_DESTINATION_ADDRESS)))
     throw new Error("Invalid donation destination address");
   const hunter = await strapi.services.hunter.findOne({ address: from });
