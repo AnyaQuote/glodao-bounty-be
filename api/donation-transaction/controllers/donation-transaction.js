@@ -12,10 +12,14 @@ const { isEmpty } = require("lodash");
  * @returns new record
  */
 const recordDonation = async (ctx) => {
-  const { tx } = ctx.request.body;
+  const { tx, username } = ctx.request.body;
   if (isEmpty(tx)) return ctx.badRequest(null, "Transaction hash is required");
+  if (isEmpty(username)) return ctx.badRequest(null, "Username is required");
 
-  return await strapi.services["donation-transaction"].recordDonation(tx);
+  return await strapi.services["donation-transaction"].recordDonation(
+    tx,
+    username
+  );
 };
 
 module.exports = {

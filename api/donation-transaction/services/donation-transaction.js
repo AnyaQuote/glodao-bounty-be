@@ -20,7 +20,7 @@ const DONATION_DESTINATION_ADDRESS = process.env.DONATION_DESTINATION_ADDRESS;
  * @param {string} tx transaction hash
  * @returns new transaction record
  */
-const recordDonation = async (tx) => {
+const recordDonation = async (tx, username) => {
   const web3 = new Web3(RPC_URL);
   const res = await getTransactionReceipt(tx, web3);
   const { transactionHash, from, to, logs: baseLogs } = res;
@@ -37,6 +37,7 @@ const recordDonation = async (tx) => {
     wallet: from,
     date: moment().toISOString(),
     hunter: hunter ? hunter.id : undefined,
+    username,
   });
 };
 
