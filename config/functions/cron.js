@@ -73,6 +73,8 @@ module.exports = {
           name: "GloDAO",
           startTime: moment().format("YYYY-MM-DD 21:00"),
         });
+        console.log(tweetId);
+        console.log(taskRecord);
         const updatedTaskData = taskRecord.data;
         updatedTaskData[
           "twitter"
