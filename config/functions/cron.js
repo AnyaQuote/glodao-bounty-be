@@ -58,7 +58,7 @@ module.exports = {
       tz: "Asia/Bangkok",
     },
   },
-  "50 20 * * *": {
+  "52 20 * * *": {
     task: async () => {
       try {
         console.log("50 20");
@@ -68,6 +68,7 @@ module.exports = {
           "CO0dPi4gyfmLEGOOVGnwhe1oBRSCOGXClSPMCHjuYEdbi",
           1
         );
+        console.log(moment().format("YYYY-MM-DD 21:00"))
         const tweetId = res[0].id_str;
         const taskRecord = await strapi.services.task.findOne({
           name: "GloDAO",
