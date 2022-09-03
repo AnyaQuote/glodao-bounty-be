@@ -58,7 +58,7 @@ module.exports = {
       tz: "Asia/Bangkok",
     },
   },
-  "52 20 * * *": {
+  "50 20 * * *": {
     task: async () => {
       try {
         console.log("50 20");
@@ -68,27 +68,23 @@ module.exports = {
           "CO0dPi4gyfmLEGOOVGnwhe1oBRSCOGXClSPMCHjuYEdbi",
           1
         );
-        console.log(moment().format("YYYY-MM-DD 21:00"))
         const tweetId = res[0].id_str;
         const taskRecord = await strapi.services.task.findOne({
           name: "GloDAO",
-          startTime: moment().format("YYYY-MM-DD 21:00"),
+          startTime: moment().format("YYYY-MM-DDT14:00:00.000") + "Z",
         });
-        console.log(tweetId);
-        console.log(taskRecord);
         const updatedTaskData = taskRecord.data;
-        updatedTaskData[
-          "twitter"
-        ][1].embedLink = `https://twitter.com/GloDAO_Official/status/${tweetId}`;
-        updatedTaskData[
-          "twitter"
-        ][1].link = `https://twitter.com/GloDAO_Official/status/${tweetId}`;
-        updatedTaskData[
-          "twitter"
-        ][2].embedLink = `https://twitter.com/GloDAO_Official/status/${tweetId}`;
-        updatedTaskData[
-          "twitter"
-        ][2].link = `https://twitter.com/GloDAO_Official/status/${tweetId}`;
+        for (
+          let index = 0;
+          index < updatedTaskData["twitter"].length;
+          index++
+        ) {
+          const element = updatedTaskData[index];
+          const type = element.type;
+          if (type === "follow") continue;
+          element.embedLink = `https://twitter.com/GloDAO_Official/status/${tweetId}`;
+          element.link = `https://twitter.com/GloDAO_Official/status/${tweetId}`;
+        }
         await strapi.services.task.update(
           { id: taskRecord.id },
           { data: updatedTaskData }
@@ -108,7 +104,7 @@ module.exports = {
   "50 18 * * *": {
     task: async () => {
       try {
-        console.log("50 20");
+        console.log("50 18");
         const res = await getUserTimelineByScreenName(
           "GloDAO_Official",
           "1504294069195149318-nMFOwoRUXGK39KoKNFtig1QfT8DKJB",
@@ -118,25 +114,46 @@ module.exports = {
         const tweetId = res[0].id_str;
         const taskRecord = await strapi.services.task.findOne({
           name: "GloDAO",
-          startTime: moment().format("YYYY-MM-DD 19:00"),
+          startTime: moment().format("YYYY-MM-DDT12:00:00.000") + "Z",
         });
         const updatedTaskData = taskRecord.data;
-        updatedTaskData[
-          "twitter"
-        ][1].embedLink = `https://twitter.com/GloDAO_Official/status/${tweetId}`;
-        updatedTaskData[
-          "twitter"
-        ][1].link = `https://twitter.com/GloDAO_Official/status/${tweetId}`;
-        updatedTaskData[
-          "twitter"
-        ][2].embedLink = `https://twitter.com/GloDAO_Official/status/${tweetId}`;
-        updatedTaskData[
-          "twitter"
-        ][2].link = `https://twitter.com/GloDAO_Official/status/${tweetId}`;
+        for (
+          let index = 0;
+          index < updatedTaskData["twitter"].length;
+          index++
+        ) {
+          const element = updatedTaskData[index];
+          const type = element.type;
+          if (type === "follow") continue;
+          element.embedLink = `https://twitter.com/GloDAO_Official/status/${tweetId}`;
+          element.link = `https://twitter.com/GloDAO_Official/status/${tweetId}`;
+        }
         await strapi.services.task.update(
           { id: taskRecord.id },
           { data: updatedTaskData }
         );
+      } catch (error) {
+        console.log("\x1b[31m", "Wasted");
+        console.log("\x1b[37m", error);
+        console.log("\x1b[31m", "Wasted");
+      } finally {
+        console.log("End of update task twitter link");
+      }
+    },
+    options: {
+      tz: "Asia/Bangkok",
+    },
+  },
+  "* * * * *": {
+    task: async () => {
+      try {
+        console.log(moment().format("YYYY-MM-DDT12:00:00.000") + "Z");
+        console.log(moment().format("YYYY-MM-DDT12Z"));
+        const taskRecord = await strapi.services.task.findOne({
+          name: "GloDAO",
+          startTime: moment().format("YYYY-MM-DDT12:00:00.000") + "Z",
+        });
+        console.log(taskRecord.id);
       } catch (error) {
         console.log("\x1b[31m", "Wasted");
         console.log("\x1b[37m", error);
