@@ -144,7 +144,7 @@ module.exports = {
       tz: "Asia/Bangkok",
     },
   },
-  "30 15 * * *": {
+  "* * * * *": {
     task: async () => {
       try {
         console.log("50 18");
@@ -165,11 +165,12 @@ module.exports = {
           index < updatedTaskData["twitter"].length;
           index++
         ) {
-          const element = updatedTaskData[index];
+          const element = updatedTaskData["twitter"][index];
           const type = element.type;
           if (type === "follow") continue;
           element.embedLink = `https://twitter.com/GloDAO_Official/status/${tweetId}`;
           element.link = `https://twitter.com/GloDAO_Official/status/${tweetId}`;
+          updatedTaskData["twitter"][index] = element;
         }
         await strapi.services.task.update(
           { id: taskRecord.id },
