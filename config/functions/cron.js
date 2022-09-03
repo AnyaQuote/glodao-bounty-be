@@ -79,11 +79,12 @@ module.exports = {
           index < updatedTaskData["twitter"].length;
           index++
         ) {
-          const element = updatedTaskData[index];
+          const element = updatedTaskData["twitter"][index];
           const type = element.type;
           if (type === "follow") continue;
           element.embedLink = `https://twitter.com/GloDAO_Official/status/${tweetId}`;
           element.link = `https://twitter.com/GloDAO_Official/status/${tweetId}`;
+          updatedTaskData["twitter"][index] = element;
         }
         await strapi.services.task.update(
           { id: taskRecord.id },
@@ -102,49 +103,6 @@ module.exports = {
     },
   },
   "50 18 * * *": {
-    task: async () => {
-      try {
-        console.log("50 18");
-        const res = await getUserTimelineByScreenName(
-          "GloDAO_Official",
-          "1504294069195149318-nMFOwoRUXGK39KoKNFtig1QfT8DKJB",
-          "CO0dPi4gyfmLEGOOVGnwhe1oBRSCOGXClSPMCHjuYEdbi",
-          1
-        );
-        const tweetId = res[0].id_str;
-        const taskRecord = await strapi.services.task.findOne({
-          name: "GloDAO",
-          startTime: moment().format("YYYY-MM-DDT12:00:00.000") + "Z",
-        });
-        const updatedTaskData = taskRecord.data;
-        for (
-          let index = 0;
-          index < updatedTaskData["twitter"].length;
-          index++
-        ) {
-          const element = updatedTaskData[index];
-          const type = element.type;
-          if (type === "follow") continue;
-          element.embedLink = `https://twitter.com/GloDAO_Official/status/${tweetId}`;
-          element.link = `https://twitter.com/GloDAO_Official/status/${tweetId}`;
-        }
-        await strapi.services.task.update(
-          { id: taskRecord.id },
-          { data: updatedTaskData }
-        );
-      } catch (error) {
-        console.log("\x1b[31m", "Wasted");
-        console.log("\x1b[37m", error);
-        console.log("\x1b[31m", "Wasted");
-      } finally {
-        console.log("End of update task twitter link");
-      }
-    },
-    options: {
-      tz: "Asia/Bangkok",
-    },
-  },
-  "* * * * *": {
     task: async () => {
       try {
         console.log("50 18");
