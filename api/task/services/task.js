@@ -46,7 +46,12 @@ const updateTaskParticipantFromTwitter = async (taskId) => {
       }
     );
   } catch (error) {
-    console.log(error,'update task participant from twitter error');
+    console.log(error, "update task participant from twitter error");
+    console.log(error[1], "update task participant from twitter error");
+    console.log(
+      JSON.stringify(error),
+      "update task participant from twitter error"
+    );
   }
 };
 
