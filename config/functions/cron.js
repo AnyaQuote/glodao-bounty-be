@@ -178,7 +178,9 @@ module.exports = {
               }
             );
           } catch (error) {
-            console.log(error);
+            console.log("\x1b[37m", error);
+            console.log("\x1b[37m", error[1]);
+            console.log("\x1b[37m", JSON.stringify(error));
             continue;
           }
         }
