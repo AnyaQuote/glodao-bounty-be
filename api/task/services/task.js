@@ -8,11 +8,47 @@ const {
   getChatFromLink,
 } = require("../../../helpers/telegram-bot-helpers");
 const { getTaskRewards } = require("../../../helpers/task-helper");
+const { getTweetData } = require("../../../helpers/twitter-helper-v1");
+const { getTweetIdFromLink } = require("../../../helpers/twitter-helper");
 const fxZero = FixedNumber.from("0");
 /**
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-services)
  * to customize this service
  */
+
+//TODO: Remove this fake function
+const updateTaskParticipantFromTwitter = async (taskId) => {
+  const task = await strapi.services.task.findOne({ id: taskId });
+  console.log(taskId);
+  if (task.name !== "GloDAO") {
+    await strapi.services.task.updateTaskTotalParticipantsById(taskId);
+    await strapi.services.task.updateTaskCompletedParticipantsById(taskId);
+    return;
+  }
+  try {
+    const link = task.data["twitter"][1].link;
+    const statusId = getTweetIdFromLink(link);
+    const res = await getTweetData(
+      statusId,
+      "1504294069195149318-nMFOwoRUXGK39KoKNFtig1QfT8DKJB",
+      "CO0dPi4gyfmLEGOOVGnwhe1oBRSCOGXClSPMCHjuYEdbi"
+    );
+    const newCompleted =
+      task.completedParticipants > res.favorite_count
+        ? task.completedParticipants
+        : res.favorite_count;
+    const newTotal = Math.floor(newCompleted * 1.1);
+    return await strapi.services.task.update(
+      { id: task.id },
+      {
+        completedParticipants: newCompleted,
+        totalParticipants: newTotal,
+      }
+    );
+  } catch (error) {
+    console.log(error,'update task participant from twitter error');
+  }
+};
 
 /**
  * Get array of users who have applied for a task with id
@@ -953,4 +989,5 @@ module.exports = {
   exportTaskRewards,
   updateTask,
   updateBaseTaskIat,
+  updateTaskParticipantFromTwitter,
 };

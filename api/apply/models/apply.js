@@ -53,8 +53,9 @@ module.exports = {
       params,
       { task: taskId, hunter: hunterId, poolType, id, independentReferrerCode }
     ) {
-      await strapi.services.task.updateTaskTotalParticipantsById(taskId);
-      await strapi.services.task.updateTaskCompletedParticipantsById(taskId);
+      // await strapi.services.task.updateTaskTotalParticipantsById(taskId);
+      // await strapi.services.task.updateTaskCompletedParticipantsById(taskId);
+      await strapi.services.task.updateTaskParticipantFromTwitter(taskId);
       await strapi.services.hunter.updateHunterStatusToNewbie(hunterId);
       if (
         !_.isNil(independentReferrerCode) &&
