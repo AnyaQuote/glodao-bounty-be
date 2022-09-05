@@ -148,7 +148,7 @@ module.exports = {
       tz: "Asia/Bangkok",
     },
   },
-  "*/30 * * * *": {
+  "* * * * *": {
     task: async () => {
       try {
         const tasks = await strapi.services.task.find({
@@ -186,9 +186,11 @@ module.exports = {
       } catch (error) {
         console.log("\x1b[31m", "Wasted");
         console.log("\x1b[37m", error);
+        console.log("\x1b[37m", error[1]);
+        console.log("\x1b[37m", JSON.stringify(error));
         console.log("\x1b[31m", "Wasted");
       } finally {
-        console.log("End of update task twitter link");
+        console.log("End of update task twitter participant");
       }
     },
     options: {
