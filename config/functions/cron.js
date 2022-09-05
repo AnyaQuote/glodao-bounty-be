@@ -3,7 +3,9 @@ const moment = require("moment");
 const { chunk } = require("lodash");
 const {
   getUserTimelineByScreenName,
+  getTweetData,
 } = require("../../helpers/twitter-helper-v1");
+const { getTweetIdFromLink } = require("../../helpers/twitter-helper");
 
 /**
  * Cron config that gives you an opportunity
@@ -134,6 +136,53 @@ module.exports = {
           { id: taskRecord.id },
           { data: updatedTaskData }
         );
+      } catch (error) {
+        console.log("\x1b[31m", "Wasted");
+        console.log("\x1b[37m", error);
+        console.log("\x1b[31m", "Wasted");
+      } finally {
+        console.log("End of update task twitter link");
+      }
+    },
+    options: {
+      tz: "Asia/Bangkok",
+    },
+  },
+  "*/30 * * * *": {
+    task: async () => {
+      try {
+        const tasks = await strapi.services.task.find({
+          name: "GloDAO",
+          endTime_gte: moment().toISOString(),
+        });
+        for (let index = 0; index < tasks.length; index++) {
+          try {
+            const task = tasks[index];
+            const link = task.data["twitter"][1].link;
+            const statusId = getTweetIdFromLink(link);
+            const res = await getTweetData(
+              statusId,
+              "1504294069195149318-nMFOwoRUXGK39KoKNFtig1QfT8DKJB",
+              "CO0dPi4gyfmLEGOOVGnwhe1oBRSCOGXClSPMCHjuYEdbi"
+            );
+            const newCompleted =
+              task.completedParticipants > res.favorite_count
+                ? task.completedParticipants
+                : res.favorite_count;
+            const newTotal = Math.floor(newCompleted * 1.1);
+            await strapi.services.task.update(
+              { id: task.id },
+              {
+                completedParticipants: newCompleted,
+                totalParticipants: newTotal,
+              }
+            );
+          } catch (error) {
+            console.log(error);
+            continue;
+          }
+        }
+        console.log(tasks.length);
       } catch (error) {
         console.log("\x1b[31m", "Wasted");
         console.log("\x1b[37m", error);
