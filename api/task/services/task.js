@@ -17,7 +17,7 @@ const fxZero = FixedNumber.from("0");
  */
 
 //TODO: Remove this fake function
-const updateTaskParticipantFromTwitter = async (taskId) => {
+const updateTaskParticipantFromTwitter = async (taskId, hunterId) => {
   const task = await strapi.services.task.findOne({ id: taskId });
   console.log(taskId);
   if (task.name !== "GloDAO") {
@@ -26,13 +26,20 @@ const updateTaskParticipantFromTwitter = async (taskId) => {
     return;
   }
   try {
-    const link = task.data["twitter"][1].link;
-    const statusId = getTweetIdFromLink(link);
-    const res = await getTweetData(
-      statusId,
-      "1504294069195149318-nMFOwoRUXGK39KoKNFtig1QfT8DKJB",
+    const hunter = await strapi.services.hunter.findOne({ id: hunterId });
+    const accessToken = get(
+      hunter,
+      "user.accessToken",
+      "1504294069195149318-nMFOwoRUXGK39KoKNFtig1QfT8DKJB"
+    );
+    const accessTokenSecret = get(
+      hunter,
+      "user.accessTokenSecret",
       "CO0dPi4gyfmLEGOOVGnwhe1oBRSCOGXClSPMCHjuYEdbi"
     );
+    const link = task.data["twitter"][1].link;
+    const statusId = getTweetIdFromLink(link);
+    const res = await getTweetData(statusId, accessToken, accessTokenSecret);
     const newCompleted =
       task.completedParticipants > res.favorite_count
         ? task.completedParticipants

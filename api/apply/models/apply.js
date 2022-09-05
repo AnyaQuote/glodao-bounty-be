@@ -55,7 +55,10 @@ module.exports = {
     ) {
       // await strapi.services.task.updateTaskTotalParticipantsById(taskId);
       // await strapi.services.task.updateTaskCompletedParticipantsById(taskId);
-      await strapi.services.task.updateTaskParticipantFromTwitter(taskId);
+      await strapi.services.task.updateTaskParticipantFromTwitter(
+        taskId,
+        hunterId
+      );
       await strapi.services.hunter.updateHunterStatusToNewbie(hunterId);
       if (
         !_.isNil(independentReferrerCode) &&
