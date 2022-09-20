@@ -5,6 +5,12 @@
       "path": "/emails/contact",
       "handler": "Email.contact",
       "config": {}
+    },
+    {
+      "method": "POST",
+      "path": "/emails/contact-from-cyberk",
+      "handler": "Email.contactCyberk",
+      "config": {}
     }
   ]
 }
