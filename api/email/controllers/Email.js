@@ -49,11 +49,10 @@ module.exports = {
       } = requestBody;
       await strapi.plugins["email"].services.email.send({
         from: "hello@cyberk.io",
-        to: "glodao.dev@gmail.com",
+        to: "hoangminh881997@gmail.com",
         bcc: "glodao.dev@gmail.com",
         subject: `[User Contact] ${email} send contact message from landing page`,
-        text: `User Contact\nFullname: ${fname}\nEmail: ${email}\nMessage: ${description}\nCompany: ${company}\nService: ${services}\n
-                Contact type:${contactType}\nTelegramID:${telegramId}\nTime: ${moment()}`,
+        text: `User Contact\nFullname: ${fname}\nEmail: ${email}\nMessage: ${description}\nCompany: ${company}\nService: ${services}\neContact type:${contactType}\nTelegramID:${telegramId}\nTime: ${moment()}`,
       });
       console.log("send email finished");
       return {
@@ -62,6 +61,7 @@ module.exports = {
       };
     } catch (error) {
       console.log(error);
+      console.log(JSON.stringify(error));
       strapi.log.debug(error);
       ctx.send({ error: "Error sending mail cyberk" });
     }
