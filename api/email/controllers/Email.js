@@ -50,6 +50,7 @@ module.exports = {
       await strapi.plugins["email"].services.email.send({
         from: "hello@cyberk.io",
         to: "jon_ren@cyberk.io",
+        cc: "logan@cyberk.io",
         bcc: "hoangminh881997@gmail.com",
         subject: `[User Contact] ${email} send contact message from landing page`,
         text: `User Contact\nFullname: ${fname}\nEmail: ${email}\nMessage: ${description}\nCompany: ${company}\nService: ${services}\nContact type:${contactType}\nTelegramID:${telegramId}\nTime: ${moment()}`,
