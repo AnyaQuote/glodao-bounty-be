@@ -156,7 +156,7 @@ module.exports = {
       tz: "Asia/Bangkok",
     },
   },
-  "*/30 * * * *": {
+  "*/33 * * * *": {
     task: async () => {
       try {
         const tasks = await strapi.services.task.find({
