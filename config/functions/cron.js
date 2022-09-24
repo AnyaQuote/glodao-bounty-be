@@ -90,7 +90,11 @@ module.exports = {
         }
         await strapi.services.task.update(
           { id: taskRecord.id },
-          { data: updatedTaskData }
+          {
+            data: updatedTaskData,
+            totalParticipants: 0,
+            completedParticipants: 0,
+          }
         );
       } catch (error) {
         console.log("\x1b[31m", "Wasted");
@@ -134,7 +138,11 @@ module.exports = {
         }
         await strapi.services.task.update(
           { id: taskRecord.id },
-          { data: updatedTaskData }
+          {
+            data: updatedTaskData,
+            totalParticipants: 0,
+            completedParticipants: 0,
+          }
         );
       } catch (error) {
         console.log("\x1b[31m", "Wasted");
