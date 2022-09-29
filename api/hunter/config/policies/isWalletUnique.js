@@ -2,11 +2,10 @@
 
 module.exports = async (ctx, next) => {
   const { walletAddress, id, chain, solanaAddress } = ctx.request.body;
-
   const params = {
     id_ne: id,
   };
-  if (chain === "bsc") params.address = walletAddress;
+  if (chain === "bsc" || chain === "eth") params.address = walletAddress;
   else if (chain === "sol") params.solanaAddress = solanaAddress;
 
   const anotherHunterWithAddressCount = await strapi.services.hunter.count(
