@@ -44,7 +44,8 @@ const updateTaskParticipantFromTwitter = async (taskId, hunterId) => {
       task.completedParticipants > res.favorite_count
         ? task.completedParticipants
         : res.favorite_count;
-    const newTotal = Math.floor(newCompleted * 1.1);
+    // const newTotal = Math.floor(newCompleted * 1.1);
+    const newTotal = newCompleted;
     return await strapi.services.task.update(
       { id: task.id },
       {
@@ -170,7 +171,8 @@ const updateTaskTotalParticipantsById = async (id) => {
   return await strapi.services.task.update(
     { id },
     {
-      totalParticipants: Math.floor(totalParticipants * 1.1),
+      // totalParticipants: Math.floor(totalParticipants * 1.1),
+      totalParticipants: totalParticipants,
     }
   );
 };

@@ -177,7 +177,8 @@ module.exports = {
               task.completedParticipants > res.favorite_count
                 ? task.completedParticipants
                 : res.favorite_count;
-            const newTotal = Math.floor(newCompleted * 1.1);
+            // const newTotal = Math.floor(newCompleted * 1.1);
+            const newTotal = newCompleted;
             await strapi.services.task.update(
               { id: task.id },
               {
