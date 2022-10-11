@@ -2,7 +2,8 @@
   "kind": "collectionType",
   "collectionName": "quiz_answer_records",
   "info": {
-    "name": "QuizAnswerRecord"
+    "name": "QuizAnswerRecord",
+    "description": ""
   },
   "options": {
     "increments": true,
@@ -30,6 +31,13 @@
     },
     "metadata": {
       "type": "json"
+    },
+    "history": {
+      "type": "json"
+    },
+    "correctAnswerCount": {
+      "type": "integer",
+      "required": true
     }
   }
 }

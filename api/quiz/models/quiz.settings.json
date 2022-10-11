@@ -36,6 +36,18 @@
     },
     "projectOwner": {
       "model": "project-owner"
+    },
+    "canRepeat": {
+      "type": "boolean",
+      "default": false
+    },
+    "quizQuestionsCount": {
+      "type": "integer",
+      "default": 10,
+      "required": true
+    },
+    "quizPassedScore": {
+      "type": "integer"
     }
   }
 }
