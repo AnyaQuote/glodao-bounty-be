@@ -118,8 +118,8 @@ module.exports = {
 
     if (isEqual(type, "quiz")) {
       const quizAnswer = get(optional, "answerList", []);
-      if (quizAnswer.length < MIN_QUIZ_ANSWER_COUNT)
-        return ctx.badRequest("Invalid number of answers");
+      // if (quizAnswer.length < MIN_QUIZ_ANSWER_COUNT)
+      // return ctx.badRequest("Invalid number of answers");
       const quizId = get(optional, "quizId", "");
       const quiz = await strapi.services.quiz.findOne({ id: quizId });
       // const isQuizComplete
@@ -134,7 +134,7 @@ module.exports = {
           continue;
         }
         const recordId = await strapi.services["quiz-answer-record"].findOne({
-          ID: `${task.quizId}_${get(apply, "hunter.id")}`,
+          ID: `${task.quizId}_${get(apply, "hunter.id")}_${apply.task.id}`,
         });
         quizTaskData.push({
           ...task,
@@ -150,7 +150,7 @@ module.exports = {
       updatedTaskData = get(apply, "data");
       const existedRecord = await strapi.services["quiz-answer-record"].findOne(
         {
-          ID: `${quizId}_${hunterId}`,
+          ID: `${quizId}_${hunterId}_${apply.task.id}`,
         }
       );
       if (isEmpty(existedRecord))
