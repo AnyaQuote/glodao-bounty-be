@@ -14,7 +14,7 @@ const { generateRandomNonce } = require("../../../helpers/wallet-helper");
  * @returns
  */
 const createProjectOwner = async (user) => {
-  const { id, username, avatar } = user;
+  const { id, username, avatar, platform } = user;
   const newProjectOwner = {
     name: username,
     status: "active",
@@ -23,6 +23,7 @@ const createProjectOwner = async (user) => {
     metadata: {
       avatar,
     },
+    platform,
   };
   const createdProjectOwner = await strapi.services["project-owner"].create(
     newProjectOwner
@@ -36,7 +37,7 @@ const createProjectOwner = async (user) => {
  * @returns hunter record
  */
 const createHunter = async (user) => {
-  const { referrerCode, id, username, referralCode, avatar } = user;
+  const { referrerCode, id, username, referralCode, avatar, platform } = user;
   const campaign = await strapi.services.campaign.findOne({
     code: referrerCode,
   });
@@ -55,6 +56,7 @@ const createHunter = async (user) => {
       metadata: {
         avatar,
       },
+      platform,
     };
   } else {
     const EMPTY_CODE = "######";
@@ -82,6 +84,7 @@ const createHunter = async (user) => {
       metadata: {
         avatar,
       },
+      platform,
     };
   }
   const createdHunter = await strapi.services.hunter.create(newHunter);
