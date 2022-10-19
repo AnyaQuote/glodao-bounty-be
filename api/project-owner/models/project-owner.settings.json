@@ -2,7 +2,8 @@
   "kind": "collectionType",
   "collectionName": "project_owners",
   "info": {
-    "name": "ProjectOwner"
+    "name": "ProjectOwner",
+    "description": ""
   },
   "options": {
     "increments": true,
@@ -30,6 +31,14 @@
     },
     "metadata": {
       "type": "json"
+    },
+    "platform": {
+      "type": "enumeration",
+      "enum": [
+        "ygg",
+        "gld"
+      ],
+      "default": "gld"
     }
   }
 }

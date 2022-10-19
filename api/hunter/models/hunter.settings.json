@@ -76,6 +76,11 @@
     },
     "solanaAddress": {
       "type": "string"
+    },
+    "platform": {
+      "type": "enumeration",
+      "enum": ["ygg", "gld"],
+      "default": "gld"
     }
   }
 }
