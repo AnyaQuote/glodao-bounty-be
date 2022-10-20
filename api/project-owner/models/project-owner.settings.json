@@ -33,12 +33,7 @@
       "type": "json"
     },
     "platform": {
-      "type": "enumeration",
-      "enum": [
-        "ygg",
-        "gld"
-      ],
-      "default": "gld"
+      "type": "string"
     }
   }
 }

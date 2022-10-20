@@ -109,7 +109,8 @@
       "type": "enumeration",
       "enum": [
         "ygg",
-        "gld"
+        "gld",
+        "dev"
       ],
       "default": "gld"
     }

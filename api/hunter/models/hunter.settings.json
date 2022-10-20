@@ -19,7 +19,6 @@
       "type": "string"
     },
     "user": {
-      "unique": true,
       "via": "hunter",
       "plugin": "users-permissions",
       "model": "user"
@@ -58,13 +57,19 @@
     },
     "participationStatus": {
       "type": "enumeration",
-      "enum": ["guest", "newbie"],
+      "enum": [
+        "guest",
+        "newbie"
+      ],
       "default": "guest"
     },
     "hunterRole": {
       "default": "user",
       "type": "enumeration",
-      "enum": ["company", "user"]
+      "enum": [
+        "company",
+        "user"
+      ]
     },
     "root": {
       "default": "######",
@@ -78,9 +83,7 @@
       "type": "string"
     },
     "platform": {
-      "type": "enumeration",
-      "enum": ["ygg", "gld"],
-      "default": "gld"
+      "type": "string"
     }
   }
 }
