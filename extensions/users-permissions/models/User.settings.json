@@ -17,10 +17,6 @@
       "configurable": false,
       "required": true
     },
-    "email": {
-      "type": "email",
-      "configurable": false
-    },
     "provider": {
       "type": "string",
       "configurable": false
@@ -56,6 +52,10 @@
       "via": "users",
       "plugin": "users-permissions",
       "configurable": false
+    },
+    "email": {
+      "type": "email",
+      "required": false
     },
     "hunter": {
       "via": "user",
@@ -113,6 +113,12 @@
         "dev"
       ],
       "default": "gld"
+    },
+    "accessTokenYgg": {
+      "type": "string"
+    },
+    "accessTokenSecretYgg": {
+      "type": "string"
     }
   }
 }

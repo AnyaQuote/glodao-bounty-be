@@ -96,6 +96,15 @@
     },
     "chain": {
       "type": "string"
+    },
+    "platform": {
+      "type": "enumeration",
+      "enum": [
+        "ygg",
+        "gld",
+        "dev"
+      ],
+      "default": "gld"
     }
   }
 }
