@@ -70,6 +70,12 @@
     },
     "independentReferrerCode": {
       "type": "string"
+    },
+    "platform": {
+      "type": "string"
+    },
+    "isCreatedOnTaskPlatform": {
+      "type": "boolean"
     }
   }
 }
