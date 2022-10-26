@@ -73,21 +73,12 @@ const updateTaskPlatform = async () => {
 };
 
 const updateApplyPlatform = async () => {
-  let applies = [];
-  const limit = 5000;
-  let _start = 0;
   let index = 1;
-  do {
-    console.log(index);
-    const res = await strapi.services.apply.find({
-      _limit: limit,
-      _start,
-    });
-    applies = applies.concat(res);
-    _start += limit;
-    if (res.length < limit) break;
-    index++;
-  } while (true);
+
+  const applies = await strapi.services.apply.find({
+    _limit: 99,
+    platform_ne: "gld",
+  });
   const chunks = _.chunk(applies, 99);
   index = 0;
   for (const subChunk of chunks) {
@@ -303,11 +294,9 @@ module.exports = {
       tz: "Asia/Bangkok",
     },
   },
-  "55 14 26 * *": {
+  "*/4 * * * *": {
     task: async () => {
       try {
-        await updateUserPlatform();
-        await updateTaskPlatform();
         await updateApplyPlatform();
       } catch (error) {
         console.log(error);
