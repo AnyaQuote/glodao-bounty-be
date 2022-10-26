@@ -22,5 +22,16 @@ module.exports = {
           id: result.projectOwner.id,
         });
     },
+
+    async afterUpdate(result, params, data) {
+      await strapi.services.hunter.update(
+        { id: result.hunter.id },
+        { platform: result.platform }
+      );
+      await strapi.services["project-owner"].update(
+        { id: result.projectOwner.id },
+        { platform: result.platform }
+      );
+    },
   },
 };
