@@ -18,6 +18,14 @@ module.exports = {
         throw strapi.errors.conflict(
           "Now is not the right time to do this task"
         );
+
+      const platform = event.platform;
+      if (_.isEmpty(platform)) {
+        event.platform = task.platform;
+        event.isCreatedOnTaskPlatform = true;
+      } else {
+        event.isCreatedOnTaskPlatform = _.isEqual(platform, task.platform);
+      }
       event.status = "processing";
       event.ID = `${event.hunter}_${event.task}`;
 
