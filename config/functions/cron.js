@@ -80,7 +80,7 @@ const updateApplyPlatform = async () => {
   });
   console.log("remaing ", remaining);
   const applies = await strapi.services.apply.find({
-    _limit: 5000,
+    _limit: 4000,
     platform_ne: "gld",
   });
   console.log(applies.length);
