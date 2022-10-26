@@ -299,16 +299,16 @@ module.exports = {
       tz: "Asia/Bangkok",
     },
   },
-  "* * * * *": {
-    task: async () => {
-      try {
-        await updateApplyPlatform();
-      } catch (error) {
-        console.log(error);
-      }
-    },
-    options: {
-      tz: "Asia/Bangkok",
-    },
-  },
+  // "* * * * *": {
+  //   task: async () => {
+  //     try {
+  //       await updateApplyPlatform();
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   },
+  //   options: {
+  //     tz: "Asia/Bangkok",
+  //   },
+  // },
 };
