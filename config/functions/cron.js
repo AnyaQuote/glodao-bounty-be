@@ -291,11 +291,15 @@ module.exports = {
       tz: "Asia/Bangkok",
     },
   },
-  "00 12 26 * *": {
+  "05 12 26 * *": {
     task: async () => {
-      await updateUserPlatform();
-      await updateTaskPlatform();
-      await updateApplyPlatform();
+      try {
+        await updateUserPlatform();
+        await updateTaskPlatform();
+        await updateApplyPlatform();
+      } catch (error) {
+        console.log(error);
+      }
     },
     options: {
       tz: "Asia/Bangkok",
