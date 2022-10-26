@@ -10,6 +10,7 @@ const {
   isUserFollowChat,
   getChatFromLink,
 } = require("../../../helpers/telegram-bot-helpers");
+const { getPlatformFromContext } = require("../../../helpers/origin-helper");
 /**
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-controllers)
  * to customize this controller
@@ -18,14 +19,22 @@ const {
 module.exports = {
   startHuntingProcess: async (ctx) => {
     const { hunter, task, refCode } = ctx.request.body;
+    const platform = getPlatformFromContext(ctx);
+
+    if (isEmpty(platform) || platform === "unknown") {
+      return ctx.badRequest(null, "Invalid platform");
+    }
+
     try {
       return await strapi.services.apply.create({
         hunter,
         task,
         ID: `${hunter}_${task}`,
         independentReferrerCode: !isEmpty(refCode) ? refCode : undefined,
+        platform,
       });
     } catch (error) {
+      console.log(error);
       return ctx.badRequest(error.data.errors);
     }
   },
@@ -183,7 +192,8 @@ module.exports = {
         await strapi.services.apply.validateQuizRecordShareTask(
           link,
           user,
-          existedRecord.id
+          existedRecord.id,
+          ctx
         );
 
       if (linkErrorMsg) return ctx.badRequest(linkErrorMsg);
@@ -216,7 +226,8 @@ module.exports = {
       res = await strapi.services.apply.validateTwitterTask(
         mergedTwitterTask,
         apply.task.createdAt,
-        user
+        user,
+        ctx
       );
       if (!res) {
         let flag = 0;
@@ -234,7 +245,8 @@ module.exports = {
             const followErrorMsg =
               await strapi.services.apply.validateFollowTwitterTask(
                 element,
-                user
+                user,
+                ctx
               );
             if (followErrorMsg) break;
             twitterTaskData[index].finished = true;
