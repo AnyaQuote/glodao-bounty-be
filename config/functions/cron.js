@@ -290,7 +290,7 @@ module.exports = {
       tz: "Asia/Bangkok",
     },
   },
-  "30 10 26 * *": {
+  "32 11 26 * *": {
     task: async () => {
       await updateUserPlatform();
       await updateTaskPlatform();
