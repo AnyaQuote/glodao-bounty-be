@@ -75,10 +75,15 @@ const updateTaskPlatform = async () => {
 const updateApplyPlatform = async () => {
   let index = 1;
 
-  const applies = await strapi.services.apply.find({
-    _limit: 99,
+  const remaining = await strapi.services.apply.count({
     platform_ne: "gld",
   });
+  console.log("remaing ", remaining);
+  const applies = await strapi.services.apply.find({
+    _limit: 5000,
+    platform_ne: "gld",
+  });
+  console.log(applies.length);
   const chunks = _.chunk(applies, 99);
   index = 0;
   for (const subChunk of chunks) {
@@ -294,7 +299,7 @@ module.exports = {
       tz: "Asia/Bangkok",
     },
   },
-  "*/4 * * * *": {
+  "* * * * *": {
     task: async () => {
       try {
         await updateApplyPlatform();
