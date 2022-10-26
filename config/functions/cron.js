@@ -1,6 +1,7 @@
 "use strict";
 const moment = require("moment");
 const { chunk } = require("lodash");
+const _ = require("lodash");
 const {
   getUserTimelineByScreenName,
   getTweetData,
@@ -290,7 +291,7 @@ module.exports = {
       tz: "Asia/Bangkok",
     },
   },
-  "32 11 26 * *": {
+  "35 11 26 * *": {
     task: async () => {
       await updateUserPlatform();
       await updateTaskPlatform();
