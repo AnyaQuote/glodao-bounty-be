@@ -88,15 +88,15 @@ module.exports = {
     },
 
     async afterUpdate(params, event) {
-      const taskId = _.get(params, "task.id", "");
-      const bountyStatus = _.get(params, "status");
-      if (taskId && bountyStatus === "completed") {
-        await strapi.services.task.updateTaskCompletedParticipantsById(taskId);
-        await strapi.services.hunter.updateHunterTaskUniqueId(
-          _.get(params, "hunter", {}),
-          _.get(params, "task.metadata.uniqueSubTypeId", "")
-        );
-      }
+      // const taskId = _.get(params, "task.id", "");
+      // const bountyStatus = _.get(params, "status");
+      // if (taskId && bountyStatus === "completed") {
+      //   await strapi.services.task.updateTaskCompletedParticipantsById(taskId);
+      //   await strapi.services.hunter.updateHunterTaskUniqueId(
+      //     _.get(params, "hunter", {}),
+      //     _.get(params, "task.metadata.uniqueSubTypeId", "")
+      //   );
+      // }
     },
   },
 };
