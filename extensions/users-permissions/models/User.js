@@ -28,10 +28,12 @@ module.exports = {
         { id: result.hunter.id },
         { platform: result.platform }
       );
-      await strapi.services["project-owner"].update(
-        { id: result.projectOwner.id },
-        { platform: result.platform }
-      );
+      if (!_.isEmpty(result.projectOwner)) {
+        await strapi.services["project-owner"].update(
+          { id: result.projectOwner.id },
+          { platform: result.platform }
+        );
+      }
     },
   },
 };
