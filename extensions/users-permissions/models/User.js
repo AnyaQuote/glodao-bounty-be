@@ -24,11 +24,13 @@ module.exports = {
     },
 
     async afterUpdate(result, params, data) {
-      await strapi.services.hunter.update(
-        { id: result.hunter.id },
-        { platform: result.platform }
-      );
-      if (!_.isEmpty(result.projectOwner)) {
+      if (result.hunter) {
+        await strapi.services.hunter.update(
+          { id: result.hunter.id },
+          { platform: result.platform }
+        );
+      }
+      if (result.projectOwner) {
         await strapi.services["project-owner"].update(
           { id: result.projectOwner.id },
           { platform: result.platform }

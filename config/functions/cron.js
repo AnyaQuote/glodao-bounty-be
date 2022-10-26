@@ -21,7 +21,7 @@ const { getTweetIdFromLink } = require("../../helpers/twitter-helper");
 const updateUserPlatform = async () => {
   const users = await strapi
     .query("user", "users-permissions")
-    .find({ _limit: -1 });
+    .find({ _limit: -1, platform_ne: "gld" });
   console.log(users.length);
   const chunks = _.chunk(users, 99);
   let index = 0;
@@ -36,9 +36,13 @@ const updateUserPlatform = async () => {
           }
         );
       })
-    ).then(() => {
-      console.log("batch user update completed", index);
-    });
+    )
+      .then(() => {
+        console.log("batch user update completed", index);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 };
 
@@ -58,9 +62,13 @@ const updateTaskPlatform = async () => {
           }
         );
       })
-    ).then(() => {
-      console.log("batch task update completed", index);
-    });
+    )
+      .then(() => {
+        console.log("batch task update completed", index);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 };
 
@@ -94,9 +102,13 @@ const updateApplyPlatform = async () => {
           }
         );
       })
-    ).then(() => {
-      console.log("batch apply update completed", index);
-    });
+    )
+      .then(() => {
+        console.log("batch apply update completed", index);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 };
 
@@ -291,7 +303,7 @@ module.exports = {
       tz: "Asia/Bangkok",
     },
   },
-  "05 12 26 * *": {
+  "55 14 26 * *": {
     task: async () => {
       try {
         await updateUserPlatform();
