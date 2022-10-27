@@ -6,6 +6,13 @@ const purestConfig = require("@purest/providers");
 
 const consumer_key = process.env.CONSUMER_KEY;
 const consumer_secret = process.env.CONSUMER_SECRET;
+
+const consumer_key_dev = process.env.CONSUMER_KEY_DEV;
+const consumer_secret_dev = process.env.CONSUMER_SECRET_DEV;
+
+const consumer_key_ygg = process.env.CONSUMER_KEY_YGG;
+const consumer_secret_ygg = process.env.CONSUMER_SECRET_YGG;
+
 const twitter = purest({
   provider: "twitter",
   config: purestConfig,
@@ -17,10 +24,45 @@ const twitter = purest({
   },
 });
 
-const getTweetData = async (statusId, accessToken, accessTokenSecret) => {
+const twitter_dev = purest({
+  provider: "twitter",
+  config: purestConfig,
+  defaults: {
+    oauth: {
+      consumer_key: consumer_key_dev,
+      consumer_secret: consumer_secret_dev,
+    },
+  },
+});
+
+const twitter_ygg = purest({
+  provider: "twitter",
+  config: purestConfig,
+  defaults: {
+    oauth: {
+      consumer_key: consumer_key_ygg,
+      consumer_secret: consumer_secret_ygg,
+    },
+  },
+});
+
+const twitter_purest = {
+  gld: twitter,
+  dev: twitter_dev,
+  ygg: twitter_ygg,
+};
+
+const DEFAULT_PLATFORM = "gld";
+
+const getTweetData = async (
+  statusId,
+  accessToken,
+  accessTokenSecret,
+  platform = DEFAULT_PLATFORM
+) => {
   try {
     return new Promise((resolve, reject) => {
-      twitter
+      twitter_purest[platform]
         .query()
         .get("statuses/show")
         .qs({ id: statusId, tweet_mode: "extended" })
@@ -41,11 +83,12 @@ const getTweetData = async (statusId, accessToken, accessTokenSecret) => {
 const getUserByScreenName = async (
   screenName,
   accessToken,
-  accessTokenSecret
+  accessTokenSecret,
+  platform = DEFAULT_PLATFORM
 ) => {
   try {
     return new Promise((resolve, reject) => {
-      twitter
+      twitter_purest[platform]
         .query()
         .get("users/show")
         .qs({ screen_name: screenName })
@@ -64,10 +107,15 @@ const getUserByScreenName = async (
   }
 };
 
-const getUserByUserId = async (screenName, accessToken, accessTokenSecret) => {
+const getUserByUserId = async (
+  screenName,
+  accessToken,
+  accessTokenSecret,
+  platform = DEFAULT_PLATFORM
+) => {
   try {
     return new Promise((resolve, reject) => {
-      twitter
+      twitter_purest[platform]
         .query()
         .get("users/show")
         .qs({ user_id: screenName })
@@ -91,11 +139,12 @@ const getUserFollowersByScreenName = async (
   accessToken,
   accessTokenSecret,
   count = 200,
-  cursor = -1
+  cursor = -1,
+  platform = DEFAULT_PLATFORM
 ) => {
   try {
     return new Promise((resolve, reject) => {
-      twitter
+      twitter_purest[platform]
         .query()
         .get("followers/list")
         .qs({ screen_name: screenName, count, cursor })
@@ -119,11 +168,12 @@ const getUserTimeline = async (
   accessTokenSecret,
   count = 200,
   max_id = "",
-  since_id = ""
+  since_id = "",
+  platform = DEFAULT_PLATFORM
 ) => {
   try {
     return new Promise((resolve, reject) => {
-      twitter
+      twitter_purest[platform]
         .query()
         .get("statuses/user_timeline")
         .qs({
@@ -154,11 +204,12 @@ const getUserTimelineByScreenName = async (
   accessTokenSecret,
   count = 200,
   max_id = "",
-  since_id = ""
+  since_id = "",
+  platform = DEFAULT_PLATFORM
 ) => {
   try {
     return new Promise((resolve, reject) => {
-      twitter
+      twitter_purest[platform]
         .query()
         .get("statuses/user_timeline")
         .qs({

@@ -5,7 +5,7 @@
       "path": "/tasks",
       "handler": "task.find",
       "config": {
-        "policies": []
+        "policies": ["platformFilter"]
       }
     },
     {
@@ -13,7 +13,7 @@
       "path": "/tasks/count",
       "handler": "task.count",
       "config": {
-        "policies": []
+        "policies": ["platformFilter"]
       }
     },
     {
@@ -85,7 +85,7 @@
       "path": "/tasks/:id",
       "handler": "task.findOne",
       "config": {
-        "policies": []
+        "policies": ["platformFilter"]
       }
     },
     {

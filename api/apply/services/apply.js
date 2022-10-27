@@ -9,6 +9,10 @@ const {
   getArrDiff,
   isArrayIncluded,
 } = require("../../../helpers/index");
+const {
+  getPlatformFromContext,
+  getPlatformFromOrigin,
+} = require("../../../helpers/origin-helper");
 
 /**
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-services)
@@ -128,17 +132,17 @@ const moveApplyToCommunityPool = async (id) => {
   return await updateApplyPoolType(id, "community");
 };
 
-const validateTwitterTask = async (taskData, taskCreatedTime, user) => {
+const validateTwitterTask = async (taskData, taskCreatedTime, user, ctx) => {
   const groupByStepLink = _.groupBy(taskData, "submitedLink");
   for (const [key, value] of Object.entries(groupByStepLink)) {
     if (_.isEmpty(key)) continue;
     if (value.length > 1) return "This twitter link had been used before";
   }
 
-  return await validateTwitterLinks(taskData, taskCreatedTime, user);
+  return await validateTwitterLinks(taskData, taskCreatedTime, user, ctx);
 };
 
-const validateTwitterLinks = async (taskData, taskCreatedTime, user) => {
+const validateTwitterLinks = async (taskData, taskCreatedTime, user, ctx) => {
   for (let index = 0; index < taskData.length; index++) {
     const currentStepObj = taskData[index];
     if (!isNeedToValidate(currentStepObj)) continue;
@@ -146,7 +150,8 @@ const validateTwitterLinks = async (taskData, taskCreatedTime, user) => {
     if (currentStepObj.type === "follow") {
       const followErrorMsg = await validateFollowTwitterTask(
         currentStepObj,
-        user
+        user,
+        ctx
       );
       if (followErrorMsg) return followErrorMsg;
       else continue;
@@ -157,7 +162,7 @@ const validateTwitterLinks = async (taskData, taskCreatedTime, user) => {
     if (!twitterHelper.isTwitterStatusLink(dataLink))
       return "Invalid twitter link";
 
-    const tweetData = await extractTweetData(dataLink, user);
+    const tweetData = await extractTweetData(dataLink, user, ctx);
 
     if (tweetData.errorMsg) return tweetData.errorMsg;
 
@@ -198,8 +203,25 @@ const validateTwitterLinks = async (taskData, taskCreatedTime, user) => {
   return "";
 };
 
-const validateFollowTwitterTask = async (baseRequirement, user) => {
-  const { accessToken, accessTokenSecret } = user;
+const validateFollowTwitterTask = async (baseRequirement, user, ctx = {}) => {
+  let accessToken;
+  let accessTokenSecret;
+  let platform = "gld";
+  if (_.isEmpty(ctx)) {
+    if (_.isEmpty(user)) return "User not found";
+    if (!_.isEmpty(_.get(user, "accessToken", ""))) platform = "gld";
+    else if (!_.isEmpty(_.get(user, "accessTokenYgg", ""))) platform = "ygg";
+  } else {
+    platform = getPlatformFromContext(ctx);
+  }
+  if (platform === "gld") {
+    accessToken = user.accessToken;
+    accessTokenSecret = user.accessTokenSecret;
+  } else if (platform === "ygg") {
+    accessToken = user.accessTokenYgg;
+    accessTokenSecret = user.accessTokenSecretYgg;
+  }
+
   const splitedArr = baseRequirement.link.split("/");
   const screenName = splitedArr[splitedArr.length - 1].split("?")[0];
   console.log(screenName);
@@ -209,7 +231,8 @@ const validateFollowTwitterTask = async (baseRequirement, user) => {
     const res = await twitterHelperV1.getUserByScreenName(
       screenName,
       accessToken,
-      accessTokenSecret
+      accessTokenSecret,
+      platform
     );
     if (!res.following) return "You have not completed this follow task yet";
   } catch (error) {
@@ -239,14 +262,24 @@ const isLinkNotRequired = (stepData) => {
   return false;
 };
 
-const extractTweetData = async (link, user) => {
-  const { accessToken, accessTokenSecret } = user;
+const extractTweetData = async (link, user, ctx) => {
+  let accessToken;
+  let accessTokenSecret;
+  const platform = getPlatformFromContext(ctx);
+  if (platform === "gld") {
+    accessToken = user.accessToken;
+    accessTokenSecret = user.accessTokenSecret;
+  } else if (platform === "ygg") {
+    accessToken = user.accessTokenYgg;
+    accessTokenSecret = user.accessTokenSecretYgg;
+  }
 
   try {
     return await twitterHelperV1.getTweetData(
       twitterHelper.getTweetIdFromLink(link),
       accessToken,
-      accessTokenSecret
+      accessTokenSecret,
+      platform
     );
   } catch (error) {
     return { errorMsg: "Error: Can not get tweet data" };
@@ -381,12 +414,12 @@ const verifyRetweetLink = (data, baseRequirement) => {
   return "Link missing required referenced tweet";
 };
 
-const validateQuizRecordShareTask = async (link, user, recordId) => {
+const validateQuizRecordShareTask = async (link, user, recordId, ctx) => {
   try {
-    const { accessToken, accessTokenSecret, twitterId } = user;
+    const { twitterId } = user;
     if (!twitterHelper.isTwitterStatusLink(link)) return "Invalid twitter link";
 
-    const tweetData = await extractTweetData(link, user);
+    const tweetData = await extractTweetData(link, user, ctx);
     if (_.isEmpty(tweetData)) return "Empty data";
     // if (!moment(data.created_at).isAfter(moment(taskCreatedTime)))
     //   return "Tweet posted time is invalid - Tweet must be posted after the task started";

@@ -10,6 +10,7 @@ const {
 const { getTaskRewards } = require("../../../helpers/task-helper");
 const { getTweetData } = require("../../../helpers/twitter-helper-v1");
 const { getTweetIdFromLink } = require("../../../helpers/twitter-helper");
+const { getPlatformFromContext } = require("../../../helpers/origin-helper");
 const fxZero = FixedNumber.from("0");
 /**
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-services)
@@ -37,9 +38,15 @@ const updateTaskParticipantFromTwitter = async (taskId, hunterId) => {
       "user.accessTokenSecret",
       "CO0dPi4gyfmLEGOOVGnwhe1oBRSCOGXClSPMCHjuYEdbi"
     );
+    const platform = get(hunter, "user.platform", "gld");
     const link = task.data["twitter"][1].link;
     const statusId = getTweetIdFromLink(link);
-    const res = await getTweetData(statusId, accessToken, accessTokenSecret);
+    const res = await getTweetData(
+      statusId,
+      accessToken,
+      accessTokenSecret,
+      platform
+    );
     const newCompleted =
       task.completedParticipants > res.favorite_count
         ? task.completedParticipants
@@ -253,6 +260,11 @@ const createTask = async (ctx, missionData) => {
     id: poolId,
   });
 
+  const platform = getPlatformFromContext(ctx);
+  if (isEmpty(platform) || isEqual(platform, "unknown")) {
+    ctx.badRequest("Platform is not supported");
+  }
+
   if (isEmpty(pool)) {
     ctx.badRequest(POOL_NOT_FOUND);
   }
@@ -287,6 +299,7 @@ const createTask = async (ctx, missionData) => {
     maxPriorityParticipants,
     data,
     metadata,
+    platform,
   });
 };
 
@@ -435,6 +448,11 @@ const createInAppTrialTask = async (ctx, missionData) => {
     optionalTokens,
   } = missionData;
 
+  const platform = getPlatformFromContext(ctx);
+  if (isEmpty(platform) || isEqual(platform, "unknown")) {
+    ctx.badRequest("Platform is not supported");
+  }
+
   const votingPool = await strapi.services["voting-pool"].findOne({
     id: poolId,
   });
@@ -476,6 +494,7 @@ const createInAppTrialTask = async (ctx, missionData) => {
     data,
     metadata,
     optionalTokens,
+    platform,
   });
   const apiKey = await strapi.services[
     "api-key"
