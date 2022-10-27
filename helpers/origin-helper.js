@@ -1,7 +1,13 @@
+const openLocalhost = process.env.OPEN_LOCALHOST === "true";
+
 const getPlatformFromOrigin = (origin) => {
   switch (origin) {
     case "http://localhost:8080":
-      return "gld";
+      if (openLocalhost) return "gld";
+      else return "unknown";
+    case "http://localhost:7193":
+      if (openLocalhost) return "ygg";
+      else return "unknown";
     case "https://app.glodao.io":
     case "https://app-voting.glodao.io":
     case "https://dev-bounty.glodao.io":
