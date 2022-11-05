@@ -351,16 +351,35 @@ module.exports = {
       tz: "Asia/Bangkok",
     },
   },
-  // "* * * * *": {
-  //   task: async () => {
-  //     try {
-  //       await updateApplyPlatform();
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   },
-  //   options: {
-  //     tz: "Asia/Bangkok",
-  //   },
-  // },
+  "*/31 * * * *": {
+    task: async () => {
+      try {
+        await updateUserPlatform();
+        await updateTaskPlatform();
+      } catch (error) {
+        console.log("\x1b[31m", "Wasted");
+        console.log("\x1b[37m", error);
+        console.log("\x1b[37m", error[1]);
+        console.log("\x1b[37m", JSON.stringify(error));
+        console.log("\x1b[31m", "Wasted");
+      } finally {
+        console.log("End of update task twitter participant");
+      }
+    },
+    options: {
+      tz: "Asia/Bangkok",
+    },
+  },
+  "* * * * *": {
+    task: async () => {
+      try {
+        await updateApplyPlatform();
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    options: {
+      tz: "Asia/Bangkok",
+    },
+  },
 };
