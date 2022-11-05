@@ -21,7 +21,7 @@ const fxZero = FixedNumber.from("0");
 const updateTaskParticipantFromTwitter = async (taskId, hunterId) => {
   const task = await strapi.services.task.findOne({ id: taskId });
   console.log(taskId);
-  if (task.name !== "GloDAO") {
+  if (task.name !== "GloDAO" && task.name !== "Galaxy Finance") {
     await strapi.services.task.updateTaskTotalParticipantsById(taskId);
     await strapi.services.task.updateTaskCompletedParticipantsById(taskId);
     return;
