@@ -12,6 +12,7 @@ const getPlatformFromOrigin = (origin) => {
     case "https://app-voting.glodao.io":
     case "https://dev-bounty.glodao.io":
     case "https://dev-dao-voting.netlify.app":
+    case "https://glodao.io":
       return "gld";
     case "https://bounty-dev.yggsea.live":
     case "https://voting-dev.yggsea.live":
