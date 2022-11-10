@@ -16,6 +16,9 @@ const getPlatformFromOrigin = (origin) => {
       return "gld";
     case "https://bounty-dev.yggsea.live":
     case "https://voting-dev.yggsea.live":
+    case "https://yggsea.io":
+    case "https://dev.yggsea.live":
+    case "https://staging.yggsea.live":
       return "ygg";
     default:
       return "unknown";
