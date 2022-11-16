@@ -8,7 +8,7 @@ module.exports = ({ env }) => ({
       connector: "mongoose",
       settings: {
         client: "mongo",
-        uri: "mongodb+srv://admin:123qwert@glodaodb.lenil.mongodb.net/dev?retryWrites=true&w=majority",
+        uri: "mongodb+srv://admin:Skymore123@bounty.mzk3ehf.mongodb.net/bounty-dev?retryWrites=true&w=majority",
       },
       options: {
         ssl: true,
@@ -18,7 +18,7 @@ module.exports = ({ env }) => ({
       connector: "mongoose",
       settings: {
         client: "mongo",
-        uri: "mongodb+srv://admin:eOD2ETY4OhBov3Di@message-db.lyv4kbw.mongodb.net/dev?retryWrites=true&w=majority",
+        uri: "mongodb+srv://admin:Skymore123@message-db.dwawp0k.mongodb.net/message?retryWrites=true&w=majority",
       },
       options: {
         ssl: true,
