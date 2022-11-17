@@ -299,87 +299,87 @@ module.exports = {
       tz: "Asia/Bangkok",
     },
   },
-  "*/32 * * * *": {
-    task: async () => {
-      try {
-        const tasks = await strapi.services.task.find({
-          name: "Galaxy Finance",
-          endTime_gte: moment().toISOString(),
-        });
-        for (let index = 0; index < tasks.length; index++) {
-          try {
-            const task = tasks[index];
-            const link = task.data["twitter"][1].link;
-            const statusId = getTweetIdFromLink(link);
-            const res = await getTweetData(
-              statusId,
-              "1504294069195149318-nMFOwoRUXGK39KoKNFtig1QfT8DKJB",
-              "CO0dPi4gyfmLEGOOVGnwhe1oBRSCOGXClSPMCHjuYEdbi"
-            );
-            const newCompleted =
-              task.completedParticipants > res.favorite_count
-                ? task.completedParticipants
-                : res.favorite_count;
-            // const newTotal = Math.floor(newCompleted * 1.1);
-            const newTotal = newCompleted;
-            await strapi.services.task.update(
-              { id: task.id },
-              {
-                completedParticipants: newCompleted,
-                totalParticipants: newTotal,
-              }
-            );
-          } catch (error) {
-            console.log("\x1b[37m", error);
-            console.log("\x1b[37m", error[1]);
-            console.log("\x1b[37m", JSON.stringify(error));
-            continue;
-          }
-        }
-        console.log(tasks.length);
-      } catch (error) {
-        console.log("\x1b[31m", "Wasted");
-        console.log("\x1b[37m", error);
-        console.log("\x1b[37m", error[1]);
-        console.log("\x1b[37m", JSON.stringify(error));
-        console.log("\x1b[31m", "Wasted");
-      } finally {
-        console.log("End of update task twitter participant");
-      }
-    },
-    options: {
-      tz: "Asia/Bangkok",
-    },
-  },
-  "*/31 * * * *": {
-    task: async () => {
-      try {
-        await updateUserPlatform();
-        await updateTaskPlatform();
-      } catch (error) {
-        console.log("\x1b[31m", "Wasted");
-        console.log("\x1b[37m", error);
-        console.log("\x1b[37m", error[1]);
-        console.log("\x1b[37m", JSON.stringify(error));
-        console.log("\x1b[31m", "Wasted");
-      } finally {
-        console.log("End of update task twitter participant");
-      }
-    },
-    options: {
-      tz: "Asia/Bangkok",
-    },
-  },
-  "* * * * *": {
-    task: async () => {
-      try {
-        await updateApplyPlatform();
-      } catch (error) {
-        console.log(error);
-      }
-    },
-    options: {
-      tz: "Asia/Bangkok",
-    },
-  },
+  // "*/32 * * * *": {
+  //   task: async () => {
+  //     try {
+  //       const tasks = await strapi.services.task.find({
+  //         name: "Galaxy Finance",
+  //         endTime_gte: moment().toISOString(),
+  //       });
+  //       for (let index = 0; index < tasks.length; index++) {
+  //         try {
+  //           const task = tasks[index];
+  //           const link = task.data["twitter"][1].link;
+  //           const statusId = getTweetIdFromLink(link);
+  //           const res = await getTweetData(
+  //             statusId,
+  //             "1504294069195149318-nMFOwoRUXGK39KoKNFtig1QfT8DKJB",
+  //             "CO0dPi4gyfmLEGOOVGnwhe1oBRSCOGXClSPMCHjuYEdbi"
+  //           );
+  //           const newCompleted =
+  //             task.completedParticipants > res.favorite_count
+  //               ? task.completedParticipants
+  //               : res.favorite_count;
+  //           // const newTotal = Math.floor(newCompleted * 1.1);
+  //           const newTotal = newCompleted;
+  //           await strapi.services.task.update(
+  //             { id: task.id },
+  //             {
+  //               completedParticipants: newCompleted,
+  //               totalParticipants: newTotal,
+  //             }
+  //           );
+  //         } catch (error) {
+  //           console.log("\x1b[37m", error);
+  //           console.log("\x1b[37m", error[1]);
+  //           console.log("\x1b[37m", JSON.stringify(error));
+  //           continue;
+  //         }
+  //       }
+  //       console.log(tasks.length);
+  //     } catch (error) {
+  //       console.log("\x1b[31m", "Wasted");
+  //       console.log("\x1b[37m", error);
+  //       console.log("\x1b[37m", error[1]);
+  //       console.log("\x1b[37m", JSON.stringify(error));
+  //       console.log("\x1b[31m", "Wasted");
+  //     } finally {
+  //       console.log("End of update task twitter participant");
+  //     }
+  //   },
+  //   options: {
+  //     tz: "Asia/Bangkok",
+  //   },
+  // },
+  // "*/31 * * * *": {
+  //   task: async () => {
+  //     try {
+  //       await updateUserPlatform();
+  //       await updateTaskPlatform();
+  //     } catch (error) {
+  //       console.log("\x1b[31m", "Wasted");
+  //       console.log("\x1b[37m", error);
+  //       console.log("\x1b[37m", error[1]);
+  //       console.log("\x1b[37m", JSON.stringify(error));
+  //       console.log("\x1b[31m", "Wasted");
+  //     } finally {
+  //       console.log("End of update task twitter participant");
+  //     }
+  //   },
+  //   options: {
+  //     tz: "Asia/Bangkok",
+  //   },
+  // },
+  // "* * * * *": {
+  //   task: async () => {
+  //     try {
+  //       await updateApplyPlatform();
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   },
+  //   options: {
+  //     tz: "Asia/Bangkok",
+  //   },
+  // },
 };
