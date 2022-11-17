@@ -469,9 +469,7 @@ const createInAppTrialTask = async (ctx, missionData) => {
     ctx.badRequest(INVALID_DATE_RANGE);
   }
 
-  const numberOfCreatedMissions = await strapi.services.task.count({
-    votingPool: votingPool.id,
-  });
+  const numberOfCreatedMissions = await strapi.services.task.count({ poolId });
 
   if (numberOfCreatedMissions >= votingPool.totalMission) {
     ctx.forbidden(EXCEEDED_MISSION_LIMIT);
