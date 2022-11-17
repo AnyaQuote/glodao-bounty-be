@@ -51,6 +51,7 @@ const connect = (provider, query) => {
 
     // Get the profile.
     getProfile(provider, query, async (err, profile) => {
+      console.log(query);
       if (err) {
         return reject([null, err]);
       }
@@ -132,6 +133,9 @@ const connect = (provider, query) => {
             profile.accessTokenSecretYgg = profile.accessTokenSecret;
             delete profile.accessToken;
             delete profile.accessTokenSecret;
+            profile.platform = "ygg";
+          } else {
+            profile.platform = platform;
           }
           console.log(profile);
           if (
@@ -156,7 +160,6 @@ const connect = (provider, query) => {
             confirmed: true,
             referralCode: generateReferralCode(profile.username),
             referrerCode,
-            platform,
           });
 
           const { id: userId } = await strapi
