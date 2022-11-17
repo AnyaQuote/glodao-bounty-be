@@ -60,7 +60,7 @@ const updateUserToken = async (
   accessTokenSecret,
   platform
 ) => {
-  if (platform === "ygg") {
+  if (platform === "ygg" || platform === "dev") {
     return await strapi.query("user", "users-permissions").update(
       { id: userId },
       {
