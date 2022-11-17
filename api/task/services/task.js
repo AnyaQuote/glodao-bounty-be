@@ -262,11 +262,11 @@ const createTask = async (ctx, missionData) => {
 
   const platform = getPlatformFromContext(ctx);
   if (isEmpty(platform) || isEqual(platform, "unknown")) {
-    ctx.badRequest("Platform is not supported");
+    return ctx.badRequest("Platform is not supported");
   }
 
   if (isEmpty(pool)) {
-    ctx.badRequest(POOL_NOT_FOUND);
+    return ctx.badRequest(POOL_NOT_FOUND);
   }
 
   if (
@@ -274,13 +274,13 @@ const createTask = async (ctx, missionData) => {
     moment(endTime).isAfter(moment(pool.endDate)) ||
     moment(startTime).isAfter(moment(endTime))
   ) {
-    ctx.badRequest(INVALID_DATE_RANGE);
+    return ctx.badRequest(INVALID_DATE_RANGE);
   }
 
   const numberOfCreatedMissions = await strapi.services.task.count({ poolId });
 
   if (numberOfCreatedMissions >= pool.totalMission) {
-    ctx.forbidden(EXCEEDED_MISSION_LIMIT);
+    return ctx.forbidden(EXCEEDED_MISSION_LIMIT);
   }
 
   return await strapi.services.task.create({
@@ -326,7 +326,7 @@ const updateTask = async (ctx, missionData) => {
   });
 
   if (isEmpty(pool)) {
-    ctx.badRequest(POOL_NOT_FOUND);
+    return ctx.badRequest(POOL_NOT_FOUND);
   }
 
   if (
@@ -334,7 +334,7 @@ const updateTask = async (ctx, missionData) => {
     moment(endTime).isAfter(moment(pool.endDate)) ||
     moment(startTime).isAfter(moment(endTime))
   ) {
-    ctx.badRequest(INVALID_DATE_RANGE);
+    return ctx.badRequest(INVALID_DATE_RANGE);
   }
 
   return await strapi.services.task.update(
@@ -450,7 +450,7 @@ const createInAppTrialTask = async (ctx, missionData) => {
 
   const platform = getPlatformFromContext(ctx);
   if (isEmpty(platform) || isEqual(platform, "unknown")) {
-    ctx.badRequest("Platform is not supported");
+    return ctx.badRequest("Platform is not supported");
   }
 
   const votingPool = await strapi.services["voting-pool"].findOne({
@@ -458,7 +458,7 @@ const createInAppTrialTask = async (ctx, missionData) => {
   });
 
   if (isEmpty(votingPool)) {
-    ctx.badRequest(POOL_NOT_FOUND);
+    return ctx.badRequest(POOL_NOT_FOUND);
   }
 
   if (
@@ -472,7 +472,7 @@ const createInAppTrialTask = async (ctx, missionData) => {
   const numberOfCreatedMissions = await strapi.services.task.count({ poolId });
 
   if (numberOfCreatedMissions >= votingPool.totalMission) {
-    ctx.forbidden(EXCEEDED_MISSION_LIMIT);
+    return ctx.forbidden(EXCEEDED_MISSION_LIMIT);
   }
 
   const task = await strapi.services.task.create({
@@ -530,7 +530,7 @@ const updateBaseTaskIat = async (ctx, missionData) => {
   });
 
   if (isEmpty(votingPool)) {
-    ctx.badRequest(POOL_NOT_FOUND);
+    return ctx.badRequest(POOL_NOT_FOUND);
   }
 
   if (
@@ -538,7 +538,7 @@ const updateBaseTaskIat = async (ctx, missionData) => {
     moment(endTime).isAfter(moment(votingPool.endDate)) ||
     moment(startTime).isAfter(moment(endTime))
   ) {
-    ctx.badRequest(INVALID_DATE_RANGE);
+    return ctx.badRequest(INVALID_DATE_RANGE);
   }
 
   return await strapi.services.task.update(
