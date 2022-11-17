@@ -23,6 +23,12 @@ module.exports = {
         });
     },
 
+    async beforeUpdate(params, data) {
+      console.log("call update user", params);
+      console.log("call update user", data);
+      delete data.platform;
+    },
+
     async afterUpdate(result, params, data) {
       if (result.hunter) {
         await strapi.services.hunter.update(

@@ -18,95 +18,95 @@ const { getTweetIdFromLink } = require("../../helpers/twitter-helper");
  * See more details here: https://strapi.io/documentation/developer-docs/latest/setup-deployment-guides/configurations.html#cron-tasks
  */
 
-const updateUserPlatform = async () => {
-  const users = await strapi
-    .query("user", "users-permissions")
-    .find({ _limit: -1, platform_ne: "gld" });
-  console.log(users.length);
-  const chunks = _.chunk(users, 99);
-  let index = 0;
-  for (const subChunk of chunks) {
-    index = index + 1;
-    await Promise.all(
-      subChunk.map((user) => {
-        return strapi.query("user", "users-permissions").update(
-          { id: user.id },
-          {
-            platform: "gld",
-          }
-        );
-      })
-    )
-      .then(() => {
-        console.log("batch user update completed", index);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }
-};
+// const updateUserPlatform = async () => {
+//   const users = await strapi
+//     .query("user", "users-permissions")
+//     .find({ _limit: -1, platform_ne: "gld" });
+//   console.log(users.length);
+//   const chunks = _.chunk(users, 99);
+//   let index = 0;
+//   for (const subChunk of chunks) {
+//     index = index + 1;
+//     await Promise.all(
+//       subChunk.map((user) => {
+//         return strapi.query("user", "users-permissions").update(
+//           { id: user.id },
+//           {
+//             platform: "gld",
+//           }
+//         );
+//       })
+//     )
+//       .then(() => {
+//         console.log("batch user update completed", index);
+//       })
+//       .catch((err) => {
+//         console.log(err);
+//       });
+//   }
+// };
 
-const updateTaskPlatform = async () => {
-  const tasks = await strapi.services.task.find({ _limit: -1 });
-  console.log(tasks.length);
-  const chunks = _.chunk(tasks, 99);
-  let index = 0;
-  for (const subChunk of chunks) {
-    index = index + 1;
-    await Promise.all(
-      subChunk.map((task) => {
-        return strapi.services.task.update(
-          { id: task.id },
-          {
-            platform: "gld",
-          }
-        );
-      })
-    )
-      .then(() => {
-        console.log("batch task update completed", index);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }
-};
+// const updateTaskPlatform = async () => {
+//   const tasks = await strapi.services.task.find({ _limit: -1 });
+//   console.log(tasks.length);
+//   const chunks = _.chunk(tasks, 99);
+//   let index = 0;
+//   for (const subChunk of chunks) {
+//     index = index + 1;
+//     await Promise.all(
+//       subChunk.map((task) => {
+//         return strapi.services.task.update(
+//           { id: task.id },
+//           {
+//             platform: "gld",
+//           }
+//         );
+//       })
+//     )
+//       .then(() => {
+//         console.log("batch task update completed", index);
+//       })
+//       .catch((err) => {
+//         console.log(err);
+//       });
+//   }
+// };
 
-const updateApplyPlatform = async () => {
-  let index = 1;
+// const updateApplyPlatform = async () => {
+//   let index = 1;
 
-  const remaining = await strapi.services.apply.count({
-    platform_ne: "gld",
-  });
-  console.log("remaing ", remaining);
-  const applies = await strapi.services.apply.find({
-    _limit: 4000,
-    platform_ne: "gld",
-  });
-  console.log(applies.length);
-  const chunks = _.chunk(applies, 99);
-  index = 0;
-  for (const subChunk of chunks) {
-    index = index + 1;
-    await Promise.all(
-      subChunk.map((apply) => {
-        return strapi.services.apply.update(
-          { id: apply.id },
-          {
-            platform: "gld",
-            IsCreatedOnTaskPlatform: true,
-          }
-        );
-      })
-    )
-      .then(() => {
-        console.log("batch apply update completed", index);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }
-};
+//   const remaining = await strapi.services.apply.count({
+//     platform_ne: "gld",
+//   });
+//   console.log("remaing ", remaining);
+//   const applies = await strapi.services.apply.find({
+//     _limit: 4000,
+//     platform_ne: "gld",
+//   });
+//   console.log(applies.length);
+//   const chunks = _.chunk(applies, 99);
+//   index = 0;
+//   for (const subChunk of chunks) {
+//     index = index + 1;
+//     await Promise.all(
+//       subChunk.map((apply) => {
+//         return strapi.services.apply.update(
+//           { id: apply.id },
+//           {
+//             platform: "gld",
+//             IsCreatedOnTaskPlatform: true,
+//           }
+//         );
+//       })
+//     )
+//       .then(() => {
+//         console.log("batch apply update completed", index);
+//       })
+//       .catch((err) => {
+//         console.log(err);
+//       });
+//   }
+// };
 
 module.exports = {
   "0 0 * * *": {
