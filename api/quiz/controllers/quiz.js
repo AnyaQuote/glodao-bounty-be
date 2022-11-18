@@ -32,7 +32,9 @@ module.exports = {
       const maxAnswerLength = quiz.answers.length;
       console.log("maxanswerlength", maxAnswerLength);
       if (size > maxAnswerLength) size = maxAnswerLength;
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
     console.log(answer.length);
     console.log(size);
     if (answer.length < size) {
