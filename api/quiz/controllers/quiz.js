@@ -30,8 +30,11 @@ module.exports = {
     }
     try {
       const maxAnswerLength = quiz.answers.length;
+      console.log("maxanswerlength", maxAnswerLength);
       if (size > maxAnswerLength) size = maxAnswerLength;
     } catch (error) {}
+    console.log(answer.length);
+    console.log(size);
     if (answer.length < size) {
       return ctx.badRequest("Invalid number of answers");
     }
