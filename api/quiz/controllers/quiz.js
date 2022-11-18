@@ -29,8 +29,8 @@ module.exports = {
       );
     }
     try {
-      console.log(quiz);
-      const maxAnswerLength = quiz.answers.length;
+      // console.log(quiz);
+      const maxAnswerLength = quiz.answer.length;
       console.log("maxanswerlength", maxAnswerLength);
       if (size > maxAnswerLength) size = maxAnswerLength;
     } catch (error) {
