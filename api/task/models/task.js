@@ -44,5 +44,11 @@ module.exports = {
         }
       }
     },
+
+    async beforeUpdate(params, data) {
+      console.log("call update task", params);
+      console.log("call update task", data);
+      if (data && data.platform) delete data.platform;
+    },
   },
 };
