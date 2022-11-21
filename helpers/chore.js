@@ -15,6 +15,8 @@ const {
 } = require("./telegram-bot-helpers");
 const { getTweetIdFromLink } = require("./twitter-helper");
 const { similarity } = require("./index");
+const { readTransactionDetail } = require("./wallet-helper");
+const { getTransactionReceipt } = require("./blockchain-helper");
 
 const argv = yargs(hideBin(process.argv)).argv;
 const glodaoAddress = "0x7a05CE29a44cA8dD49D967367F98D3F07E204faC";
@@ -379,12 +381,440 @@ async function distributeBUSD() {
   }
   console.log(_.uniqBy(bountyRewards, "walletAddress").length);
 }
+async function updateAllBUSDToGLD() {
+  const alls = await strapi.services["bounty-reward"].find({
+    _limit: -1,
+    updatedAt_gt: moment("2022-08-14 19:00").toISOString(),
+  });
+  const chunks = _.chunk(alls, 10);
+  let index = 0;
+  for (const subChunks of chunks) {
+    index = index + 1;
+    try {
+      await Promise.all(
+        subChunks.map((bountyReward) => {
+          return strapi.services["bounty-reward"].update(
+            { id: bountyReward.id },
+            {
+              rewards: bountyReward.rewards.filter((r) => r.token === "GLD"),
+              rewardsHistory: bountyReward.rewardsHistory.filter(
+                (el) => !el.datetime.toString().startsWith("2022-08-15")
+              ),
+              depositHistory: bountyReward.depositHistory.filter(
+                (el) => !el.datetime.toString().startsWith("2022-08-15")
+              ),
+            }
+          );
+        })
+      ).then((res) => {
+        console.log("find batch complete", index);
+      });
+    } catch (error) {
+      console.log("\x1b[31m", "Wasted");
+      console.log("\x1b[37m", error);
+      console.log("\x1b[31m", "Wasted");
+      return;
+    }
+  }
+  return;
+  console.log(alls.length);
+  const a = alls[0];
+  const b = {
+    ...a,
+    rewards: a.rewards.filter((r) => r.token === "GLD"),
+    rewardsHistory: a.rewardsHistory.filter(
+      (el) => !el.datetime.toString().startsWith("2022-08-15")
+    ),
+    depositHistory: a.depositHistory.filter(
+      (el) => !el.datetime.toString().startsWith("2022-08-15")
+    ),
+  };
+  console.log(b.rewards);
+  console.log(a.rewardsHistory[a.rewardsHistory.length - 1].datetime);
+  console.log(
+    a.rewardsHistory[a.rewardsHistory.length - 1].datetime.toString()
+  );
+  console.log(
+    a.rewardsHistory[a.rewardsHistory.length - 1].datetime
+      .toString()
+      .startsWith("2022-08-15")
+  );
+}
+async function sendGld() {
+  const arr = [
+    "0xc27E35EE758b2dd9826026D8bBf52f822002bA6c",
+    "0xb641934f5cD11755581D3587Dfd6cB81109a908b",
+    "0x94b7310b952611662C64a0CfE123Db5664C2Ea78",
+    "0x510b10C09e6440EE099d8b66D56c89A3EBaDd882",
+    "0x2EDa8595AB79bB08E0B2c19750418Eaf13B5E275",
+    "0x77640ec95c14a84aF8eCd6bB4439e0F0cb129601",
+    "0x01c8A57fb706C859751F52FE1C83C3163b129289",
+    "0xc37E7542fA5e02a834F91cc05e447EA1577FBa04",
+    "0xa612C4F6d3A231c7949edEFf0e6574Fe787a918E",
+    "0x53668bbe886d0da46ddd61e2182061f4131af7b2",
+  ];
+  for (let index = 0; index < arr.length; index++) {
+    const address = arr[index];
+    await strapi.services["bounty-reward"].recordReward(
+      address,
+      "GLD-contract-address",
+      "GLD",
+      "2500"
+    );
+    console.log(index);
+  }
+}
+async function exportDonateFile() {
+  const res = await strapi.services["donation-transaction"].find({
+    _limit: -1,
+  });
+  console.log(res);
+  const headers = [
+    {
+      id: "hash",
+      title: "hash",
+    },
+    {
+      id: "amountStr",
+      title: "amount",
+    },
+    {
+      id: "wallet",
+      title: "wallet",
+    },
+    {
+      id: "date",
+      title: "date",
+    },
+    {
+      id: "username",
+      title: "username",
+    },
+    {
+      id: "twittername",
+      title: "twittername",
+    },
+  ];
+  await exportDataToCsv(
+    res.map((r) => ({ ...r, twittername: _.get(r, "hunter.name", "") })),
+    headers,
+    "donate.csv"
+  );
+}
+const duplicateGlodaoDailyTask = async () => {
+  const taskRecord = await strapi.services.task.findOne({
+    name: "GloDAO",
+    startTime: moment().format("YYYY-MM-DDT14:00:00.000") + "Z",
+  });
+  console.log(taskRecord);
+};
+const exportCsvStep = async () => {
+  const task = await strapi.services.task.findOne({
+    id: "6333fedeb9d50226298eacab",
+  });
+  const applies = await strapi.services.apply.find({
+    task: "6333fedeb9d50226298eacab",
+    _limit: -1,
+  });
+  console.log(task);
+  console.log(applies.length);
+  const apply1 = applies[0];
+  console.log(apply1);
+  const getStepNumber = (arr) => {
+    return arr.filter((el) => el.finished === true).length;
+  };
+  console.log(getStepNumber(apply1.data["optional"]));
+  applies.forEach((apply) => {
+    // apply.step = getStepNumber(apply.data["optional"]);
+    console.log(getStepNumber(apply.data["optional"]));
+    // console.log(apply["data"]["optional"][9]);
+    // console.log(apply["data"]["optional"][9].imageShareTime === undefined);
+    console.log(apply["data"]["optional"]);
+  });
+  console.log(applies[0]["data"]["optional"][10]);
+  const appendApi = (link) => {
+    if (!link) return link;
+    if (!link.includes("upload")) return link;
+    return link.includes("https://") ? link : `https://api.glodao.io${link}`;
+  };
+  const headers = [
+    {
+      id: "id",
+      title: "id",
+    },
+    {
+      id: "name",
+      title: "hunterName",
+    },
+
+    {
+      id: "address",
+      title: "walletAddress",
+    },
+    {
+      id: "step",
+      title: "Step",
+    },
+    {
+      id: "link",
+      title: "link",
+    },
+    {
+      id: "completeTime",
+      title: "completeTime",
+    },
+    {
+      id: "feedback",
+      title: "feecback",
+    },
+    {
+      id: "imageShareTime",
+      title: "imageShareTime",
+    },
+    {
+      id: "mail",
+      title: "mail",
+    },
+  ];
+
+  await exportDataToCsv(
+    applies.map((apply) => ({
+      ...apply,
+      name: apply.hunter.name,
+      address: apply.hunter.address,
+      step: getStepNumber(apply.data["optional"]) + " trên 11",
+      link: appendApi(apply.data["optional"][9].link),
+      feedback: apply.data["optional"][10].link,
+      imageShareTime: apply.data["optional"][9].shareTime
+        ? moment(apply.data["optional"][9].shareTime)
+        : "null",
+      mail: apply.data["optional"][0].link,
+    })),
+    headers,
+    `realbox.csv`
+  );
+};
+
+async function coinmap() {
+  const applies = await strapi.services.apply.find({
+    task: "63498397e701da536d18e5fc",
+    status: "completed",
+  });
+  console.log(applies.length);
+  const sample = applies[0];
+  console.log(sample);
+  let headers = [
+    { id: "bounty", title: "bounty" },
+    { id: "commissionRate", title: "commissionRate" },
+    { id: "campaignCode", title: "campaignCode" },
+    { id: "status", title: "status" },
+    { id: "referrerCode", title: "referrerCode" },
+    { id: "completeTime", title: "completeTime" },
+    { id: "walletAddress", title: "walletAddress" },
+    { id: "id", title: "id" },
+    { id: "name", title: "name" },
+    { id: "maxCorrect", title: "maxCorrect" },
+    { id: "numOfQuiz", title: "numOfQuiz" },
+  ];
+  // console.log(sample.data["quiz"][0]);
+  // const record = sample.data["quiz"][0].recordId;
+  // const recordabc = await strapi.services["quiz-answer-record"].findOne({
+  //   id: record,
+  // });
+  // console.log(recordabc);
+  // console.log(recordabc.correctAnswerCount);
+  // console.log(recordabc.history.length);
+  let data = [];
+  for (let index = 0; index < applies.length; index++) {
+    const element = applies[index];
+    const record = element.data["quiz"][0].recordId;
+    const recordabc = await strapi.services["quiz-answer-record"].findOne({
+      id: record,
+    });
+    data.push({
+      ...element,
+      maxCorrect: recordabc.correctAnswerCount,
+      numOfQuiz: recordabc.history.length,
+      name: element.hunter.name,
+    });
+  }
+
+  await exportDataToCsv(data, headers, `coinmap.csv`);
+}
+
+const initAllPlatformToUserAndTask = async () => {};
+
+const checkSabbir = async () => {
+  const user = await strapi.services.hunter.findOne({
+    id: "6322d319eba2990785d1eebd",
+  });
+  console.log(user);
+};
+
+// const updateUserPlatform = async () => {
+//   const users = await strapi
+//     .query("user", "users-permissions")
+//     .find({ _limit: -1 });
+//   console.log(users.length);
+//   const chunks = _.chunk(users, 12);
+//   let index = 0;
+//   for (const subChunk of chunks) {
+//     index = index + 1;
+//     await Promise.all(
+//       subChunk.map((user) => {
+//         return strapi.query("user", "users-permissions").update(
+//           { id: user.id },
+//           {
+//             platform: "gld",
+//           }
+//         );
+//       })
+//     ).then(() => {
+//       console.log("batch user update completed", index);
+//     });
+//   }
+// };
+
+// const updateTaskPlatform = async () => {
+//   const tasks = await strapi.services.task.find({ _limit: -1 });
+//   console.log(tasks.length);
+//   const chunks = _.chunk(tasks, 12);
+//   let index = 0;
+//   for (const subChunk of chunks) {
+//     index = index + 1;
+//     await Promise.all(
+//       subChunk.map((task) => {
+//         return strapi.services.task.update(
+//           { id: task.id },
+//           {
+//             platform: "gld",
+//           }
+//         );
+//       })
+//     ).then(() => {
+//       console.log("batch task update completed", index);
+//     });
+//   }
+// };
+
+// const updateApplyPlatform = async () => {
+//   let applies = [];
+//   const limit = 5000;
+//   let _start = 0;
+//   let index = 1;
+//   do {
+//     console.log(index);
+//     const res = await strapi.services.apply.find({
+//       _limit: limit,
+//       _start,
+//     });
+//     applies = applies.concat(res);
+//     _start += limit;
+//     if (res.length < limit) break;
+//     index++;
+//   } while (true);
+//   const chunks = _.chunk(applies, 99);
+//   index = 0;
+//   for (const subChunk of chunks) {
+//     index = index + 1;
+//     await Promise.all(
+//       subChunk.map((apply) => {
+//         return strapi.services.apply.update(
+//           { id: apply.id },
+//           {
+//             platform: "gld",
+//             IsCreatedOnTaskPlatform: true,
+//           }
+//         );
+//       })
+//     ).then(() => {
+//       console.log("batch apply update completed", index);
+//     });
+//   }
+// };
+
+const checklearn = async () => {
+  const ask = await strapi.services.task.findOne({
+    id: "63777a6b64bbd7029012f3fd",
+  });
+  console.log(ask);
+  const applies = await strapi.services.apply.find({
+    task: "63777a6b64bbd7029012f3fd",
+  });
+  console.log(applies.length);
+  console.log(applies.filter((applu) => applu.status === "processing").length);
+  console.log(applies.filter((applu) => applu.status === "completed").length);
+};
+
 async function main(argv) {
   // await merge2Csv();
   await initialize();
+  await checklearn();
+  // await coinmap();
+  return;
+  const headersImage = [
+    {
+      id: "id",
+      title: "id",
+    },
+    {
+      id: "name",
+      title: "name",
+    },
+    {
+      id: "url",
+      title: "url",
+    },
+    {
+      id: "createdAt",
+      title: "createdAt",
+    },
+  ];
+  await exportDataToCsv(
+    images.map((image) => ({
+      ...image,
+      url: appendApi(image.url),
+    })),
+    headersImage,
+    `realbox-image.csv`
+  );
+  await exportCsvStep();
+
+  // await duplicateGlodaoDailyTask();
+  // const tasks = await strapi.services.task.find({
+  //   _limit: -1,
+  //   missionIndex_gt: 164,
+  //   _sort: "missionIndex:asc",
+  // });
+  // console.log(tasks.length);
+  // for (let index = 0; index < tasks.length; index++) {
+  //   const element = tasks[index];
+  //   console.log(element.missionIndex);
+
+  //   await strapi.services.task.update(
+  //     {
+  //       id: element.id,
+  //     },
+  //     {
+  //       missionIndex: element.missionIndex + 1,
+  //     }
+  //   );
+  // }
+  return;
+  const alls = await strapi.services.apply.find({
+    _limit: -1,
+    task: "62f97f88a7b51f5f82c58993",
+  });
+  console.log(alls.length);
+  for (let index = 0; index < alls.length; index++) {
+    const element = alls[index];
+    await strapi.services.apply.delete({ id: element.id });
+    console.log(index);
+  }
+  // await updateAllBUSDToGLD();
   // const rs=await strapi.services.task.calculateAverageCommunityReward(10);
   // console.log(rs)
-  await distributeBUSD();
+  // await distributeBUSD();
   // await getSomethingChore();
   return;
   const allhunter = await strapi.services.hunter.find({

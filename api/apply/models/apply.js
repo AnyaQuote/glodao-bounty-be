@@ -14,17 +14,17 @@ module.exports = {
     // Called after an entry is created
     async beforeCreate(event) {
       const task = await strapi.services.task.findOne({ id: event.task });
-      if (!strapi.services.task.isTaskProcessable(task))
+      if (!(await strapi.services.task.isTaskProcessable(task)))
         throw strapi.errors.conflict(
           "Now is not the right time to do this task"
         );
 
       const platform = event.platform;
-      if (_.isEmpty(platform)) {
+      if (!platform) {
         event.platform = task.platform;
         event.isCreatedOnTaskPlatform = true;
       } else {
-        event.isCreatedOnTaskPlatform = _.isEqual(platform, task.platform);
+        event.isCreatedOnTaskPlatform = platform === task.platform;
       }
       event.status = "processing";
       event.ID = `${event.hunter}_${event.task}`;

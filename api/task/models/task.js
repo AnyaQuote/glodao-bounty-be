@@ -59,7 +59,8 @@ module.exports = {
           error: { params, error },
         });
       }
-      if (data && data.platform) delete data.platform;
+      delete data.platform;
+      // if (data && data.platform) delete data.platform;
     },
   },
 };
