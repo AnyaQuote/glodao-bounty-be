@@ -61,8 +61,8 @@ module.exports = {
       params,
       { task: taskId, hunter: hunterId, poolType, id, independentReferrerCode }
     ) {
-      // await strapi.services.task.updateTaskTotalParticipantsById(taskId);
-      // await strapi.services.task.updateTaskCompletedParticipantsById(taskId);
+      await strapi.services.task.updateTaskTotalParticipantsById(taskId);
+      await strapi.services.task.updateTaskCompletedParticipantsById(taskId);
       await strapi.services.task.updateTaskParticipantFromTwitter(
         taskId,
         hunterId
