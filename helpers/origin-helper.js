@@ -11,22 +11,44 @@ const getPlatformFromOrigin = (origin) => {
     case "http://localhost:2618":
       if (openLocalhost) return "dev";
       else return "unknown";
-    case "https://app.glodao.io":
-    case "https://app-voting.glodao.io":
-    case "https://dev-bounty.glodao.io":
-    case "https://dev-dao-voting.netlify.app":
-    case "https://glodao.io":
-    case "https://dev-voting.glodao.io":
-      return "gld";
     case "https://bounty-dev.yggsea.live":
+      return "ygg";
+      break;
     case "https://voting-dev.yggsea.live":
-    case "https://yggsea.io":
+      return "ygg";
+      break;
     case "https://dev.yggsea.live":
+      return "ygg";
+      break;
     case "https://staging.yggsea.live":
+      return "ygg";
+      break;
     case "https://dev.api-yggsea.com":
+      return "ygg";
+      break;
     case "https://yggsea.io":
+      return "ygg";
+      break;
     case "https://yggsea.org":
       return "ygg";
+    case "https://app.glodao.io":
+      return "gld";
+      break;
+    case "https://app-voting.glodao.io":
+      return "gld";
+      break;
+    case "https://dev-bounty.glodao.io":
+      return "gld";
+      break;
+    case "https://dev-dao-voting.netlify.app":
+      return "gld";
+      break;
+    case "https://glodao.io":
+      return "gld";
+      break;
+    case "https://dev-voting.glodao.io":
+      return "gld";
+      break;
     default:
       return "unknown";
   }
