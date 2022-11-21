@@ -98,12 +98,7 @@
       "type": "string"
     },
     "platform": {
-      "type": "enumeration",
-      "enum": [
-        "ygg",
-        "gld",
-        "dev"
-      ]
+      "type": "string"
     }
   }
 }
