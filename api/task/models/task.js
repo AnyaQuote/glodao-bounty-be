@@ -61,6 +61,7 @@ module.exports = {
         });
       }
       delete data.platform;
+      delete data.realPlatform;
       // if (data && data.platform) delete data.platform;
     },
   },
