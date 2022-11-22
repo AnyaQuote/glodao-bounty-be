@@ -99,6 +99,9 @@
     },
     "platform": {
       "type": "string"
+    },
+    "realPlatform": {
+      "type": "string"
     }
   }
 }

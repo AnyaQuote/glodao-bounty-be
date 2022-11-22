@@ -7,7 +7,7 @@ module.exports = async (ctx, next) => {
   const platform = getPlatformFromContext(ctx);
   switch (platform) {
     case "ygg":
-      ctx.query["platform"] = "ygg";
+      ctx.query["realPlatform"] = "ygg";
       break;
     case "unknown":
       return ctx.forbidden("This origin is not allowed.");

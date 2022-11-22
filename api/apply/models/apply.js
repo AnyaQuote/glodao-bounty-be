@@ -21,10 +21,10 @@ module.exports = {
 
       const platform = event.platform;
       if (!platform) {
-        event.platform = task.platform;
+        event.platform = task.realPlatform;
         event.isCreatedOnTaskPlatform = true;
       } else {
-        event.isCreatedOnTaskPlatform = platform === task.platform;
+        event.isCreatedOnTaskPlatform = platform === task.realPlatform;
       }
       event.status = "processing";
       event.ID = `${event.hunter}_${event.task}`;
@@ -85,6 +85,14 @@ module.exports = {
       //     { poolType: "community" }
       //   );
       // }
+    },
+
+    async beforeUpdate(params, data) {
+      console.log("call update apply", params);
+      console.log("call update apply", data);
+
+      delete data.platform;
+      // if (data && data.platform) delete data.platform;
     },
 
     async afterUpdate(params, event) {

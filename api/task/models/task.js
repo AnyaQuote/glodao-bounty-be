@@ -43,6 +43,7 @@ module.exports = {
           throw strapi.errors.conflict(EXCEEDED_MISSION_LIMIT);
         }
       }
+      event.realPlatform = event.platform;
     },
 
     async beforeUpdate(params, data) {
