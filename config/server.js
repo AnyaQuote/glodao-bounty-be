@@ -9,8 +9,8 @@ module.exports = ({ env }) => ({
   cron: {
     enabled: true,
   },
-  // url:
-  //   env("NODE_ENV") === "production"
-  //     ? "https://api.glodao.io"
-  //     : "https://dev-api.glodao.io",
+  url:
+    env("NODE_ENV") === "production"
+      ? "https://api.glodao.io"
+      : "https://dev-api.glodao.io",
 });
