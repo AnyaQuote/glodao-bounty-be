@@ -7,6 +7,9 @@ const _ = require("lodash");
 
 module.exports = {
   lifecycles: {
+    async beforeCreate(event) {
+      event.realPlatform = event.platform;
+    },
     async afterCreate(result) {
       const newUser = result;
       const userType = "both";

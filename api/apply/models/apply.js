@@ -22,10 +22,12 @@ module.exports = {
       const platform = event.platform;
       if (!platform) {
         event.platform = task.realPlatform;
-        event.isCreatedOnTaskPlatform = true;
-      } else {
-        event.isCreatedOnTaskPlatform = platform === task.realPlatform;
+        event.realPlatform = task.realPlatform;
       }
+      event.realPlatform = task.realPlatform;
+
+      event.isCreatedOnTaskPlatform = platform === task.realPlatform;
+
       event.status = "processing";
       event.ID = `${event.hunter}_${event.task}`;
 

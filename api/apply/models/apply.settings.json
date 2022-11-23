@@ -76,6 +76,9 @@
     },
     "isCreatedOnTaskPlatform": {
       "type": "boolean"
+    },
+    "realPlatform": {
+      "type": "string"
     }
   }
 }

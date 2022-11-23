@@ -107,12 +107,19 @@
     },
     "platform": {
       "type": "enumeration",
-      "enum": ["ygg", "gld", "dev"]
+      "enum": [
+        "ygg",
+        "gld",
+        "dev"
+      ]
     },
     "accessTokenYgg": {
       "type": "string"
     },
     "accessTokenSecretYgg": {
+      "type": "string"
+    },
+    "realPlatform": {
       "type": "string"
     }
   }
