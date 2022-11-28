@@ -1,6 +1,7 @@
 "use strict";
 const moment = require("moment");
 const { chunk } = require("lodash");
+const _ = require("lodash");
 const {
   getUserTimelineByScreenName,
   getTweetData,
@@ -16,7 +17,6 @@ const { getTweetIdFromLink } = require("../../helpers/twitter-helper");
  *
  * See more details here: https://strapi.io/documentation/developer-docs/latest/setup-deployment-guides/configurations.html#cron-tasks
  */
-
 module.exports = {
   "0 0 * * *": {
     task: async () => {

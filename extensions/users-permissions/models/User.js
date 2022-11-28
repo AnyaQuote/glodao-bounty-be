@@ -7,6 +7,9 @@ const _ = require("lodash");
 
 module.exports = {
   lifecycles: {
+    async beforeCreate(event) {
+      event.realPlatform = event.platform;
+    },
     async afterCreate(result) {
       const newUser = result;
       const userType = "both";
@@ -21,6 +24,27 @@ module.exports = {
         await strapi.services["project-owner"].delete({
           id: result.projectOwner.id,
         });
+    },
+
+    async beforeUpdate(params, data) {
+      console.log("call update user", params);
+      console.log("call update user", data);
+      delete data.platform;
+    },
+
+    async afterUpdate(result, params, data) {
+      if (result.hunter) {
+        await strapi.services.hunter.update(
+          { id: result.hunter.id },
+          { platform: result.platform }
+        );
+      }
+      if (result.projectOwner) {
+        await strapi.services["project-owner"].update(
+          { id: result.projectOwner.id },
+          { platform: result.platform }
+        );
+      }
     },
   },
 };

@@ -54,14 +54,29 @@ const updateHunterTaskUniqueId = async (hunter, taskUniqueId) => {
   }
 };
 
-const updateUserToken = async (userId, accessToken, accessTokenSecret) => {
-  return await strapi.query("user", "users-permissions").update(
-    { id: userId },
-    {
-      accessToken: accessToken,
-      accessTokenSecret: accessTokenSecret,
-    }
-  );
+const updateUserToken = async (
+  userId,
+  accessToken,
+  accessTokenSecret,
+  platform
+) => {
+  if (platform === "ygg" || platform === "dev") {
+    return await strapi.query("user", "users-permissions").update(
+      { id: userId },
+      {
+        accessTokenYgg: accessToken,
+        accessTokenSecretYgg: accessTokenSecret,
+      }
+    );
+  } else {
+    return await strapi.query("user", "users-permissions").update(
+      { id: userId },
+      {
+        accessToken: accessToken,
+        accessTokenSecret: accessTokenSecret,
+      }
+    );
+  }
 };
 
 const updateUserDiscordId = async (userId, discordId) => {

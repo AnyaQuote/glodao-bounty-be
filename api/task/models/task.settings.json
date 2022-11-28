@@ -98,13 +98,13 @@
       "type": "string"
     },
     "platform": {
-      "type": "enumeration",
-      "enum": [
-        "ygg",
-        "gld",
-        "dev"
-      ],
-      "default": "gld"
+      "type": "string"
+    },
+    "realPlatform": {
+      "type": "string"
+    },
+    "priorityRatio": {
+      "type": "decimal"
     }
   }
 }

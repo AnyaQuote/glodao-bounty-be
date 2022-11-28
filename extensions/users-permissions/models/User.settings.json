@@ -111,13 +111,15 @@
         "ygg",
         "gld",
         "dev"
-      ],
-      "default": "gld"
+      ]
     },
     "accessTokenYgg": {
       "type": "string"
     },
     "accessTokenSecretYgg": {
+      "type": "string"
+    },
+    "realPlatform": {
       "type": "string"
     }
   }

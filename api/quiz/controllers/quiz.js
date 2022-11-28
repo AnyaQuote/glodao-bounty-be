@@ -28,6 +28,16 @@ module.exports = {
         1
       );
     }
+    try {
+      // console.log(quiz);
+      const maxAnswerLength = quiz.answer.length;
+      console.log("maxanswerlength", maxAnswerLength);
+      if (size > maxAnswerLength) size = maxAnswerLength;
+    } catch (error) {
+      console.log(error);
+    }
+    console.log(answer.length);
+    console.log(size);
     if (answer.length < size) {
       return ctx.badRequest("Invalid number of answers");
     }

@@ -15,6 +15,15 @@ const { getAbsoluteServerUrl } = require("strapi-utils");
 const jwt = require("jsonwebtoken");
 const { generateRandomString } = require("../../../helpers");
 
+const consumer_key = process.env.CONSUMER_KEY;
+const consumer_secret = process.env.CONSUMER_SECRET;
+
+const consumer_key_dev = process.env.CONSUMER_KEY_DEV;
+const consumer_secret_dev = process.env.CONSUMER_SECRET_DEV;
+
+const consumer_key_ygg = process.env.CONSUMER_KEY_YGG;
+const consumer_secret_ygg = process.env.CONSUMER_SECRET_YGG;
+
 /**
  * Connect thanks to a third-party provider.
  *
@@ -26,7 +35,11 @@ const { generateRandomString } = require("../../../helpers");
  */
 
 const connect = (provider, query) => {
+  console.log("fetch user");
+  console.log(query);
+
   const access_token = query.access_token || query.code || query.oauth_token;
+  const platform = query.platform;
   let referrerCode = _.get(query, "referrerCode", "######");
   // If connected from dao-voting, userType will have value of 'voting'
   const userType = _.get(query, "userType", "bounty");
@@ -38,6 +51,7 @@ const connect = (provider, query) => {
 
     // Get the profile.
     getProfile(provider, query, async (err, profile) => {
+      console.log(query);
       if (err) {
         return reject([null, err]);
       }
@@ -78,18 +92,25 @@ const connect = (provider, query) => {
 
         if (!_.isEmpty(user)) {
           const { accessToken, accessTokenSecret } = profile;
-          let updatedUser = user;
-          if (!_.isEqual(user.accessToken, accessToken)) {
-            try {
-              updatedUser = await strapi.services.hunter.updateUserToken(
-                user.id,
-                accessToken,
-                accessTokenSecret
-              );
-            } catch (error) {
-              return reject([null, error]);
-            }
+          if (platform === "ygg") {
+            profile.accessTokenYgg = accessToken;
+            profile.accessTokenSecretYgg = accessTokenSecret;
+            delete profile.accessToken;
+            delete profile.accessTokenSecret;
           }
+          let updatedUser = user;
+          // if (!_.isEqual(user.accessToken, accessToken)) {
+          try {
+            updatedUser = await strapi.services.hunter.updateUserToken(
+              user.id,
+              accessToken,
+              accessTokenSecret,
+              platform
+            );
+          } catch (error) {
+            return reject([null, error]);
+          }
+          // }
           // For existing user who only have linked hunter
           // This will check and create linked project owner
           // when the userType = voting,
@@ -106,6 +127,17 @@ const connect = (provider, query) => {
           // ==============================================
           return resolve([updatedUser, null]);
         } else {
+          console.log(profile);
+          if (platform === "ygg" || platform === "dev") {
+            profile.accessTokenYgg = profile.accessToken;
+            profile.accessTokenSecretYgg = profile.accessTokenSecret;
+            delete profile.accessToken;
+            delete profile.accessTokenSecret;
+            profile.platform = "ygg";
+          } else {
+            profile.platform = platform;
+          }
+          console.log(profile);
           if (
             !_.isEmpty(_.find(users, (user) => user.provider !== provider)) &&
             advanced.unique_email
@@ -141,10 +173,13 @@ const connect = (provider, query) => {
           let afterRemovePrivateDataUser = afterCreatedUser;
           delete afterRemovePrivateDataUser.accessToken;
           delete afterRemovePrivateDataUser.accessTokenSecret;
+          delete afterRemovePrivateDataUser.accessTokenYgg;
+          delete afterRemovePrivateDataUser.accessTokenSecretYgg;
 
           return resolve([afterRemovePrivateDataUser, null]);
         }
       } catch (err) {
+        console.log(err);
         return reject([null, err]);
       }
     });
@@ -336,11 +371,25 @@ const getProfile = async (provider, query, callback) => {
       break;
     }
     case "twitter": {
+      console.log(query);
+      let key = consumer_key;
+      let secret = consumer_secret;
+      if (query.platform) {
+        if (query.platform === "dev") {
+          key = consumer_key_dev;
+          secret = consumer_secret_dev;
+          console.log("dev");
+        } else if (query.platform === "ygg") {
+          key = consumer_key_ygg;
+          secret = consumer_secret_ygg;
+          console.log("ygg");
+        }
+      }
       const twitter = purest({
         provider: "twitter",
         config: purestConfig,
-        key: grant.twitter.key,
-        secret: grant.twitter.secret,
+        key: key,
+        secret: secret,
       });
 
       twitter

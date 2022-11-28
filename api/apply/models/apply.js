@@ -14,10 +14,20 @@ module.exports = {
     // Called after an entry is created
     async beforeCreate(event) {
       const task = await strapi.services.task.findOne({ id: event.task });
-      if (!strapi.services.task.isTaskProcessable(task))
+      if (!(await strapi.services.task.isTaskProcessable(task)))
         throw strapi.errors.conflict(
           "Now is not the right time to do this task"
         );
+
+      const platform = event.platform;
+      if (!platform) {
+        event.platform = task.realPlatform;
+        event.realPlatform = task.realPlatform;
+      }
+      event.realPlatform = task.realPlatform;
+
+      event.isCreatedOnTaskPlatform = platform === task.realPlatform;
+
       event.status = "processing";
       event.ID = `${event.hunter}_${event.task}`;
 
@@ -53,8 +63,8 @@ module.exports = {
       params,
       { task: taskId, hunter: hunterId, poolType, id, independentReferrerCode }
     ) {
-      // await strapi.services.task.updateTaskTotalParticipantsById(taskId);
-      // await strapi.services.task.updateTaskCompletedParticipantsById(taskId);
+      await strapi.services.task.updateTaskTotalParticipantsById(taskId);
+      await strapi.services.task.updateTaskCompletedParticipantsById(taskId);
       await strapi.services.task.updateTaskParticipantFromTwitter(
         taskId,
         hunterId
@@ -77,6 +87,14 @@ module.exports = {
       //     { poolType: "community" }
       //   );
       // }
+    },
+
+    async beforeUpdate(params, data) {
+      console.log("call update apply", params);
+      console.log("call update apply", data);
+
+      delete data.platform;
+      // if (data && data.platform) delete data.platform;
     },
 
     async afterUpdate(params, event) {

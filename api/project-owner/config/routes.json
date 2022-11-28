@@ -53,7 +53,7 @@
       "path": "/project-owners/updateProjectOwnerAddress",
       "handler": "project-owner.updateProjectOwnerAddress",
       "config": {
-        "policies": ["isOwner", "isWalletUnique", "signMessage"]
+        "policies": ["isOwner", "isWalletUnique"]
       }
     }
   ]
