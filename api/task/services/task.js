@@ -321,6 +321,7 @@ const updateTask = async (ctx, missionData) => {
     priorityRewardAmount,
     data,
     metadata,
+    priorityRatio,
   } = missionData;
 
   const pool = await strapi.services["voting-pool"].findOne({
@@ -357,6 +358,7 @@ const updateTask = async (ctx, missionData) => {
       maxPriorityParticipants,
       data,
       metadata,
+      priorityRatio,
     }
   );
 };
