@@ -102,6 +102,9 @@
     },
     "realPlatform": {
       "type": "string"
+    },
+    "priorityRatio": {
+      "type": "decimal"
     }
   }
 }
