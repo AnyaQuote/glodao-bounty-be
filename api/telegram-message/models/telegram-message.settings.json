@@ -33,6 +33,9 @@
     },
     "authorUsername": {
       "type": "string"
+    },
+    "partnerPlatform": {
+      "type": "string"
     }
   }
 }

@@ -2,6 +2,38 @@
   "routes": [
     {
       "method": "GET",
+      "path": "/telegram-messages/existedTelegramId/:id",
+      "handler": "telegram-message.existedTelegramId",
+      "config": {
+        "policies": ["global::is-valid-partner-key"]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/telegram-messages/findHunter/:referralCode",
+      "handler": "telegram-message.findHunter",
+      "config": {
+        "policies": ["global::is-valid-partner-key"]
+      }
+    },
+    {
+      "method": "PATCH",
+      "path": "/telegram-messages/updateHunter/:id",
+      "handler": "telegram-message.updateHunter",
+      "config": {
+        "policies": ["global::is-valid-partner-key"]
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/telegram-messages/createMsg",
+      "handler": "telegram-message.createMsg",
+      "config": {
+        "policies": ["global::is-valid-partner-key"]
+      }
+    },
+    {
+      "method": "GET",
       "path": "/telegram-messages",
       "handler": "telegram-message.find",
       "config": {
