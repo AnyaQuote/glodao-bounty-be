@@ -1,0 +1,22 @@
+{
+  "kind": "collectionType",
+  "collectionName": "partner_platform_keys",
+  "info": {
+    "name": "PartnerPlatformKey"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "partner": {
+      "type": "string"
+    },
+    "key": {
+      "type": "uid",
+      "targetField": "partner"
+    }
+  }
+}
