@@ -1,0 +1,50 @@
+{
+  "kind": "collectionType",
+  "collectionName": "telegram_bot_logs",
+  "info": {
+    "name": "TelegramBotLog",
+    "description": ""
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "userId": {
+      "type": "string"
+    },
+    "chatId": {
+      "type": "string"
+    },
+    "text": {
+      "type": "string"
+    },
+    "messageId": {
+      "type": "string"
+    },
+    "date": {
+      "type": "datetime"
+    },
+    "chatUsername": {
+      "type": "string"
+    },
+    "authorUsername": {
+      "type": "string"
+    },
+    "partnerPlatform": {
+      "type": "string"
+    },
+    "user": {
+      "plugin": "users-permissions",
+      "model": "user"
+    },
+    "hunter": {
+      "model": "hunter"
+    },
+    "log": {
+      "type": "text"
+    }
+  }
+}

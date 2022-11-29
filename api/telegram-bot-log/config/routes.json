@@ -1,0 +1,52 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/telegram-bot-logs",
+      "handler": "telegram-bot-log.find",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/telegram-bot-logs/count",
+      "handler": "telegram-bot-log.count",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/telegram-bot-logs/:id",
+      "handler": "telegram-bot-log.findOne",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/telegram-bot-logs",
+      "handler": "telegram-bot-log.create",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/telegram-bot-logs/:id",
+      "handler": "telegram-bot-log.update",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/telegram-bot-logs/:id",
+      "handler": "telegram-bot-log.delete",
+      "config": {
+        "policies": []
+      }
+    }
+  ]
+}
