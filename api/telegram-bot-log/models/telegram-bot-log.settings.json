@@ -45,6 +45,12 @@
     },
     "log": {
       "type": "text"
+    },
+    "jsonLog": {
+      "type": "json"
+    },
+    "type": {
+      "type": "string"
     }
   }
 }

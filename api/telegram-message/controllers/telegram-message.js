@@ -12,6 +12,15 @@ const countId = async (ctx) => {
 
 const existedTelegramId = async (ctx) => {
   const { telegramId } = ctx.params;
+  await strapi.services["telegram-bot-log"].create({
+    log: "Check existed telegram id",
+    jsonLog: {
+      telegramId: telegramId,
+    },
+    userId: telegramId,
+    type: "existedTelegramId",
+    partnerPlatform: ctx.params["partnerPlatform"],
+  });
   return (
     (await strapi.query("user", "users-permissions").count({ telegramId })) > 0
   );
@@ -20,7 +29,30 @@ const existedTelegramId = async (ctx) => {
 const findHunter = async (ctx) => {
   const { referralCode } = ctx.params;
   const hunter = await strapi.services.hunter.findOne({ referralCode });
-  if (!hunter) return {};
+  if (!hunter) {
+    await strapi.services["telegram-bot-log"].create({
+      log: "Find hunter",
+      jsonLog: {
+        referralCode: referralCode,
+      },
+      type: "findHunter",
+      partnerPlatform: ctx.params["partnerPlatform"],
+    });
+    return {};
+  }
+  await strapi.services["telegram-bot-log"].create({
+    hunter: hunter.id,
+    log: "Find hunter",
+    jsonLog: {
+      id: hunter.id,
+      userId: _.get(hunter, "user.id"),
+      referrerCode: hunter.referrerCode,
+      telegramId: _.get(hunter, "user.telegramId"),
+      referralCode,
+    },
+    type: "findHunter",
+    partnerPlatform: ctx.params["partnerPlatform"],
+  });
   return {
     id: hunter.id,
     userId: _.get(hunter, "user.id"),
@@ -47,6 +79,18 @@ const createMsg = async (ctx) => {
     messageId: `${messageId}`,
     date: moment(date * 1000).toISOString(),
   });
+  await strapi.services["telegram-bot-log"].create({
+    userId: `${userId}`,
+    chatId: `${chatId}`,
+    text,
+    authorUsername,
+    chatUsername,
+    messageId: `${messageId}`,
+    date: moment(date * 1000).toISOString(),
+    partnerPlatform: ctx.params["partnerPlatform"],
+    log: "Create new message",
+    type: "createMsg",
+  });
 };
 
 const updateHunter = async (ctx) => {
@@ -60,6 +104,18 @@ const updateHunter = async (ctx) => {
       referrerCode,
     }
   );
+  await strapi.services["telegram-bot-log"].create({
+    userId: telegramId,
+    hunter: id,
+    log: "Update hunter",
+    jsonLog: {
+      telegramId: telegramId,
+      referralCode: referralCode,
+      referrerCode: referrerCode,
+    },
+    type: "updateHunter",
+    partnerPlatform: ctx.params["partnerPlatform"],
+  });
 };
 
 module.exports = {

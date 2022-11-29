@@ -13,15 +13,17 @@ module.exports = async (ctx, next) => {
       "The server understands the request but you are not authorized to access this resource"
     );
 
-  const exsitedPartner = await strapi.services["partner-platform-key"].count({
+  const exsitedPartner = await strapi.services["partner-platform-key"].findOne({
     key: PARTNER_API_KEY,
   });
 
-  if (exsitedPartner === 0) {
+  if (!exsitedPartner) {
     return ctx.forbidden(
       "The server understands the request but you are not authorized to access this resource"
     );
   }
+
+  ctx.params["partnerPlatform"] = exsitedPartner.partner;
 
   return await next();
 };
