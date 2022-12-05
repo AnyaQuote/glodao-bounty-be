@@ -62,36 +62,47 @@ const findHunter = async (ctx) => {
   };
 };
 const createMsg = async (ctx) => {
-  const {
-    userId,
-    chatId,
-    text,
-    authorUsername,
-    chatUsername,
-    messageId,
-    date,
-  } = ctx.request.body;
-  await strapi.services["telegram-message"].create({
-    userId: `${userId}`,
-    chatId: `${chatId}`,
-    text,
-    authorUsername,
-    chatUsername,
-    messageId: `${messageId}`,
-    date: moment(date * 1000).toISOString(),
-  });
-  await strapi.services["telegram-bot-log"].create({
-    userId: `${userId}`,
-    chatId: `${chatId}`,
-    text,
-    authorUsername,
-    chatUsername,
-    messageId: `${messageId}`,
-    date: moment(date * 1000).toISOString(),
-    partnerPlatform: ctx.params["partnerPlatform"],
-    log: "Create new message",
-    type: "createMsg",
-  });
+  try {
+    const {
+      userId,
+      chatId,
+      text,
+      authorUsername,
+      chatUsername,
+      messageId,
+      date,
+    } = ctx.request.body;
+    await strapi.services["telegram-message"].create({
+      userId: `${userId}`,
+      chatId: `${chatId}`,
+      text,
+      authorUsername,
+      chatUsername,
+      messageId: `${messageId}`,
+      date: moment(date * 1000).toISOString(),
+    });
+    await strapi.services["telegram-bot-log"].create({
+      userId: `${userId}`,
+      chatId: `${chatId}`,
+      text,
+      authorUsername,
+      chatUsername,
+      messageId: `${messageId}`,
+      date: moment(date * 1000).toISOString(),
+      partnerPlatform: ctx.params["partnerPlatform"],
+      log: "Create new message",
+      type: "createMsg",
+    });
+    return {
+      code: 200,
+      status: true,
+    };
+  } catch (error) {
+    return {
+      code: 500,
+      status: false,
+    };
+  }
 };
 
 const updateHunter = async (ctx) => {
