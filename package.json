@@ -48,6 +48,7 @@
     "strapi-plugin-upload": "3.6.1",
     "strapi-plugin-users-permissions": "3.6.1",
     "strapi-provider-email-sendgrid": "^3.6.10",
+    "strapi-provider-upload-aws-s3": "^3.6.11",
     "strapi-utils": "3.6.1",
     "telegraf": "^4.8.3",
     "web3": "^1.7.1",
