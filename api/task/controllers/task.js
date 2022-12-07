@@ -6,6 +6,16 @@ const { get, isEqual, isEmpty } = require("lodash");
  * to customize this controller
  */
 
+const partnerDeleteTask = async (ctx) => {
+  const { id, partnerPlatform } = ctx.params;
+  const task = await strapi.services.task.findOne({ id });
+  if (!task) return ctx.badRequest("Invalid ID");
+  if (task.realPlatform == partnerPlatform) {
+    return await strapi.services.task.delete({ id });
+  }
+  return ctx.forbidden("You are not authorized to access this resource");
+};
+
 module.exports = {
   exportUsers: async (ctx) => {
     const { id, type } = get(ctx, "query", {});
@@ -125,4 +135,5 @@ module.exports = {
       stepCode,
     });
   },
+  partnerDeleteTask,
 };

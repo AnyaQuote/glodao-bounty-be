@@ -81,6 +81,14 @@
       }
     },
     {
+      "method": "DELETE",
+      "path": "/tasks/partnerDeleteTask/:id",
+      "handler": "task.partnerDeleteTask",
+      "config": {
+        "policies": ["global::is-valid-partner-key"]
+      }
+    },
+    {
       "method": "GET",
       "path": "/tasks/:id",
       "handler": "task.findOne",
