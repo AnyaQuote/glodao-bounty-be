@@ -1,5 +1,5 @@
 "use strict";
-
+const _ = require("lodash");
 /**
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#lifecycle-hooks)
  * to customize this model
@@ -63,6 +63,30 @@ module.exports = {
       delete data.platform;
       delete data.realPlatform;
       // if (data && data.platform) delete data.platform;
+    },
+
+    async beforeDelete(params) {
+      const { id } = params;
+      const applies = await strapi.apply.find({
+        _limit: -1,
+        task: id,
+      });
+      const chunks = _.chunk(applies, 100);
+      for (const subChunksOfApplies of chunks) {
+        try {
+          await Promise.all(
+            subChunksOfApplies.map((apply) => {
+              return strapi.services.apply.delete({ id: apply.id });
+            })
+          ).then(() => {
+            console.log("batch completed");
+          });
+        } catch (error) {
+          console.log("\x1b[31m", "Wasted");
+          console.log("\x1b[37m", error);
+          console.log("\x1b[31m", "Wasted");
+        }
+      }
     },
   },
 };
