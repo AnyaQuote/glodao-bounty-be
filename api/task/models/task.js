@@ -66,11 +66,14 @@ module.exports = {
     },
 
     async beforeDelete(params) {
-      const { id } = params;
+      const { id, _id } = params;
+      const taskId = id || _id;
+      if (!taskId) return;
       console.log(params);
+      console.log(taskId);
       const applies = await strapi.services.apply.find({
         _limit: -1,
-        task: id,
+        task: taskId,
       });
       const chunks = _.chunk(applies, 100);
       for (const subChunksOfApplies of chunks) {
