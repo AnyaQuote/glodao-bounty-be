@@ -67,6 +67,7 @@ module.exports = {
 
     async beforeDelete(params) {
       const { id } = params;
+      console.log(params);
       const applies = await strapi.services.apply.find({
         _limit: -1,
         task: id,
