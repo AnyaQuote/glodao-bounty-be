@@ -149,7 +149,11 @@ const setupBot = () => {
           urlEntities[0].offset + urlEntities[0].length
         )
       );
-      if (host !== HOST || !searchParams || !searchParams.get("ref"))
+      if (
+        (host !== HOST && host !== "yggsea.io") ||
+        !searchParams ||
+        !searchParams.get("ref")
+      )
         return ctx.reply(MESSAGES.INVALID_REF_URL_ERROR);
 
       const referralCode = searchParams.get("ref");
@@ -266,7 +270,7 @@ const setupBot = () => {
           urlEntities[0].offset + urlEntities[0].length
         )
       );
-      if (host !== HOST) return;
+      if (host !== HOST && host !== "yggsea.io") return;
       if (!searchParams || !searchParams.get("ref"))
         return ctx.reply(MESSAGES.INVALID_REF_URL_ERROR);
 
