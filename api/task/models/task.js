@@ -71,24 +71,26 @@ module.exports = {
       if (!taskId) return;
       console.log(params);
       console.log(taskId);
-      const applies = await strapi.services.apply.find({
-        _limit: -1,
-        task: taskId,
-      });
-      const chunks = _.chunk(applies, 100);
-      for (const subChunksOfApplies of chunks) {
-        try {
-          await Promise.all(
-            subChunksOfApplies.map((apply) => {
-              return strapi.services.apply.delete({ id: apply.id });
-            })
-          ).then(() => {
-            console.log("batch completed");
-          });
-        } catch (error) {
-          console.log("\x1b[31m", "Wasted");
-          console.log("\x1b[37m", error);
-          console.log("\x1b[31m", "Wasted");
+      if (taskId) {
+        const applies = await strapi.services.apply.find({
+          _limit: -1,
+          task: taskId,
+        });
+        const chunks = _.chunk(applies, 100);
+        for (const subChunksOfApplies of chunks) {
+          try {
+            await Promise.all(
+              subChunksOfApplies.map((apply) => {
+                return strapi.services.apply.delete({ id: apply.id });
+              })
+            ).then(() => {
+              console.log("batch completed");
+            });
+          } catch (error) {
+            console.log("\x1b[31m", "Wasted");
+            console.log("\x1b[37m", error);
+            console.log("\x1b[31m", "Wasted");
+          }
         }
       }
     },
