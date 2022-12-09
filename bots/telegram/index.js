@@ -288,7 +288,7 @@ const setupBot = () => {
 
       if (!_.isEmpty(_.get(hunter, "user.telegramId", "")))
         return ctx.reply(
-          "This account had been linked with a Telegram account already\nIf you own the linked account, please contact GloDAO technical support for help"
+          "This account had been linked with a Telegram account already\nIf you own the linked account, please contact technical support for help"
         );
 
       await strapi.query("user", "users-permissions").update(
