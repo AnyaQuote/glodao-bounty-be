@@ -44,7 +44,10 @@ module.exports = {
       get(ctx, "query.link", "") ||
       get(ctx, "request.body.link", "") ||
       get(ctx, "params.link", "");
-    const isValid = await strapi.services.task.verifyTelegramMissionLink(link);
+    const isValid = await strapi.services.task.verifyTelegramMissionLink(
+      link,
+      ctx
+    );
     if (!isValid) {
       return ctx.badRequest("Invalid link or the bot is not in the chat yet");
     }

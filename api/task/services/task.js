@@ -6,6 +6,7 @@ const { FixedNumber } = require("@ethersproject/bignumber");
 const {
   isUserFollowChat,
   getChatFromLink,
+  getBotIdUsingPlatform,
 } = require("../../../helpers/telegram-bot-helpers");
 const { getTaskRewards } = require("../../../helpers/task-helper");
 const { getTweetData } = require("../../../helpers/twitter-helper-v1");
@@ -120,13 +121,18 @@ const exportTaskRewards = async (ctx, id) => {
  * @param {string} link telegram link
  * @returns true - link is valid and bot in the chat, otherwise false
  */
-const verifyTelegramMissionLink = async (link) => {
+const verifyTelegramMissionLink = async (link, ctx) => {
   try {
-    const BOT_ID = process.env.TELEGRAM_BOT_ID;
+    // const BOT_ID = process.env.TELEGRAM_BOT_ID;
+    const BOT_ID = getBotIdUsingPlatform(getPlatformFromContext(ctx));
     console.log(link, "link");
     console.log(getChatFromLink(link), "get chat from link");
     console.log(BOT_ID, "botid");
-    const isBotInLink = await isUserFollowChat(getChatFromLink(link), BOT_ID);
+    const isBotInLink = await isUserFollowChat(
+      getChatFromLink(link),
+      BOT_ID,
+      getPlatformFromContext(ctx)
+    );
     console.log(isBotInLink);
     if (isBotInLink) return true;
     else return false;

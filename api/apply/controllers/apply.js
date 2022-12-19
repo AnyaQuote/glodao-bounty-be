@@ -306,7 +306,8 @@ module.exports = {
           if (index === mergedTelegramTask.length - 1 && element.finished) {
             const isUserFollow = await isUserFollowChat(
               getChatFromLink(element.link),
-              element.submitedId
+              element.submitedId,
+              getPlatformFromContext(ctx)
             );
             if (!isUserFollow)
               return ctx.badRequest("Can not find user in chat");
@@ -316,7 +317,8 @@ module.exports = {
           ) {
             const isUserFollow = await isUserFollowChat(
               getChatFromLink(element.link),
-              element.submitedId
+              element.submitedId,
+              getPlatformFromContext(ctx)
             );
             if (!isUserFollow)
               return ctx.badRequest("Can not find user in chat");
