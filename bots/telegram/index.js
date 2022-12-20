@@ -8,6 +8,7 @@ const _ = require("lodash");
 const moment = require("moment");
 const MESSAGES = require("./messages");
 const argv = yargs(hideBin(process.argv)).argv;
+console.log(argv)
 const bot = new Telegraf(argv.token);
 
 const HTTP_URL_REGEX =
