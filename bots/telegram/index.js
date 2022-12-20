@@ -5,8 +5,8 @@ const { setupStrapi } = require("../../helpers/strapi-helper");
 const _ = require("lodash");
 const moment = require("moment");
 const MESSAGES = require("./messages");
-
-const bot = new Telegraf(process.env.TELEGRAM_BOT_API_TOKEN);
+const argv = yargs(hideBin(process.argv)).argv;
+const bot = new Telegraf(argv.token);
 
 const HTTP_URL_REGEX =
   /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/;
