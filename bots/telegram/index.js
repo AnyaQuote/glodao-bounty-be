@@ -1,5 +1,6 @@
 require("dotenv").config();
 const yargs = require("yargs/yargs");
+const { hideBin } = require("yargs/helpers");
 
 const { Telegraf } = require("telegraf");
 const { setupStrapi } = require("../../helpers/strapi-helper");
