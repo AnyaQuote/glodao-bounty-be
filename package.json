@@ -27,7 +27,7 @@
     "@metamask/eth-sig-util": "^4.0.0",
     "@sentry/node": "^6.19.6",
     "abi-decoder": "^2.4.0",
-    "axios": "^0.26.1",
+    "axios": "^1.2.1",
     "chai": "^4.3.6",
     "csv-writer": "^1.6.0",
     "csvtojson": "^2.0.10",

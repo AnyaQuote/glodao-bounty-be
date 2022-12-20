@@ -8,8 +8,9 @@ const _ = require("lodash");
 const moment = require("moment");
 const MESSAGES = require("./messages");
 const argv = yargs(hideBin(process.argv)).argv;
-console.log(argv)
+console.log(argv);
 const bot = new Telegraf(argv.token);
+const axios = require("axios");
 
 const HTTP_URL_REGEX =
   /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/;
@@ -17,13 +18,17 @@ const HTTP_URL_REGEX =
 const URL_REGEX =
   /[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/;
 
-const HOST = process.env.WEB_HOST;
-
+const HOST = argv.webHost || process.env.WEB_HOST;
+const API_HOST = argv.apiHost || process.env.API_HOST;
+const PARTNER_API_KEY = argv.partnerKey || process.env.PARTNER_API_KEY;
+console.log(HOST);
+console.log(API_HOST);
+console.log(PARTNER_API_KEY);
 const main = async () => {
-  await setupStrapi();
-  console.log("Strapi ready");
-  console.log(strapi.config.database.connections);
-  console.log(strapi.config.connections);
+  // await setupStrapi();
+  // console.log("Strapi ready");
+  // console.log(strapi.config.database.connections);
+  // console.log(strapi.config.connections);
   setupBot();
   console.log("Bot Ready");
 
@@ -74,13 +79,30 @@ const setupBot = () => {
       console.log(ctx.message);
       console.log(telegramId, _.get(ctx, "message.from.username", ""));
 
-      const isUsedTelegramId =
-        (await strapi
-          .query("user", "users-permissions")
-          .count({ telegramId })) > 0;
+      // const isUsedTelegramId =
+      //   (await strapi
+      //     .query("user", "users-permissions")
+      //     .count({ telegramId })) > 0;
+      const { data: isUsedTelegramId } = await axios.get(
+        `${API_HOST}/telegram-messages/existedTelegramId/${telegramId}?PARTNER_API_KEY=${PARTNER_API_KEY}`
+      );
+      console.log(isUsedTelegramId);
       if (isUsedTelegramId) return ctx.reply(MESSAGES.ALREADY_LINKED_ERROR);
 
-      const hunter = await strapi.services.hunter.findOne({ referralCode });
+      // const hunter = await strapi.services.hunter.findOne({ referralCode });
+
+      // const hunter =
+      // GET
+      // /telegram-messages/findHunter/:referralCode
+      // return hunter: {
+      // id,
+      // userId,
+      // referrerCode,
+      // telegramId,
+      //}
+      const { data: hunter } = await axios.get(
+        `${API_HOST}/telegram-messages/findHunter/${referralCode}?PARTNER_API_KEY=${PARTNER_API_KEY}`
+      );
       if (_.isEmpty(hunter)) return ctx.reply(MESSAGES.INVALID_REF_LINK_ERROR);
 
       if (!_.isEmpty(_.get(hunter, "user.telegramId", "")))
@@ -88,20 +110,37 @@ const setupBot = () => {
           "This account had been linked with a Telegram account already\nIf you own the linked Telegram account, use /unlink command to unlink the account"
         );
 
-      await strapi.query("user", "users-permissions").update(
-        { id: hunter.user.id },
+      // await strapi.query("user", "users-permissions").update(
+      //   { id: hunter.userId },
+      //   {
+      //     telegramId,
+      //     referralCode,
+      //     referrerCode: hunter.referrerCode,
+      //   }
+      // );
+      // Update hunter telegram id
+      // PATCH
+      // /telegram-messages/updateHunter/:id
+      // Request body:
+      // {
+      // telegramId, referralCode, referrerCode:hunter.referrerCode
+      // }
+
+      const { data } = await axios.patch(
+        `${API_HOST}/telegram-messages/updateHunter/${hunter.userId}?PARTNER_API_KEY=${PARTNER_API_KEY}`,
         {
           telegramId,
           referralCode,
           referrerCode: hunter.referrerCode,
         }
       );
-      return ctx.reply(
-        "Link account successfully! You can process Telegram task from now on",
-        {
-          reply_to_message_id: ctx.message.message_id,
-        }
-      );
+      if (data.status)
+        return ctx.reply(
+          "Link account successfully! You can process Telegram task from now on",
+          {
+            reply_to_message_id: ctx.message.message_id,
+          }
+        );
     } catch (error) {
       console.log(error);
       // return ctx.reply(MESSAGES.UNKNOWN_ERROR, {
@@ -162,13 +201,22 @@ const setupBot = () => {
       const referralCode = searchParams.get("ref");
 
       // Check if this telegram id had been used
-      const isUsedTelegramId =
-        (await strapi
-          .query("user", "users-permissions")
-          .count({ telegramId })) > 0;
+      // const isUsedTelegramId =
+      //   (await strapi
+      //     .query("user", "users-permissions")
+      //     .count({ telegramId })) > 0;
+
+      const { data: isUsedTelegramId } = await axios.get(
+        `${API_HOST}/telegram-messages/existedTelegramId/${telegramId}?PARTNER_API_KEY=${PARTNER_API_KEY}`
+      );
       if (isUsedTelegramId) return ctx.reply(MESSAGES.ALREADY_LINKED_ERROR);
 
-      const hunter = await strapi.services.hunter.findOne({ referralCode });
+      // const hunter = await strapi.services.hunter.findOne({ referralCode });
+      const { data: hunter } = await axios.get(
+        `${API_HOST}/telegram-messages/findHunter/${referralCode}?PARTNER_API_KEY=${PARTNER_API_KEY}`
+      );
+
+      console.log(hunter);
       if (_.isEmpty(hunter)) return ctx.reply(MESSAGES.INVALID_REF_LINK_ERROR);
 
       if (!_.isEmpty(_.get(hunter, "user.telegramId", "")))
@@ -176,17 +224,26 @@ const setupBot = () => {
           "This account had been linked with a Telegram account already\nIf you own the linked Telegram account, use /unlink command to unlink the account"
         );
 
-      await strapi.query("user", "users-permissions").update(
-        { id: hunter.user.id },
+      // await strapi.query("user", "users-permissions").update(
+      //   { id: hunter.userId },
+      //   {
+      //     telegramId,
+      //     referralCode,
+      //     referrerCode: hunter.referrerCode,
+      //   }
+      // );
+      const { data } = await axios.patch(
+        `${API_HOST}/telegram-messages/updateHunter/${hunter.userId}?PARTNER_API_KEY=${PARTNER_API_KEY}`,
         {
           telegramId,
           referralCode,
           referrerCode: hunter.referrerCode,
         }
       );
-      return ctx.reply(MESSAGES.LINK_SUCCESS, {
-        reply_to_message_id: ctx.message.message_id,
-      });
+      if (data.status)
+        return ctx.reply(MESSAGES.LINK_SUCCESS, {
+          reply_to_message_id: ctx.message.message_id,
+        });
     } catch (error) {
       console.log(error);
       // return ctx.reply(MESSAGES.UNKNOWN_ERROR, {
@@ -280,13 +337,23 @@ const setupBot = () => {
       const referralCode = searchParams.get("ref");
 
       // Check if this telegram id had been used
-      const isUsedTelegramId =
-        (await strapi
-          .query("user", "users-permissions")
-          .count({ telegramId })) > 0;
+      // const isUsedTelegramId =
+      //   (await strapi
+      //     .query("user", "users-permissions")
+      //     .count({ telegramId })) > 0;
+      const { data: isUsedTelegramId } = await axios.get(
+        `${API_HOST}/telegram-messages/existedTelegramId/${telegramId}?PARTNER_API_KEY=${PARTNER_API_KEY}`
+      );
+      console.log(isUsedTelegramId);
+
       if (isUsedTelegramId) return ctx.reply(MESSAGES.ALREADY_LINKED_ERROR);
 
-      const hunter = await strapi.services.hunter.findOne({ referralCode });
+      // const hunter = await strapi.services.hunter.findOne({ referralCode });
+      const { data: hunter } = await axios.get(
+        `${API_HOST}/telegram-messages/findHunter/${referralCode}?PARTNER_API_KEY=${PARTNER_API_KEY}`
+      );
+      console.log(hunter);
+
       if (_.isEmpty(hunter)) return ctx.reply(MESSAGES.INVALID_REF_LINK_ERROR);
 
       if (!_.isEmpty(_.get(hunter, "user.telegramId", "")))
@@ -294,17 +361,27 @@ const setupBot = () => {
           "This account had been linked with a Telegram account already\nIf you own the linked account, please contact technical support for help"
         );
 
-      await strapi.query("user", "users-permissions").update(
-        { id: hunter.user.id },
+      // await strapi.query("user", "users-permissions").update(
+      //   { id: hunter.userId },
+      //   {
+      //     telegramId,
+      //     referralCode,
+      //     referrerCode: hunter.referrerCode,
+      //   }
+      // );
+      const { data } = await axios.patch(
+        `${API_HOST}/telegram-messages/updateHunter/${hunter.userId}?PARTNER_API_KEY=${PARTNER_API_KEY}`,
         {
           telegramId,
           referralCode,
           referrerCode: hunter.referrerCode,
         }
       );
-      return ctx.reply(MESSAGES.LINK_SUCCESS, {
-        reply_to_message_id: ctx.message.message_id,
-      });
+      console.log(data)
+      if (data.status)
+        return ctx.reply(MESSAGES.LINK_SUCCESS, {
+          reply_to_message_id: ctx.message.message_id,
+        });
     } catch (error) {
       console.log(error);
       // return ctx.reply(MESSAGES.UNKNOWN_ERROR, {
@@ -325,8 +402,33 @@ const setupBot = () => {
       const { id: userId, username: authorUsername } = from;
       const { id: chatId, username: chatUsername } = chat;
       console.log(`${authorUsername} send message in ${chatUsername}: ${text}`);
-      strapi.services["telegram-message"]
-        .create({
+      // strapi.services["telegram-message"]
+      //   .create({
+      //     userId: `${userId}`,
+      //     chatId: `${chatId}`,
+      //     text,
+      //     authorUsername,
+      //     chatUsername,
+      //     messageId: `${messageId}`,
+      //     date: moment(date * 1000).toISOString(),
+      //   })
+      //   .catch((error) => {
+      //     console.log(error.data.errors, "ohno");
+      //   });
+      // POST
+      // /telegram-messages/createMsg
+      //  request body: {
+      //       userId: `${userId}`,
+      //       chatId: `${chatId}`,
+      //       text,
+      //       authorUsername,
+      //       chatUsername,
+      //       messageId: `${messageId}`,
+      //       date: moment(date * 1000).toISOString(),
+      //}
+      axios.post(
+        `${API_HOST}/telegram-messages/createMsg?PARTNER_API_KEY=${PARTNER_API_KEY}`,
+        {
           userId: `${userId}`,
           chatId: `${chatId}`,
           text,
@@ -334,10 +436,8 @@ const setupBot = () => {
           chatUsername,
           messageId: `${messageId}`,
           date: moment(date * 1000).toISOString(),
-        })
-        .catch((error) => {
-          console.log(error.data.errors, "ohno");
-        });
+        }
+      );
     } catch (error) {
       console.log(error);
     }

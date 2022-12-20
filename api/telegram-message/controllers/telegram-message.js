@@ -12,7 +12,7 @@ const countId = async (ctx) => {
 };
 
 const existedTelegramId = async (ctx) => {
-  const { telegramId } = ctx.params;
+  const { id: telegramId } = ctx.params;
   await strapi.services["telegram-bot-log"].create({
     log: "Check existed telegram id",
     jsonLog: {
@@ -108,26 +108,40 @@ const createMsg = async (ctx) => {
 const updateHunter = async (ctx) => {
   const { id } = ctx.params;
   const { telegramId, referralCode, referrerCode } = ctx.request.body;
-  await strapi.query("user", "users-permissions").update(
-    { id },
-    {
-      telegramId,
-      referralCode,
-      referrerCode,
-    }
-  );
-  await strapi.services["telegram-bot-log"].create({
-    userId: telegramId,
-    hunter: id,
-    log: "Update hunter",
-    jsonLog: {
-      telegramId: telegramId,
-      referralCode: referralCode,
-      referrerCode: referrerCode,
-    },
-    type: "updateHunter",
-    partnerPlatform: ctx.params["partnerPlatform"],
-  });
+  try {
+    await strapi.query("user", "users-permissions").update(
+      { id },
+      {
+        telegramId,
+        referralCode,
+        referrerCode,
+      }
+    );
+    try {
+      await strapi.services["telegram-bot-log"].create({
+        userId: telegramId,
+        user: id,
+        log: "Update hunter",
+        jsonLog: {
+          telegramId: telegramId,
+          referralCode: referralCode,
+          referrerCode: referrerCode,
+        },
+        type: "updateHunter",
+        partnerPlatform: ctx.params["partnerPlatform"],
+      });
+    } catch (error) {}
+    return {
+      status: true,
+      code: 200,
+    };
+  } catch (error) {
+    console.log(error);
+    return {
+      status: false,
+      code: 500,
+    };
+  }
 };
 
 module.exports = {
