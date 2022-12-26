@@ -70,7 +70,8 @@
         "referral",
         "lucky",
         "active",
-        "iat"
+        "iat",
+        "mix"
       ],
       "default": "bounty",
       "required": true
