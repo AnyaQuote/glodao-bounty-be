@@ -59,7 +59,7 @@ module.exports = {
   createTask: async (ctx) => {
     const missionData = ctx.request.body;
     const type = get(ctx, "request.body.type", "bounty");
-    if (isEqual(type, "iat")) {
+    if (isEqual(type, "iat") || isEqual(type, "mix")) {
       return await strapi.services.task.createInAppTrialTask(ctx, missionData);
     } else {
       return await strapi.services.task.createTask(ctx, missionData);
