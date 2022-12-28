@@ -476,12 +476,18 @@ const createInAppTrialTask = async (ctx, missionData) => {
     moment(endTime).isAfter(moment(votingPool.endDate)) ||
     moment(startTime).isAfter(moment(endTime))
   ) {
-    ctx.badRequest(INVALID_DATE_RANGE);
+    return ctx.badRequest(INVALID_DATE_RANGE);
   }
+
+  if (!projectOwner) return ctx.badRequest("Missing project owner");
 
   const numberOfCreatedMissions = await strapi.services.task.count({ poolId });
 
   if (numberOfCreatedMissions >= votingPool.totalMission) {
+    return ctx.forbidden(EXCEEDED_MISSION_LIMIT);
+  }
+
+  if (votingPool.usedMission >= votingPool.totalMission) {
     return ctx.forbidden(EXCEEDED_MISSION_LIMIT);
   }
 

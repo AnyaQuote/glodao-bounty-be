@@ -78,6 +78,10 @@
     },
     "projectOwner": {
       "model": "project-owner"
+    },
+    "usedMission": {
+      "type": "integer",
+      "default": 0
     }
   }
 }

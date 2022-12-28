@@ -46,6 +46,19 @@ module.exports = {
       event.realPlatform = event.platform;
     },
 
+    async afterCreate(result, data) {
+      const poolId = _.get(result, "votingPool.id", "");
+      const usedMission = _.get(result, "votingPool.usedMission", 0);
+      if (poolId) {
+        await strapi.services["voting-pool"].update(
+          { id: poolId },
+          {
+            usedMission: usedMission + 1,
+          }
+        );
+      }
+    },
+
     async beforeUpdate(params, data) {
       console.log("call update task", params);
       console.log("call update task", data);
