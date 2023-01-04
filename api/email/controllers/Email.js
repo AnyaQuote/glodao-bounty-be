@@ -76,4 +76,45 @@ module.exports = {
       ctx.send({ error: "Error sending mail cyberk" });
     }
   },
+  contactG2m: async (ctx) => {
+    try {
+      let requestBody = ctx.request.body;
+      if (typeof ctx.request.body === "string")
+        requestBody = JSON.parse(ctx.request.body);
+      const {
+        fname,
+        lname,
+        email,
+        contactNumber,
+        description,
+        interestedService,
+      } = requestBody;
+      await strapi.plugins["email"].services.email.send({
+        from: "hello@cyberk.io",
+        to: "anya.quote@gmail.com",
+        // cc: "logan@cyberk.io",
+        cc: "hoangminh881997@gmail.com",
+        subject: `[User Contact] ${email} send contact message from landing page`,
+        text: `
+        User Contact\n
+
+        Fullname: ${fname} ${lname}\n
+        Email: ${email}\n
+        Contact Number: ${contactNumber || ""}\n
+        Description: ${description || ""}\n
+        Interested Service:${interestedService || ""}\n
+        Time: ${moment()}`,
+      });
+      console.log("send email finished");
+      return {
+        status: 200,
+        message: "Email cyberk sent successfully",
+      };
+    } catch (error) {
+      console.log(error);
+      console.log(JSON.stringify(error));
+      strapi.log.debug(error);
+      ctx.send({ error: "Error sending mail cyberk" });
+    }
+  },
 };
