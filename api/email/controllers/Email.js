@@ -19,7 +19,7 @@ module.exports = {
       await strapi.plugins["email"].services.email.send({
         to: "hello@glodao.io",
         bcc: "glodao.dev@gmail.com",
-        subject: `[User Contact] ${email} send contact message from landing page`,
+        subject: `[User Contact] ${email} send contact message from GloDAO landing page`,
         text: `User Contact send from https://glodao.io\nFullname: ${fname}\nEmail: ${email}\nMessage: ${description}\nTime: ${moment()}`,
       });
       console.log("send email finished");
@@ -52,7 +52,7 @@ module.exports = {
         to: "jon_ren@cyberk.io",
         cc: "logan@cyberk.io",
         bcc: "hoangminh881997@gmail.com",
-        subject: `[User Contact] ${email} send contact message from landing page`,
+        subject: `[User Contact] ${email} send contact message from Cyberk landing page`,
         text: `
         User Contact\n
 
@@ -91,10 +91,10 @@ module.exports = {
       } = requestBody;
       await strapi.plugins["email"].services.email.send({
         from: "hello@cyberk.io",
-        to: "anya.quote@gmail.com",
-        // cc: "logan@cyberk.io",
-        cc: "hoangminh881997@gmail.com",
-        subject: `[User Contact] ${email} send contact message from landing page`,
+        to: "jon_ren@cyberk.io",
+        cc: "logan@cyberk.io",
+        bcc: "hoangminh881997@gmail.com",
+        subject: `[User Contact] ${email} send contact message from G2M landing page`,
         text: `
         User Contact\n
 
@@ -102,7 +102,7 @@ module.exports = {
         Email: ${email}\n
         Contact Number: ${contactNumber || ""}\n
         Description: ${description || ""}\n
-        Interested Service:${interestedService || ""}\n
+        Interested Service: ${interestedService || ""}\n
         Time: ${moment()}`,
       });
       console.log("send email finished");
