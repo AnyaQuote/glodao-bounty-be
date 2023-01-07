@@ -106,6 +106,9 @@
     },
     "priorityRatio": {
       "type": "decimal"
+    },
+    "transactions": {
+      "type": "json"
     }
   }
 }
