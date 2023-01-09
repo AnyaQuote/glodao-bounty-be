@@ -563,6 +563,7 @@ const updateBaseTaskIat = async (ctx, missionData) => {
     data,
     metadata,
     optionalTokens,
+    transactions,
   } = missionData;
 
   const votingPool = await strapi.services["voting-pool"].findOne({
@@ -580,28 +581,51 @@ const updateBaseTaskIat = async (ctx, missionData) => {
   ) {
     return ctx.badRequest(INVALID_DATE_RANGE);
   }
-
-  return await strapi.services.task.update(
-    { id },
-    {
-      votingPool: votingPool.id,
-      poolId,
-      name,
-      type,
-      status,
-      chainId: votingPool.chainId,
-      tokenBasePrice,
-      rewardAmount,
-      startTime,
-      endTime,
-      maxParticipants,
-      priorityRewardAmount,
-      maxPriorityParticipants,
-      data,
-      metadata,
-      optionalTokens,
-    }
-  );
+  if (transactions) {
+    return await strapi.services.task.update(
+      { id },
+      {
+        votingPool: votingPool.id,
+        poolId,
+        name,
+        type,
+        status,
+        chainId: votingPool.chainId,
+        tokenBasePrice,
+        rewardAmount,
+        startTime,
+        endTime,
+        maxParticipants,
+        priorityRewardAmount,
+        maxPriorityParticipants,
+        data,
+        metadata,
+        optionalTokens,
+        transactions,
+      }
+    );
+  } else
+    return await strapi.services.task.update(
+      { id },
+      {
+        votingPool: votingPool.id,
+        poolId,
+        name,
+        type,
+        status,
+        chainId: votingPool.chainId,
+        tokenBasePrice,
+        rewardAmount,
+        startTime,
+        endTime,
+        maxParticipants,
+        priorityRewardAmount,
+        maxPriorityParticipants,
+        data,
+        metadata,
+        optionalTokens,
+      }
+    );
 };
 
 const APP_TRIAL_TYPE = "iat";
