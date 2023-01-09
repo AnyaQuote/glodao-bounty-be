@@ -328,6 +328,7 @@ const updateTask = async (ctx, missionData) => {
     data,
     metadata,
     priorityRatio,
+    transactions,
   } = missionData;
 
   const pool = await strapi.services["voting-pool"].findOne({
@@ -346,27 +347,50 @@ const updateTask = async (ctx, missionData) => {
     return ctx.badRequest(INVALID_DATE_RANGE);
   }
 
-  return await strapi.services.task.update(
-    { id },
-    {
-      votingPool: pool.id,
-      poolId,
-      name,
-      type,
-      status,
-      chainId: pool.chainId,
-      tokenBasePrice,
-      rewardAmount,
-      startTime,
-      endTime,
-      maxParticipants,
-      priorityRewardAmount,
-      maxPriorityParticipants,
-      data,
-      metadata,
-      priorityRatio,
-    }
-  );
+  if (transactions) {
+    return await strapi.services.task.update(
+      { id },
+      {
+        votingPool: pool.id,
+        poolId,
+        name,
+        type,
+        status,
+        chainId: pool.chainId,
+        tokenBasePrice,
+        rewardAmount,
+        startTime,
+        endTime,
+        maxParticipants,
+        priorityRewardAmount,
+        maxPriorityParticipants,
+        data,
+        metadata,
+        priorityRatio,
+      }
+    );
+  } else
+    return await strapi.services.task.update(
+      { id },
+      {
+        votingPool: pool.id,
+        poolId,
+        name,
+        type,
+        status,
+        chainId: pool.chainId,
+        tokenBasePrice,
+        rewardAmount,
+        startTime,
+        endTime,
+        maxParticipants,
+        priorityRewardAmount,
+        maxPriorityParticipants,
+        data,
+        metadata,
+        priorityRatio,
+      }
+    );
 };
 
 /**
