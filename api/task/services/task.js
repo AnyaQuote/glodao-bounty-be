@@ -1,6 +1,15 @@
 "use strict";
 
-const { get, gte, isEmpty, isEqual, includes, uniq, isNil } = require("lodash");
+const {
+  get,
+  gte,
+  isEmpty,
+  isEqual,
+  includes,
+  uniq,
+  isNil,
+  pick,
+} = require("lodash");
 const moment = require("moment");
 const { FixedNumber } = require("@ethersproject/bignumber");
 const {
@@ -367,6 +376,7 @@ const updateTask = async (ctx, missionData) => {
         data,
         metadata,
         priorityRatio,
+        transactions,
       }
     );
   } else
