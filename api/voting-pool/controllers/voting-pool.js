@@ -31,4 +31,10 @@ module.exports = {
       votingPoolData
     );
   },
+  updateTokenBVotingPool: async (ctx) => {
+    const votingPoolData = ctx.request.body;
+    return await strapi.services["voting-pool"].updateTokenBVotingPool(
+      votingPoolData
+    );
+  },
 };

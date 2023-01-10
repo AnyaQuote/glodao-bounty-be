@@ -49,7 +49,7 @@
     },
     "poolId": {
       "type": "string",
-      "unique": true
+      "unique": false
     },
     "unicodeName": {
       "type": "string",
@@ -82,6 +82,11 @@
     "usedMission": {
       "type": "integer",
       "default": 0
+    },
+    "version": {
+      "type": "string",
+      "default": "v1",
+      "required": true
     }
   }
 }

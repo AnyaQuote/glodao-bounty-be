@@ -79,6 +79,14 @@
       "config": {
         "policies": ["global::is-address-owner"]
       }
+    },
+    {
+      "method": "POST",
+      "path": "/voting-pools/updateTokenBVotingPool",
+      "handler": "voting-pool.updateTokenBVotingPool",
+      "config": {
+        "policies": ["global::is-address-owner"]
+      }
     }
   ]
 }
