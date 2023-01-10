@@ -13,7 +13,7 @@ const {
 const createVotingPool = async (ctx, votingPoolData) => {
   // 1. check contract has poolId
   let pool;
-  const poolInfo = await getPoolInfo(votingPoolData.poolId);
+  const poolInfo = await getPoolInfo(votingPoolData);
 
   if (!poolInfo) {
     return ctx.badRequest("Contract can not identify this record");
@@ -21,6 +21,7 @@ const createVotingPool = async (ctx, votingPoolData) => {
 
   const votingPool = await strapi.services["voting-pool"].findOne({
     poolId: votingPoolData.poolId,
+    version: votingPoolData.version,
   });
   if (votingPool && votingPool.id) {
     votingPoolData.data = {
@@ -73,6 +74,7 @@ const updateVotingPool = async (votingPoolData, votingPooId) => {
 const createOrUpdateVotingPool = async (ctx, votingPoolData) => {
   const votingPool = await strapi.services["voting-pool"].findOne({
     poolId: votingPoolData.poolId,
+    version: votingPoolData.version,
   });
   let pool;
   if (votingPool && votingPool.id) {
@@ -150,9 +152,21 @@ const updateVotingPoolInfo = async (votingPoolData) => {
   return updatedPool;
 };
 
+const updateTokenBVotingPool = async (votingPoolData) => {
+  const { id, data } = votingPoolData;
+  const updatedPool = await strapi.services["voting-pool"].update(
+    { id },
+    {
+      data,
+    }
+  );
+  return updatedPool;
+};
+
 module.exports = {
   createOrUpdateVotingPool,
   updateStatusToApproved,
   cancelVotingPool,
   updateVotingPoolInfo,
+  updateTokenBVotingPool,
 };
