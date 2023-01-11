@@ -29,7 +29,7 @@ const resetAllData = () => {
 const getTaskRewards = (task, relatedCompleteApplies) => {
   resetAllData();
   const tempApplies = relatedCompleteApplies;
-  calculatePoolReward(task, tempApplies);
+  calculatePoolReward(task.id, tempApplies);
   let rewardCalculatedArr = [];
   for (let index = 0; index < tempApplies.length; index++) {
     const apply = tempApplies[index];
@@ -196,7 +196,74 @@ const getTaskRewards = (task, relatedCompleteApplies) => {
   return rewardAddressMap;
 };
 
-const calculatePoolReward = async (task, relatedCompleteApplies) => {
+// const calculatePoolReward = async (task, relatedCompleteApplies) => {
+//   const allPriorityPool = relatedCompleteApplies.slice(
+//     0,
+//     task.maxPriorityParticipants
+//   );
+//   allPriorityPool.forEach((apply) => {
+//     priorityPoolMap.set(apply.id, apply);
+//   });
+//   let priorityCount = allPriorityPool.length;
+//   if (task.maxPriorityParticipants === 0)
+//     basePriorityReward = priorityCount = 0;
+//   else
+//     basePriorityReward = FixedNumber.from(
+//       _.get(task, "priorityRewardAmount", "0")
+//     ).divUnsafe(FixedNumber.from(_.get(task, "maxPriorityParticipants", "1")));
+//   const totalCommunityReward = FixedNumber.from(
+//     _.get(task, "rewardAmount", "0")
+//   )
+//     .mulUnsafe(FixedNumber.from("93"))
+//     .divUnsafe(FIXED_NUMBER.HUNDRED)
+//     .subUnsafe(FixedNumber.from(_.get(task, "priorityRewardAmount", "0")));
+//   const optionalTokens = _.get(task, "optionalTokens", []);
+//   optionalTokenArr = optionalTokens;
+
+//   const totalCommunityParticipants =
+//     relatedCompleteApplies.length - priorityCount;
+//   // UPDATE TO USING FAKE NUMBER FOR REWARD CALCULATION
+
+//   // const totalCommunityParticipants = task.totalParticipants - priorityCount;
+//   optionalTokens.forEach((token) => {
+//     optionalTokenMap.set(token.tokenContractAddress, token);
+//     let optionPriorityReward = 0;
+//     let optionCommunityReward = 0;
+//     if (task.maxPriorityParticipants !== 0)
+//       optionPriorityReward = FixedNumber.from(
+//         _.get(token, "priorityRewardAmount", "0")
+//       ).divUnsafe(
+//         FixedNumber.from(_.get(task, "maxPriorityParticipants", "1"))
+//       );
+//     optionCommunityReward = FixedNumber.from(_.get(token, "rewardAmount", "0"))
+//       .mulUnsafe(FixedNumber.from("93"))
+//       .divUnsafe(FIXED_NUMBER.HUNDRED)
+//       .subUnsafe(FixedNumber.from(_.get(token, "priorityRewardAmount", "0")))
+//       .divUnsafe(FixedNumber.from(`${totalCommunityParticipants}`));
+//     optionalTokenPriorityReward.set(
+//       token.tokenContractAddress,
+//       optionPriorityReward
+//     );
+//     optionalTokenCommunityReward.set(
+//       token.tokenContractAddress,
+//       optionCommunityReward
+//     );
+//   });
+//   baseCommunityReward = totalCommunityReward.divUnsafe(
+//     FixedNumber.from(
+//       `${totalCommunityParticipant == 0 ? 1 : totalCommunityReward}`
+//     )
+//   );
+// };
+calculatePoolReward = async (taskId, relatedCompleteApplies) => {
+  const task = await strapi.services.task.findOne({ id: taskId });
+  const countTotla = await strapi.services.apply.count({ task: taskId });
+  console.log(task.name);
+  console.log(task.missionIndex);
+  filename = task.name + "-" + task.missionIndex;
+  console.log("total par:" + task.totalParticipants);
+  console.log("total par:" + countTotla);
+  // const allPriorityPool = relatedCompleteApplies.slice(0, 0);
   const allPriorityPool = relatedCompleteApplies.slice(
     0,
     task.maxPriorityParticipants
@@ -205,6 +272,9 @@ const calculatePoolReward = async (task, relatedCompleteApplies) => {
     priorityPoolMap.set(apply.id, apply);
   });
   let priorityCount = allPriorityPool.length;
+  console.log(priorityCount);
+  console.log(relatedCompleteApplies.length);
+  this.task = task;
   if (task.maxPriorityParticipants === 0)
     basePriorityReward = priorityCount = 0;
   else
@@ -225,6 +295,7 @@ const calculatePoolReward = async (task, relatedCompleteApplies) => {
   // UPDATE TO USING FAKE NUMBER FOR REWARD CALCULATION
 
   // const totalCommunityParticipants = task.totalParticipants - priorityCount;
+  console.log(task.totalParticipants);
   optionalTokens.forEach((token) => {
     optionalTokenMap.set(token.tokenContractAddress, token);
     let optionPriorityReward = 0;
@@ -250,9 +321,7 @@ const calculatePoolReward = async (task, relatedCompleteApplies) => {
     );
   });
   baseCommunityReward = totalCommunityReward.divUnsafe(
-    FixedNumber.from(
-      `${totalCommunityParticipant == 0 ? 1 : totalCommunityReward}`
-    )
+    FixedNumber.from(`${totalCommunityParticipants}`)
   );
 };
 
