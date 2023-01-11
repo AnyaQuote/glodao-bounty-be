@@ -43,6 +43,7 @@ const getPoolInfo = async (votingPoolData) => {
       .call();
     return poolInfo;
   } catch (error) {
+    console.error(error);
     // poolId not exist
     return null;
   }
