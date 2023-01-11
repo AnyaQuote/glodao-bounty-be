@@ -191,6 +191,7 @@ const getTaskRewards = (task, relatedCompleteApplies) => {
       );
     });
   });
+
   //TODO: update to every reward map which currently wrong calculation
   return rewardAddressMap;
 };
@@ -249,7 +250,9 @@ const calculatePoolReward = async (task, relatedCompleteApplies) => {
     );
   });
   baseCommunityReward = totalCommunityReward.divUnsafe(
-    FixedNumber.from(`${totalCommunityParticipants}`)
+    FixedNumber.from(
+      `${totalCommunityParticipant == 0 ? 1 : totalCommunityReward}`
+    )
   );
 };
 
