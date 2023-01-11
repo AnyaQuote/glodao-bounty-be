@@ -218,11 +218,11 @@ const calculatePoolReward = async (task, relatedCompleteApplies) => {
   const optionalTokens = _.get(task, "optionalTokens", []);
   optionalTokenArr = optionalTokens;
 
-  // const totalCommunityParticipants =
-  // relatedCompleteApplies.length - priorityCount;
+  const totalCommunityParticipants =
+  relatedCompleteApplies.length - priorityCount;
   // UPDATE TO USING FAKE NUMBER FOR REWARD CALCULATION
 
-  const totalCommunityParticipants = task.totalParticipants - priorityCount;
+  // const totalCommunityParticipants = task.totalParticipants - priorityCount;
   optionalTokens.forEach((token) => {
     optionalTokenMap.set(token.tokenContractAddress, token);
     let optionPriorityReward = 0;
