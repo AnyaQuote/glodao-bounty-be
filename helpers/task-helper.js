@@ -191,7 +191,6 @@ const getTaskRewards = (task, relatedCompleteApplies) => {
       );
     });
   });
-  resetAllData();
   //TODO: update to every reward map which currently wrong calculation
   return rewardAddressMap;
 };
