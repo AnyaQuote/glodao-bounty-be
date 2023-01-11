@@ -76,7 +76,7 @@ const getChainConfig = (chainId) => {
       break;
     case 97:
       name = "BSC TestNET";
-      rpc = "https://data-seed-prebsc-1-s1.binance.org:8545/";
+      rpc = "https://data-seed-prebsc-2-s3.binance.org:8545/";
       ws =
         "wss://speedy-nodes-nyc.moralis.io/1d4b28cac6eaaaa2f3c695d6/bsc/testnet/ws";
       // ws = "wss://bsc-ws-node.nariox.org:443";
