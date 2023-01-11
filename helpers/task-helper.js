@@ -24,6 +24,7 @@ const resetAllData = () => {
   priorityPoolMap.clear();
   everyRewardMap.clear();
   allHunterArr = getHunters();
+  rewardAddressMap.clear();
 };
 const getTaskRewards = (task, relatedCompleteApplies) => {
   resetAllData();
@@ -190,6 +191,7 @@ const getTaskRewards = (task, relatedCompleteApplies) => {
       );
     });
   });
+  resetAllData();
   //TODO: update to every reward map which currently wrong calculation
   return rewardAddressMap;
 };
@@ -219,7 +221,7 @@ const calculatePoolReward = async (task, relatedCompleteApplies) => {
   optionalTokenArr = optionalTokens;
 
   const totalCommunityParticipants =
-  relatedCompleteApplies.length - priorityCount;
+    relatedCompleteApplies.length - priorityCount;
   // UPDATE TO USING FAKE NUMBER FOR REWARD CALCULATION
 
   // const totalCommunityParticipants = task.totalParticipants - priorityCount;
