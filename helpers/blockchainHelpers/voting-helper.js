@@ -10,7 +10,7 @@ const CONFIG = {
   },
   prod: {
     votingAddress: "0x7edb25616977cDeCF9Ca7adcA2a34e1F8461A4B9",
-    votingAddressV2: "0x7edb25616977cDeCF9Ca7adcA2a34e1F8461A4B9",
+    votingAddressV2: "0xAd01dcBC0e8476593619D78C2b32F7Cbd4F0fee1",
     chainId: 56,
   },
 };
