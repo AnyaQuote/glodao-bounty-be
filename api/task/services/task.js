@@ -299,6 +299,10 @@ const createTask = async (ctx, missionData) => {
     return ctx.forbidden(EXCEEDED_MISSION_LIMIT);
   }
 
+  if (pool.usedMission >= pool.totalMission) {
+    return ctx.forbidden(EXCEEDED_MISSION_LIMIT);
+  }
+
   return await strapi.services.task.create({
     votingPool: pool.id,
     poolId,
