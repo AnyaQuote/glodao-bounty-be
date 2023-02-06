@@ -249,7 +249,9 @@ async function exportApply(argv) {
     const isPriority = !_.isEmpty(priorityPoolMap.get(apply.id));
     if (hunter.referrerCode === "######" || _.isEmpty(commissionerHunter)) {
       commissionRate = 0;
-      glodaoCommissionRate = 5;
+      // glodaoCommissionRate = 5;
+      //TODO: fake rate
+      glodaoCommissionRate = 7;
       rootCommissionRate = 0;
     } else {
       commissionAddress = commissionerHunter.address;
