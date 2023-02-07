@@ -17,6 +17,12 @@
       "path": "/emails/contact-from-g2m",
       "handler": "Email.contactG2m",
       "config": {}
+    },
+    {
+      "method": "POST",
+      "path": "/emails/contact-from-coinseeker",
+      "handler": "Email.contactCoinseeker",
+      "config": {}
     }
   ]
 }

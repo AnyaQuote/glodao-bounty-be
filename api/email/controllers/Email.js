@@ -117,4 +117,38 @@ module.exports = {
       ctx.send({ error: "Error sending mail cyberk" });
     }
   },
+
+  contactCoinseeker: async (ctx) => {
+    try {
+      let requestBody = ctx.request.body;
+      if (typeof ctx.request.body === "string")
+        requestBody = JSON.parse(ctx.request.body);
+      const {
+        email,
+      } = requestBody;
+      await strapi.plugins["email"].services.email.send({
+        from: "hello@cyberk.io",
+        to: "anya.quote@gmail.com",
+        // to: "jon_ren@cyberk.io",
+        // cc: "logan@cyberk.io",
+        bcc: "hoangminh881997@gmail.com",
+        subject: `[User Contact] ${email} send contact message from Coinseeker landing page`,
+        text: `
+        User Contact\n
+
+        Email: ${email}\n
+        Time: ${moment()}`,
+      });
+      console.log("send email finished");
+      return {
+        status: 200,
+        message: "Email cyberk sent from coinseeker successfully",
+      };
+    } catch (error) {
+      console.log(error);
+      console.log(JSON.stringify(error));
+      strapi.log.debug(error);
+      ctx.send({ error: "Error sending mail cyberk-coinseeker" });
+    }
+  },
 };
