@@ -263,7 +263,8 @@ async function exportApply(argv) {
         // ))
         //   ? 5
         //   : 3;
-        commissionRate = 3;
+        // commissionRate = 3;
+        commissionRate = 5;
       } catch (error) {
         console.log(error);
       }
