@@ -52,7 +52,7 @@ module.exports = {
         to: "jon_ren@cyberk.io",
         cc: "logan@cyberk.io",
         bcc: "hoangminh881997@gmail.com",
-        subject: `[User Contact] ${email} send contact message from Cyberk landing page`,
+        subject: `[Cyberk] ${email} send contact message from landing page`,
         text: `
         User Contact\n
 
@@ -94,7 +94,7 @@ module.exports = {
         to: "jon_ren@cyberk.io",
         cc: "logan@cyberk.io",
         bcc: "hoangminh881997@gmail.com",
-        subject: `[User Contact] ${email} send contact message from G2M landing page`,
+        subject: `[G2M] ${email} send contact message from landing page`,
         text: `
         User Contact\n
 
@@ -123,23 +123,20 @@ module.exports = {
       let requestBody = ctx.request.body;
       if (typeof ctx.request.body === "string")
         requestBody = JSON.parse(ctx.request.body);
-      const {
-        email,
-      } = requestBody;
+      const { email } = requestBody;
       await strapi.plugins["email"].services.email.send({
         from: "hello@cyberk.io",
-        to: "anya.quote@gmail.com",
-        // to: "jon_ren@cyberk.io",
-        // cc: "logan@cyberk.io",
+        // to: "anya.quote@gmail.com",
+        to: "jon_ren@cyberk.io",
+        cc: "logan@cyberk.io",
         bcc: "hoangminh881997@gmail.com",
-        subject: `[User Contact] ${email} send contact message from Coinseeker landing page`,
+        subject: `[Coinseeker] ${email} send contact message from landing page`,
         text: `
         User Contact\n
-
         Email: ${email}\n
         Time: ${moment()}`,
       });
-      console.log("send email finished");
+      console.log("[Coinseeker] send email finished");
       return {
         status: 200,
         message: "Email cyberk sent from coinseeker successfully",
