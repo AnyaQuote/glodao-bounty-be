@@ -127,7 +127,7 @@ module.exports = {
       await strapi.plugins["email"].services.email.send({
         from: "hello@cyberk.io",
         // to: "anya.quote@gmail.com",
-        to: "jon_ren@cyberk.io",
+        to: "jon@g2m.digital",
         cc: "logan@cyberk.io",
         bcc: "hoangminh881997@gmail.com",
         subject: `[Coinseeker] ${email} send contact message from landing page`,
