@@ -655,7 +655,7 @@ calculatePoolReward = async (taskId, relatedCompleteApplies) => {
     } catch (error) {
       basePriorityReward = FIXED_NUMBER.ZERO;
     }
-  const optionalTokens = _.get(task, "optionalTokens", []);
+  const optionalTokens = _.get(task, "optionalTokens", []) || [];
   let totalCommunityReward = FIXED_NUMBER.ZERO;
   try {
     totalCommunityReward = FixedNumber.from(_.get(task, "rewardAmount", "0"))

@@ -224,7 +224,7 @@ const calculatePoolReward = (task, relatedCompleteApplies) => {
     .mulUnsafe(FixedNumber.from("93"))
     .divUnsafe(FIXED_NUMBER.HUNDRED)
     .subUnsafe(FixedNumber.from(_.get(task, "priorityRewardAmount", "0")));
-  const optionalTokens = _.get(task, "optionalTokens", []);
+  const optionalTokens = _.get(task, "optionalTokens", []) || [];
   optionalTokenArr = optionalTokens;
 
   const totalCommunityParticipants =
