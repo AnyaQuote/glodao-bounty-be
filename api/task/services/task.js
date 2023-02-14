@@ -970,6 +970,13 @@ const updateInAppTrialTask = async (ctx, request, data) => {
     address: walletAddress,
   });
 
+  // Test there is task existed with requested keyTask
+  const task = await strapi.services.task.findOne({ id: keyTask.id });
+
+  if (isEmpty(task)) {
+    return requestError(500, "Task not found");
+  }
+
   if (isEmpty(processRecord)) {
     if (isEmpty(hunter)) {
       await strapi.services["pending-app-process"].create({
@@ -1001,12 +1008,6 @@ const updateInAppTrialTask = async (ctx, request, data) => {
         hunter: !isEmpty(hunter) ? hunter.id : undefined,
       }
     );
-  }
-
-  // Test there is task existed with requested keyTask
-  const task = await strapi.services.task.findOne({ id: keyTask.id });
-  if (isEmpty(task)) {
-    return requestError(500, "Task not found");
   }
 
   if (isEmpty(hunter)) {
@@ -1046,7 +1047,10 @@ const updateInAppTrialTask = async (ctx, request, data) => {
       } else return step;
     }
   );
-  const updatedData = { [APP_TRIAL_TYPE]: appTrialDataWithUpdatedStep };
+  const updatedData = {
+    ...task.data,
+    [APP_TRIAL_TYPE]: appTrialDataWithUpdatedStep,
+  };
   var isTaskCompleted = true;
   for (const key in updatedData) {
     if (Object.hasOwnProperty.call(updatedData, key)) {
