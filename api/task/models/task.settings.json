@@ -71,7 +71,8 @@
         "lucky",
         "active",
         "iat",
-        "mix"
+        "mix",
+        "trading"
       ],
       "default": "bounty",
       "required": true
