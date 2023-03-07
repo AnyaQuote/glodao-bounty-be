@@ -62,17 +62,6 @@ module.exports = {
     async beforeUpdate(params, data) {
       console.log("call update task", params);
       console.log("call update task", data);
-      try {
-        await strapi.services["log"].create({
-          data,
-          error: params,
-        });
-      } catch (error) {
-        await strapi.services["log"].create({
-          data,
-          error: { params, error },
-        });
-      }
       delete data.platform;
       delete data.realPlatform;
       // if (data && data.platform) delete data.platform;

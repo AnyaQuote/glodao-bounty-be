@@ -262,6 +262,7 @@ module.exports = {
 
     if (isEqual(type, "telegram")) {
       const telegramId = get(user, "telegramId", "");
+      console.log(telegramId)
       if (isEmpty(telegramId))
         return ctx.badRequest("You had not linked your Telegram account");
 
@@ -304,6 +305,9 @@ module.exports = {
           }
         } else {
           if (index === mergedTelegramTask.length - 1 && element.finished) {
+            console.log(getChatFromLink(element.link))
+            console.log(element.submitedId)
+            console.log( getPlatformFromContext(ctx))
             const isUserFollow = await isUserFollowChat(
               getChatFromLink(element.link),
               element.submitedId,
