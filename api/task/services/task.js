@@ -754,7 +754,10 @@ const mapHunterWithTaskProcessRecord = async (taskId, uniqueId, hunterId) => {
       } else return step;
     }
   );
-  const updatedData = { [APP_TRIAL_TYPE]: appTrialDataWithUpdatedStep };
+  const updatedData = {
+    ...apply.data,
+    [APP_TRIAL_TYPE]: appTrialDataWithUpdatedStep,
+  };
   var isTaskCompleted = true;
   for (const key in updatedData) {
     if (Object.hasOwnProperty.call(updatedData, key)) {
@@ -888,7 +891,10 @@ const updateInApTrialTaskWithUniqueId = async (ctx, request, data) => {
       } else return step;
     }
   );
-  const updatedData = { [APP_TRIAL_TYPE]: appTrialDataWithUpdatedStep };
+  const updatedData = {
+    ...apply.data,
+    [APP_TRIAL_TYPE]: appTrialDataWithUpdatedStep,
+  };
   var isTaskCompleted = true;
   for (const key in updatedData) {
     if (Object.hasOwnProperty.call(updatedData, key)) {
@@ -1048,7 +1054,7 @@ const updateInAppTrialTask = async (ctx, request, data) => {
     }
   );
   const updatedData = {
-    ...task.data,
+    ...apply.data,
     [APP_TRIAL_TYPE]: appTrialDataWithUpdatedStep,
   };
   var isTaskCompleted = true;
