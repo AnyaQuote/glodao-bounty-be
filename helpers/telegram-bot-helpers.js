@@ -27,6 +27,8 @@ const getBotIdUsingPlatform = (platform) => {
 
 const getChatMember = async (chat, userId, platform = "gld") => {
   const apiToken = switchTokenUsingPlatform(platform);
+  console.log(platform)
+  console.log(apiToken)
   try {
     const { data } = await axios.get(
       `https://api.telegram.org/bot${apiToken}/getChatMember?chat_id=@${chat}&user_id=${userId}`

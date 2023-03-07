@@ -262,7 +262,7 @@ module.exports = {
 
     if (isEqual(type, "telegram")) {
       const telegramId = get(user, "telegramId", "");
-      console.log(telegramId)
+      console.log(telegramId);
       if (isEmpty(telegramId))
         return ctx.badRequest("You had not linked your Telegram account");
 
@@ -305,13 +305,15 @@ module.exports = {
           }
         } else {
           if (index === mergedTelegramTask.length - 1 && element.finished) {
-            console.log(getChatFromLink(element.link))
-            console.log(element.submitedId)
-            console.log( getPlatformFromContext(ctx))
+            console.log(getChatFromLink(element.link));
+            console.log(element.submitedId);
+            console.log(getPlatformFromContext(ctx));
+            console.log(get(apply, "task.realPlatform", "gld"));
             const isUserFollow = await isUserFollowChat(
               getChatFromLink(element.link),
               element.submitedId,
-              getPlatformFromContext(ctx)
+              // getPlatformFromContext(ctx)
+              get(apply, "task.realPlatform", "gld")
             );
             if (!isUserFollow)
               return ctx.badRequest("Can not find user in chat");
@@ -322,7 +324,8 @@ module.exports = {
             const isUserFollow = await isUserFollowChat(
               getChatFromLink(element.link),
               element.submitedId,
-              getPlatformFromContext(ctx)
+              // getPlatformFromContext(ctx)
+              get(apply, "task.realPlatform", "gld")
             );
             if (!isUserFollow)
               return ctx.badRequest("Can not find user in chat");
