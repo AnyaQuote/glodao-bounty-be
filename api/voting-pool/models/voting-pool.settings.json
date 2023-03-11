@@ -87,6 +87,13 @@
       "type": "string",
       "default": "v1",
       "required": true
+    },
+    "managementType": {
+      "type": "enumeration",
+      "enum": [
+        "individual",
+        "group"
+      ]
     }
   }
 }

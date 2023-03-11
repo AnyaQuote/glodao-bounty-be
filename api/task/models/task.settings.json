@@ -110,6 +110,9 @@
     },
     "transactions": {
       "type": "json"
+    },
+    "managementType": {
+      "type": "string"
     }
   }
 }
