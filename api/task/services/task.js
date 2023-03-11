@@ -1156,6 +1156,19 @@ const createIndividualSocialTask = async (ctx) => {
     }
   );
 
+  const priorityRatio = requestBody.priorityRatio || 0;
+  const priorityRewardAmount =
+    (toNumber(requestBody.rewardAmount) * priorityRatio) / 100;
+
+  if (
+    (priorityRatio === 0 && requestBody.maxPriorityParticipants !== 0) ||
+    (priorityRatio !== 0 && requestBody.maxPriorityParticipants === 0)
+  ) {
+    return ctx.badRequest(
+      "Invalid priority ratio and max priority participants"
+    );
+  }
+
   const pool = await strapi.services["voting-pool"].create({
     projectName: requestBody.name,
     data: {
@@ -1181,32 +1194,33 @@ const createIndividualSocialTask = async (ctx) => {
     // chainId
   });
 
-  const priorityRatio = requestBody.priorityRatio || 0;
-  const priorityRewardAmount =
-    (toNumber(requestBody.rewardAmount) * priorityRatio) / 100;
+  let task;
 
-  if (
-    (priorityRatio === 0 && requestBody.maxPriorityParticipants !== 0) ||
-    (priorityRatio !== 0 && requestBody.maxPriorityParticipants === 0)
-  ) {
-    return ctx.badRequest(
-      "Invalid priority ratio and max priority participants"
-    );
+  try {
+    
+    task = await strapi.services.task.create({
+      ...requestBody,
+      votingPool: pool.id,
+      name: requestBody.name,
+      type: "bounty",
+      status: "upcoming",
+      platform,
+      priorityRatio,
+      priorityRewardAmount: `${priorityRewardAmount}`,
+      data: data,
+      metadata: metadata,
+      projectOwner: projectOwner.id,
+      optionalTokens: [],
+    });
+  } catch (error) {
+    console.log("error");
+    await strapi.services["voting-pool"].delete({ id: pool.id });
+    return ctx.badRequest(error);
   }
-  return await strapi.services.task.create({
-    ...requestBody,
-    votingPool: pool.id,
-    name: requestBody.name,
-    type: "bounty",
-    status: "upcoming",
-    platform,
-    priorityRatio,
-    priorityRewardAmount: `${priorityRewardAmount}`,
-    data: data,
-    metadata: metadata,
-    projectOwner: projectOwner.id,
-    optionalTokens: [],
-  });
+  if(task===null){
+    return ctx.badRequest("cannot create task")
+  }
+  return task;
 
   console.log(user);
   console.log(requestBody);
