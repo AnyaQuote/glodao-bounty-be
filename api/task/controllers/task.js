@@ -16,6 +16,10 @@ const partnerDeleteTask = async (ctx) => {
   return ctx.forbidden("You are not authorized to access this resource");
 };
 
+const createIndividualSocialTask = (ctx) => {
+  return strapi.services.task.createIndividualSocialTask(ctx);
+};
+
 module.exports = {
   exportUsers: async (ctx) => {
     const { id, type } = get(ctx, "query", {});
@@ -139,4 +143,5 @@ module.exports = {
     });
   },
   partnerDeleteTask,
+  createIndividualSocialTask,
 };

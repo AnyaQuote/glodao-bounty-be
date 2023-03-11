@@ -1,6 +1,14 @@
 {
   "routes": [
     {
+      "method": "POST",
+      "path": "/tasks-individual/createIndividualSocialTask",
+      "handler": "task.createIndividualSocialTask",
+      "config": {
+        "policies": ["global::is-address-owner"]
+      }
+    },
+    {
       "method": "GET",
       "path": "/tasks",
       "handler": "task.find",

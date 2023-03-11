@@ -9,6 +9,10 @@ const {
   uniq,
   isNil,
   pick,
+  kebabCase,
+  size,
+  merge,
+  toNumber,
 } = require("lodash");
 const moment = require("moment");
 const { FixedNumber } = require("@ethersproject/bignumber");
@@ -1090,7 +1094,125 @@ const updateInAppTrialTask = async (ctx, request, data) => {
   });
 };
 
+const createIndividualSocialTask = async (ctx) => {
+  const user = ctx.state.user;
+  const projectOwner = await strapi.services["project-owner"].findOne({
+    id: user.projectOwner,
+  });
+  const platform = getPlatformFromContext(ctx);
+  const requestBody = pick(ctx.request.body, [
+    "name",
+    // type='bounty'
+    //status ='upcoming'
+    "tokenBasePrice",
+    "rewardAmount",
+    "startTime",
+    "endTime",
+    // "maxParticipants",
+    "maxPriorityParticipants",
+    "data",
+    "metadata",
+    "priorityRatio",
+    "tokenAddress",
+    "tokenName",
+  ]);
+
+  if (size(requestBody) < 11) {
+    return ctx.badRequest("Missing required fields");
+  }
+
+  if (moment(requestBody.startTime).isBefore(moment())) {
+    return ctx.badRequest("Start time must be in the future");
+  }
+  //end time must be in the future
+  if (moment(requestBody.endTime).isBefore(moment())) {
+    return ctx.badRequest("End time must be in the future");
+  }
+  //start time must be before end time
+  if (moment(requestBody.startTime).isAfter(moment(requestBody.endTime))) {
+    return ctx.badRequest("Start time must be before end time");
+  }
+
+  const data = pick(requestBody.data, ["twitter", "telegram", "discord"]);
+
+  if (size(data) === 0) {
+    return ctx.badRequest("Missing mission data");
+  }
+
+  const metadata = merge(
+    pick(requestBody.metadata, [
+      "shortDescription",
+      "decimals",
+      "projectLogo",
+      "tokenLogo",
+      "coverImage",
+      "caption",
+      "socialLinks",
+      "website",
+    ]),
+    {
+      rewardToken: requestBody.tokenName,
+      tokenContractAddress: requestBody.tokenAddress,
+    }
+  );
+
+  const pool = await strapi.services["voting-pool"].create({
+    projectName: requestBody.name,
+    data: {
+      ...requestBody.metadata,
+      optionalTokenName: get(requestBody, "metadata.rewardToken", ""),
+      optionalTokenLogo: get(requestBody, "metadata.tokenLogo", ""),
+      optionalRewardAmount: requestBody.rewardAmount,
+    },
+    type: "bounty",
+    managementType: "individual",
+    status: "approved",
+    startDate: requestBody.startTime,
+    endDate: requestBody.endTime,
+    ownerAddress: projectOwner.address,
+    unicodeName: kebabCase(requestBody.name) + "-" + moment().unix().toString(),
+    totalMission: "1",
+    votingStart: requestBody.startTime,
+    votingEnd: requestBody.endTime,
+    projectOwner: projectOwner.id,
+    platform,
+    // tokenName: requestBody.tokenName,
+    // chain: "bsc",
+    // chainId
+  });
+
+  const priorityRatio = requestBody.priorityRatio || 0;
+  const priorityRewardAmount =
+    (toNumber(requestBody.rewardAmount) * priorityRatio) / 100;
+
+  if (
+    (priorityRatio === 0 && requestBody.maxPriorityParticipants !== 0) ||
+    (priorityRatio !== 0 && requestBody.maxPriorityParticipants === 0)
+  ) {
+    return ctx.badRequest(
+      "Invalid priority ratio and max priority participants"
+    );
+  }
+  return await strapi.services.task.create({
+    ...requestBody,
+    votingPool: pool.id,
+    name: requestBody.name,
+    type: "bounty",
+    status: "upcoming",
+    platform,
+    priorityRatio,
+    priorityRewardAmount: `${priorityRewardAmount}`,
+    data: data,
+    metadata: metadata,
+    projectOwner: projectOwner.id,
+    optionalTokens: [],
+  });
+
+  console.log(user);
+  console.log(requestBody);
+};
 module.exports = {
+  createIndividualSocialTask,
   increaseTaskTotalParticipants,
   increaseTaskTotalParticipantsById,
   updateTaskTotalParticipantsById,

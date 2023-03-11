@@ -2,6 +2,9 @@ const openLocalhost = process.env.OPEN_LOCALHOST === "true";
 
 const getPlatformFromOrigin = (origin) => {
   switch (origin) {
+    case "http://localhost:1337":
+      if (openLocalhost) return "gld";
+      else return "unknown";
     case "http://localhost:8080":
       if (openLocalhost) return "gld";
       else return "unknown";
