@@ -28,7 +28,7 @@ module.exports = {
     ctx.query.origin = _.get(ctx, "accept.headers.origin");
 
     const platform = getPlatformFromContext(ctx);
-    console.log(platform)
+    console.log(platform);
     if (!platform || _.isEqual(platform, "unknown")) {
       return ctx.forbidden(null, "This origin is not allowed.");
     }
@@ -153,15 +153,16 @@ module.exports = {
         });
       }
     } else {
-      if (!_.get(await store.get({ key: "grant" }), [provider, "enabled"])) {
-        return ctx.badRequest(
-          null,
-          formatError({
-            id: "provider.disabled",
-            message: "This provider is disabled.",
-          })
-        );
-      }
+      if (provider !== "ygg")
+        if (!_.get(await store.get({ key: "grant" }), [provider, "enabled"])) {
+          return ctx.badRequest(
+            null,
+            formatError({
+              id: "provider.disabled",
+              message: "This provider is disabled.",
+            })
+          );
+        }
 
       // Connect the user with the third-party provider.
       let user, error;

@@ -14,6 +14,7 @@ const purestConfig = require("@purest/providers");
 const { getAbsoluteServerUrl } = require("strapi-utils");
 const jwt = require("jsonwebtoken");
 const { generateRandomString } = require("../../../helpers");
+const axios = require("axios");
 
 const consumer_key = process.env.CONSUMER_KEY;
 const consumer_secret = process.env.CONSUMER_SECRET;
@@ -51,136 +52,230 @@ const connect = (provider, query) => {
 
     // Get the profile.
     getProfile(provider, query, async (err, profile) => {
-      console.log(query);
-      if (err) {
-        return reject([null, err]);
-      }
-
-      try {
-        const isRefExist = await strapi.plugins[
-          "users-permissions"
-        ].services.user.isRefExist(referrerCode);
-        const referrerCampaignCount = await strapi.services.campaign.count({
-          code: referrerCode,
-        });
-        if (!isRefExist && referrerCampaignCount === 0) {
-          referrerCode = "######";
+      if (provider === "ygg") {
+        console.log(query);
+        if (err) {
+          return reject([null, err]);
         }
 
-        const users = await strapi.query("user", "users-permissions").find({
-          twitterId: profile.twitterId,
-        });
-
-        const advanced = await strapi
-          .store({
-            environment: "",
-            type: "plugin",
-            name: "users-permissions",
-            key: "advanced",
-          })
-          .get();
-
-        const user = _.find(users, { provider });
-
-        if (_.isEmpty(user) && !advanced.allow_register) {
-          return resolve([
-            null,
-            [{ messages: [{ id: "Auth.advanced.allow_register" }] }],
-            "Register action is actually not available.",
-          ]);
-        }
-
-        if (!_.isEmpty(user)) {
-          const { accessToken, accessTokenSecret } = profile;
-          if (platform === "ygg") {
-            profile.accessTokenYgg = accessToken;
-            profile.accessTokenSecretYgg = accessTokenSecret;
-            delete profile.accessToken;
-            delete profile.accessTokenSecret;
-          }
-          let updatedUser = user;
-          // if (!_.isEqual(user.accessToken, accessToken)) {
-          try {
-            updatedUser = await strapi.services.hunter.updateUserToken(
-              user.id,
-              accessToken,
-              accessTokenSecret,
-              platform
-            );
-          } catch (error) {
-            return reject([null, error]);
-          }
-          // }
-          // For existing user who only have linked hunter
-          // This will check and create linked project owner
-          // when the userType = voting,
-          // indicates that users sign in from dao voting
-          const isHunterOrProjectOwnerCreated = await strapi.plugins[
+        try {
+          const isRefExist = await strapi.plugins[
             "users-permissions"
-          ].services.user.createHunterOrProjectOwner(userType, updatedUser);
-          if (isHunterOrProjectOwnerCreated) {
-            const formerUser = updatedUser;
-            updatedUser = await strapi
-              .query("user", "users-permissions")
-              .findOne({ id: formerUser.id });
+          ].services.user.isRefExist(referrerCode);
+          const referrerCampaignCount = await strapi.services.campaign.count({
+            code: referrerCode,
+          });
+          if (!isRefExist && referrerCampaignCount === 0) {
+            referrerCode = "######";
           }
-          // ==============================================
-          return resolve([updatedUser, null]);
-        } else {
-          console.log(profile);
-          if (platform === "ygg" || platform === "dev") {
-            profile.accessTokenYgg = profile.accessToken;
-            profile.accessTokenSecretYgg = profile.accessTokenSecret;
-            delete profile.accessToken;
-            delete profile.accessTokenSecret;
-            profile.platform = "ygg";
-          } else {
-            profile.platform = platform;
-          }
-          console.log(profile);
-          if (
-            !_.isEmpty(_.find(users, (user) => user.provider !== provider)) &&
-            advanced.unique_email
-          ) {
+
+          const users = await strapi.query("user", "users-permissions").find({
+            username: profile.username,
+            provider: "ygg",
+          });
+
+          const advanced = await strapi
+            .store({
+              environment: "",
+              type: "plugin",
+              name: "users-permissions",
+              key: "advanced",
+            })
+            .get();
+
+          const user = _.find(users, { provider });
+
+          if (_.isEmpty(user) && !advanced.allow_register) {
             return resolve([
               null,
-              [{ messages: [{ id: "Auth.form.error.email.taken" }] }],
-              "Email is already taken.",
+              [{ messages: [{ id: "Auth.advanced.allow_register" }] }],
+              "Register action is actually not available.",
             ]);
           }
 
-          // Retrieve default role.
-          const defaultRole = await strapi
-            .query("role", "users-permissions")
-            .findOne({ type: advanced.default_role }, []);
+          if (!_.isEmpty(user)) {
+            // }
+            // For existing user who only have linked hunter
+            // This will check and create linked project owner
+            // when the userType = voting,
+            // indicates that users sign in from dao voting
+            const isHunterOrProjectOwnerCreated = await strapi.plugins[
+              "users-permissions"
+            ].services.user.createHunterOrProjectOwner(userType, updatedUser);
+            if (isHunterOrProjectOwnerCreated) {
+              const formerUser = updatedUser;
+              updatedUser = await strapi
+                .query("user", "users-permissions")
+                .findOne({ id: formerUser.id });
+            }
+            // ==============================================
+            return resolve([updatedUser, null]);
+          } else {
+            // Retrieve default role.
+            const defaultRole = await strapi
+              .query("role", "users-permissions")
+              .findOne({ type: advanced.default_role }, []);
 
-          const params = _.assign(profile, {
-            provider: provider,
-            role: defaultRole.id,
-            confirmed: true,
-            referralCode: generateReferralCode(profile.username),
-            referrerCode,
+            const params = _.assign(profile, {
+              provider: provider,
+              role: defaultRole.id,
+              confirmed: true,
+              referralCode: generateReferralCode(profile.username),
+              referrerCode,
+            });
+
+            const { id: userId } = await strapi
+              .query("user", "users-permissions")
+              .create(params);
+
+            const afterCreatedUser = await strapi
+              .query("user", "users-permissions")
+              .findOne({ id: userId });
+
+            let afterRemovePrivateDataUser = afterCreatedUser;
+            delete afterRemovePrivateDataUser.accessToken;
+            delete afterRemovePrivateDataUser.accessTokenSecret;
+            delete afterRemovePrivateDataUser.accessTokenYgg;
+            delete afterRemovePrivateDataUser.accessTokenSecretYgg;
+
+            return resolve([afterRemovePrivateDataUser, null]);
+          }
+        } catch (err) {
+          console.log(err);
+          return reject([null, err]);
+        }
+      } else {
+        console.log(query);
+        if (err) {
+          return reject([null, err]);
+        }
+
+        try {
+          const isRefExist = await strapi.plugins[
+            "users-permissions"
+          ].services.user.isRefExist(referrerCode);
+          const referrerCampaignCount = await strapi.services.campaign.count({
+            code: referrerCode,
+          });
+          if (!isRefExist && referrerCampaignCount === 0) {
+            referrerCode = "######";
+          }
+
+          const users = await strapi.query("user", "users-permissions").find({
+            twitterId: profile.twitterId,
           });
 
-          const { id: userId } = await strapi
-            .query("user", "users-permissions")
-            .create(params);
+          const advanced = await strapi
+            .store({
+              environment: "",
+              type: "plugin",
+              name: "users-permissions",
+              key: "advanced",
+            })
+            .get();
 
-          const afterCreatedUser = await strapi
-            .query("user", "users-permissions")
-            .findOne({ id: userId });
+          const user = _.find(users, { provider });
 
-          let afterRemovePrivateDataUser = afterCreatedUser;
-          delete afterRemovePrivateDataUser.accessToken;
-          delete afterRemovePrivateDataUser.accessTokenSecret;
-          delete afterRemovePrivateDataUser.accessTokenYgg;
-          delete afterRemovePrivateDataUser.accessTokenSecretYgg;
+          if (_.isEmpty(user) && !advanced.allow_register) {
+            return resolve([
+              null,
+              [{ messages: [{ id: "Auth.advanced.allow_register" }] }],
+              "Register action is actually not available.",
+            ]);
+          }
 
-          return resolve([afterRemovePrivateDataUser, null]);
+          if (!_.isEmpty(user)) {
+            const { accessToken, accessTokenSecret } = profile;
+            if (platform === "ygg") {
+              profile.accessTokenYgg = accessToken;
+              profile.accessTokenSecretYgg = accessTokenSecret;
+              delete profile.accessToken;
+              delete profile.accessTokenSecret;
+            }
+            let updatedUser = user;
+            // if (!_.isEqual(user.accessToken, accessToken)) {
+            try {
+              updatedUser = await strapi.services.hunter.updateUserToken(
+                user.id,
+                accessToken,
+                accessTokenSecret,
+                platform
+              );
+            } catch (error) {
+              return reject([null, error]);
+            }
+            // }
+            // For existing user who only have linked hunter
+            // This will check and create linked project owner
+            // when the userType = voting,
+            // indicates that users sign in from dao voting
+            const isHunterOrProjectOwnerCreated = await strapi.plugins[
+              "users-permissions"
+            ].services.user.createHunterOrProjectOwner(userType, updatedUser);
+            if (isHunterOrProjectOwnerCreated) {
+              const formerUser = updatedUser;
+              updatedUser = await strapi
+                .query("user", "users-permissions")
+                .findOne({ id: formerUser.id });
+            }
+            // ==============================================
+            return resolve([updatedUser, null]);
+          } else {
+            console.log(profile);
+            if (platform === "ygg" || platform === "dev") {
+              profile.accessTokenYgg = profile.accessToken;
+              profile.accessTokenSecretYgg = profile.accessTokenSecret;
+              delete profile.accessToken;
+              delete profile.accessTokenSecret;
+              profile.platform = "ygg";
+            } else {
+              profile.platform = platform;
+            }
+            console.log(profile);
+            if (
+              !_.isEmpty(_.find(users, (user) => user.provider !== provider)) &&
+              advanced.unique_email
+            ) {
+              return resolve([
+                null,
+                [{ messages: [{ id: "Auth.form.error.email.taken" }] }],
+                "Email is already taken.",
+              ]);
+            }
+
+            // Retrieve default role.
+            const defaultRole = await strapi
+              .query("role", "users-permissions")
+              .findOne({ type: advanced.default_role }, []);
+
+            const params = _.assign(profile, {
+              provider: provider,
+              role: defaultRole.id,
+              confirmed: true,
+              referralCode: generateReferralCode(profile.username),
+              referrerCode,
+            });
+
+            const { id: userId } = await strapi
+              .query("user", "users-permissions")
+              .create(params);
+
+            const afterCreatedUser = await strapi
+              .query("user", "users-permissions")
+              .findOne({ id: userId });
+
+            let afterRemovePrivateDataUser = afterCreatedUser;
+            delete afterRemovePrivateDataUser.accessToken;
+            delete afterRemovePrivateDataUser.accessTokenSecret;
+            delete afterRemovePrivateDataUser.accessTokenYgg;
+            delete afterRemovePrivateDataUser.accessTokenSecretYgg;
+
+            return resolve([afterRemovePrivateDataUser, null]);
+          }
+        } catch (err) {
+          console.log(err);
+          return reject([null, err]);
         }
-      } catch (err) {
-        console.log(err);
-        return reject([null, err]);
       }
     });
   });
@@ -685,6 +780,24 @@ const getProfile = async (provider, query, callback) => {
             });
           }
         });
+      break;
+    }
+    case "ygg": {
+      axios
+        .get(
+          "https://yggsea.org/api/v1/admin/account/profile?token=" +
+            access_token
+        )
+        .then((resp) => {
+          console.log(resp.data);
+          const user = resp.data.result.user;
+          callback(null, {
+            username: user["_id"],
+            email: user.email,
+            avatar: user.avatar,
+          });
+        })
+        .catch((err) => callback(err));
       break;
     }
     default:
