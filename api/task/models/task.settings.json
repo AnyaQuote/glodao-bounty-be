@@ -113,6 +113,9 @@
     },
     "managementType": {
       "type": "string"
+    },
+    "projectOwner": {
+      "model": "project-owner"
     }
   }
 }
