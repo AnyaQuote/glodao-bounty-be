@@ -94,6 +94,8 @@ const connect = (provider, query) => {
           }
 
           if (!_.isEmpty(user)) {
+            let updatedUser = user;
+
             // }
             // For existing user who only have linked hunter
             // This will check and create linked project owner
@@ -122,6 +124,7 @@ const connect = (provider, query) => {
               confirmed: true,
               referralCode: generateReferralCode(profile.username),
               referrerCode,
+              platform,
             });
 
             const { id: userId } = await strapi
@@ -784,15 +787,14 @@ const getProfile = async (provider, query, callback) => {
     }
     case "ygg": {
       axios
-        .get(
-          "https://yggsea.org/api/v1/admin/account/profile?token=" +
-            access_token
-        )
+        .get("https://yggsea.org/api/v1/admin/account/profile", {
+          headers: { Token: access_token },
+        })
         .then((resp) => {
           console.log(resp.data);
           const user = resp.data.result.user;
           callback(null, {
-            username: user["_id"],
+            username: user.email || user["_id"],
             email: user.email,
             avatar: user.avatar,
           });
