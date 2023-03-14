@@ -1197,7 +1197,6 @@ const createIndividualSocialTask = async (ctx) => {
   let task;
 
   try {
-    
     task = await strapi.services.task.create({
       ...requestBody,
       votingPool: pool.id,
@@ -1211,14 +1210,15 @@ const createIndividualSocialTask = async (ctx) => {
       metadata: metadata,
       projectOwner: projectOwner.id,
       optionalTokens: [],
+      managementType: "individual",
     });
   } catch (error) {
     console.log("error");
     await strapi.services["voting-pool"].delete({ id: pool.id });
     return ctx.badRequest(error);
   }
-  if(task===null){
-    return ctx.badRequest("cannot create task")
+  if (task === null) {
+    return ctx.badRequest("cannot create task");
   }
   return task;
 
