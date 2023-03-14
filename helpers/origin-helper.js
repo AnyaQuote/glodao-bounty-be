@@ -11,6 +11,9 @@ const getPlatformFromOrigin = (origin) => {
     case "http://localhost:7193":
       if (openLocalhost) return "ygg";
       else return "unknown";
+    case "http://localhost:4000":
+      if (openLocalhost) return "ygg";
+      else return "unknown";
     case "http://localhost:2618":
       if (openLocalhost) return "dev";
       else return "unknown";

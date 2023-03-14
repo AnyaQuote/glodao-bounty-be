@@ -746,10 +746,50 @@ const checklearn = async () => {
   console.log(applies.filter((applu) => applu.status === "completed").length);
 };
 
+const changeAllToMap = async () => {
+  const tasks = await strapi.services.task.find({
+    _limit: -1,
+  });
+  for (let index = 0; index < tasks.length; index++) {
+    const element = tasks[index];
+    if (element.votingPool !== null) {
+      if (element.votingPool.managementType === "individual") {
+        await strapi.services.task.update(
+          {
+            id: element.id,
+          },
+          {
+            managementType: "individual",
+          }
+        );
+      } else {
+        await strapi.services["voting-pool"].update(
+          {
+            id: element.votingPool.id,
+          },
+          {
+            managementType: "group",
+          }
+        );
+        await strapi.services.task.update(
+          {
+            id: element.id,
+          },
+          {
+            managementType: "group",
+          }
+        );
+      }
+      console.log(element.votingPool.managementType);
+    }
+  }
+};
+
 async function main(argv) {
   // await merge2Csv();
   await initialize();
-  await checklearn();
+  // await changeAllToMap();
+  // await checklearn();
   // await coinmap();
   return;
   const headersImage = [
