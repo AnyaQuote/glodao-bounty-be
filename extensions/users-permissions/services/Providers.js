@@ -71,7 +71,6 @@ const connect = (provider, query) => {
 
           const users = await strapi.query("user", "users-permissions").find({
             email: profile.email,
-            provider: "ygg",
           });
 
           const advanced = await strapi
@@ -83,7 +82,7 @@ const connect = (provider, query) => {
             })
             .get();
 
-          const user = _.find(users, { provider });
+          const user = _.find(users, { provider: "ygg" });
 
           if (_.isEmpty(user) && !advanced.allow_register) {
             return resolve([
@@ -119,7 +118,7 @@ const connect = (provider, query) => {
               .findOne({ type: advanced.default_role }, []);
 
             const params = _.assign(profile, {
-              provider: provider,
+              provider: "ygg",
               role: defaultRole.id,
               confirmed: true,
               referralCode: generateReferralCode(profile.username),
@@ -794,7 +793,7 @@ const getProfile = async (provider, query, callback) => {
           console.log(resp.data);
           const user = resp.data.result.user;
           callback(null, {
-            username: user.email || user["_id"],
+            username: "ygg_" + (user.email || user["_id"]),
             email: user.email,
             avatar: user.avatar,
           });
@@ -811,7 +810,7 @@ const getProfile = async (provider, query, callback) => {
           console.log(resp.data);
           const user = resp.data.result.user;
           callback(null, {
-            username: user.email || user["_id"],
+            username: "ygg_" + (user.email || user["_id"]),
             email: user.email,
             avatar: user.avatar,
           });
