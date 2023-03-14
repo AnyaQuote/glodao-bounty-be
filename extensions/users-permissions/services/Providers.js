@@ -52,7 +52,7 @@ const connect = (provider, query) => {
 
     // Get the profile.
     getProfile(provider, query, async (err, profile) => {
-      if (provider === "ygg") {
+      if (provider === "ygg" || provider === "yggdev") {
         console.log(query);
         if (err) {
           return reject([null, err]);
@@ -788,6 +788,23 @@ const getProfile = async (provider, query, callback) => {
     case "ygg": {
       axios
         .get("https://yggsea.org/api/v1/admin/account/profile", {
+          headers: { Token: access_token },
+        })
+        .then((resp) => {
+          console.log(resp.data);
+          const user = resp.data.result.user;
+          callback(null, {
+            username: user.email || user["_id"],
+            email: user.email,
+            avatar: user.avatar,
+          });
+        })
+        .catch((err) => callback(err));
+      break;
+    }
+    case "yggdev": {
+      axios
+        .get("https://dev.api-yggsea.com/api/v1/admin/account/profile", {
           headers: { Token: access_token },
         })
         .then((resp) => {

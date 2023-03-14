@@ -153,7 +153,7 @@ module.exports = {
         });
       }
     } else {
-      if (provider !== "ygg")
+      if (provider !== "ygg" || provider !== "yggdev")
         if (!_.get(await store.get({ key: "grant" }), [provider, "enabled"])) {
           return ctx.badRequest(
             null,
