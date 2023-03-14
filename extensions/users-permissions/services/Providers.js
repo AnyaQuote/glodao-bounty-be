@@ -70,7 +70,7 @@ const connect = (provider, query) => {
           }
 
           const users = await strapi.query("user", "users-permissions").find({
-            username: profile.username,
+            email: profile.email,
             provider: "ygg",
           });
 
