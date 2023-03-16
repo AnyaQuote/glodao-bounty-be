@@ -1133,7 +1133,13 @@ const createIndividualSocialTask = async (ctx) => {
     return ctx.badRequest("Start time must be before end time");
   }
 
-  const data = pick(requestBody.data, ["twitter", "telegram", "discord"]);
+  const data = pick(requestBody.data, [
+    "twitter",
+    "telegram",
+    "discord",
+    "facebook",
+    "optional",
+  ]);
 
   if (size(data) === 0) {
     return ctx.badRequest("Missing mission data");
