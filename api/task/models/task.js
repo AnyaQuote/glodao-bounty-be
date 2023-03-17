@@ -11,6 +11,9 @@ module.exports = {
     // Called before an entry is created
     async beforeCreate(event) {
       const type = event.type || "bounty";
+      if (!event.managementType) {
+        event.managementType = "group";
+      }
       let searchType = type;
       let totalTaskCount = await strapi.services.task.count({
         type: searchType,
