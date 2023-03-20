@@ -1099,6 +1099,9 @@ const createIndividualSocialTask = async (ctx) => {
   const projectOwner = await strapi.services["project-owner"].findOne({
     id: user.projectOwner,
   });
+  if (!projectOwner.address) {
+    return ctx.forbidden("You must have an address to create a task");
+  }
   const platform = getPlatformFromContext(ctx);
   const requestBody = pick(ctx.request.body, [
     "name",
