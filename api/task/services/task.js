@@ -1182,6 +1182,7 @@ const createIndividualSocialTask = async (ctx) => {
     projectName: requestBody.name,
     data: {
       ...metadata,
+      optionalTokenAddress: get(metadata, "tokenContractAddress", ""),
       optionalTokenName: get(metadata, "rewardToken", ""),
       optionalTokenLogo: get(metadata, "tokenLogo", ""),
       optionalRewardAmount: requestBody.rewardAmount,
