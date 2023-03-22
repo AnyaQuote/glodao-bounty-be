@@ -1181,9 +1181,9 @@ const createIndividualSocialTask = async (ctx) => {
   const pool = await strapi.services["voting-pool"].create({
     projectName: requestBody.name,
     data: {
-      ...requestBody.metadata,
-      optionalTokenName: get(requestBody, "metadata.rewardToken", ""),
-      optionalTokenLogo: get(requestBody, "metadata.tokenLogo", ""),
+      ...metadata,
+      optionalTokenName: get(metadata, "rewardToken", ""),
+      optionalTokenLogo: get(metadata, "tokenLogo", ""),
       optionalRewardAmount: requestBody.rewardAmount,
     },
     type: "bounty",
@@ -1198,6 +1198,7 @@ const createIndividualSocialTask = async (ctx) => {
     votingEnd: requestBody.endTime,
     projectOwner: projectOwner.id,
     platform,
+    // tokenAddress: requestBody.tokenAddress,
     // tokenName: requestBody.tokenName,
     // chain: "bsc",
     // chainId
