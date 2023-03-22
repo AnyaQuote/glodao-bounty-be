@@ -58,6 +58,14 @@ const connect = (provider, query) => {
           return reject([null, err]);
         }
 
+        //TODO: remove this after have twitter linking option
+        if (profile.email && mappedYggTwitterAccount(profile.email)) {
+          const user = await existedYggTwitterAccount(profile.email);
+          if (user) {
+            return resolve([user, null]);
+          }
+        }
+
         try {
           const isRefExist = await strapi.plugins[
             "users-permissions"
@@ -95,7 +103,6 @@ const connect = (provider, query) => {
           if (!_.isEmpty(user)) {
             let updatedUser = user;
 
-            // }
             // For existing user who only have linked hunter
             // This will check and create linked project owner
             // when the userType = voting,
@@ -822,6 +829,41 @@ const getProfile = async (provider, query, callback) => {
       callback(new Error("Unknown provider."));
       break;
   }
+};
+
+const mappedYggTwitterAccount = (yggEmail) => {
+  if (yggEmail === "hoa@yggsea.io") {
+    return true;
+  } else if (yggEmail === "yansen@yggsea.io") {
+    return true;
+  } else if (yggEmail === "sophia@yggsea.io") {
+    return true;
+  } else if (yggEmail === "henson@yggsea.io") {
+    return true;
+  } else if (yggEmail === "nhutnguyen@yggsea.io") {
+    return true;
+  }
+  return false;
+};
+//TODO: remove this after have link twitter account feature
+const existedYggTwitterAccount = async (yggEmail) => {
+  let existedId = null;
+  if (yggEmail === "hoa@yggsea.io") {
+    existedId = "1258644427620278272";
+  } else if (yggEmail === "yansen@yggsea.io") {
+    existedId = "119953684";
+  } else if (yggEmail === "sophia@yggsea.io") {
+    existedId = "1468495126670749699";
+  } else if (yggEmail === "henson@yggsea.io") {
+    existedId = "1597530154326437890";
+  } else if (yggEmail === "nhutnguyen@yggsea.io") {
+    existedId = "1079012710459666434";
+  }
+  if (!existedId) return null;
+  const user = await strapi
+    .query("user", "users-permissions")
+    .findOne({ twitterId: existedId });
+  return user;
 };
 
 /**
