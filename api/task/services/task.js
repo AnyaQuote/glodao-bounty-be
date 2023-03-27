@@ -349,6 +349,12 @@ const updateTask = async (ctx, missionData) => {
     transactions,
   } = missionData;
 
+  // const task = await strapi.services.task.findOne({
+  //   id: id,
+  // });
+
+  // const pool = task.votingPool;
+
   const pool = await strapi.services["voting-pool"].findOne({
     id: poolId,
   });
@@ -584,6 +590,12 @@ const updateBaseTaskIat = async (ctx, missionData) => {
     optionalTokens,
     transactions,
   } = missionData;
+
+  // const task = await strapi.services.task.findOne({
+  //   id: id,
+  // });
+
+  // const votingPool = task.votingPool;
 
   const votingPool = await strapi.services["voting-pool"].findOne({
     id: poolId,
@@ -1255,6 +1267,7 @@ const createIndividualSocialTask = async (ctx) => {
       projectOwner: projectOwner.id,
       optionalTokens: [],
       managementType: "individual",
+      poolId: pool.poolId,
     });
   } catch (error) {
     console.log("error");
@@ -1416,6 +1429,7 @@ const createIndividualLearnTask = async (ctx) => {
       projectOwner: projectOwner.id,
       optionalTokens: [],
       managementType: "individual",
+      poolId: pool.poolId,
     });
   } catch (error) {
     console.log("error");
