@@ -1266,12 +1266,328 @@ const createIndividualSocialTask = async (ctx) => {
     return ctx.badRequest("cannot create task");
   }
   return task;
+};
 
-  console.log(user);
-  console.log(requestBody);
+const createIndividualLearnTask = async (ctx) => {
+  const platform = getPlatformFromContext(ctx);
+
+  const user = ctx.state.user;
+  const projectOwner = await strapi.services["project-owner"].findOne({
+    id: user.projectOwner,
+  });
+  if (!projectOwner.address) {
+    return ctx.forbidden("You must have an address to create a task");
+  }
+
+  const requestBody = pick(ctx.request.body, [
+    "name",
+    // type='bounty'
+    //status ='upcoming'
+    "tokenBasePrice",
+    "rewardAmount",
+    "startTime",
+    "endTime",
+    "maxParticipants",
+    "maxPriorityParticipants",
+    // data
+    "quizData",
+    "data",
+    "metadata",
+    // token
+    "priorityRatio",
+    "tokenAddress",
+    "tokenName",
+  ]);
+
+  if (size(requestBody) < 13) {
+    return ctx.badRequest("Missing required fields");
+  }
+
+  const poolAndFee = pick(ctx.request.body, [
+    // pool and fee
+    "version",
+    "poolId",
+    "feeTokenName",
+    "feeTokenAmount",
+    "feeTokenAddress",
+  ]);
+
+  const metadata = merge(
+    pick(requestBody.metadata, [
+      "shortDescription",
+      "decimals",
+      "projectLogo",
+      "tokenLogo",
+      "coverImage",
+      "caption",
+      "socialLinks",
+      "website",
+    ]),
+    {
+      rewardToken: requestBody.tokenName,
+      tokenContractAddress: requestBody.tokenAddress,
+    }
+  );
+
+  // Start time end time section
+  const timePairValidation = await validateIndividualTaskTimePair(
+    pick(requestBody, ["startTime", "endTime"])
+  );
+  if (!timePairValidation.ok) {
+    return ctx.badRequest(timePairValidation.error || "");
+  }
+  // End of time pair validation
+
+  //Voting pool validation
+  const poolValidation = await validatePoolData(
+    requestBody,
+    metadata,
+    poolAndFee,
+    projectOwner,
+    ctx
+  );
+  if (!poolValidation.ok) {
+    return ctx.badRequest(poolValidation.error || "");
+  }
+  const pool = poolValidation.pool;
+  //End of voting pool validation
+
+  // Create Quiz section
+  const quizValidation = await validateQuizData(
+    merge(
+      pick(get(requestBody, "quizData", {}), [
+        "name",
+        "description",
+        "learningInformation",
+        "data",
+        "answer",
+        "metadata",
+      ]),
+      {
+        ownerAddress: projectOwner.address,
+        projectOwner: projectOwner.id,
+      }
+    ),
+    pick(requestBody.data, ["quiz"]),
+    ctx
+  );
+  if (!quizValidation.ok) {
+    if (pool) strapi.services["voting-pool"].delete({ id: pool.id });
+    return ctx.badRequest(quizValidation.error || "");
+  }
+
+  const data = quizValidation.data;
+  const quiz = quizValidation.quiz;
+  // End of Create Quiz section
+
+  const priorityRatio = requestBody.priorityRatio || 0;
+  const priorityRewardAmount =
+    (toNumber(requestBody.rewardAmount) * priorityRatio) / 100;
+
+  if (
+    (priorityRatio === 0 && requestBody.maxPriorityParticipants !== 0) ||
+    (priorityRatio !== 0 && requestBody.maxPriorityParticipants === 0)
+  ) {
+    return ctx.badRequest(
+      "Invalid priority ratio and max priority participants"
+    );
+  }
+
+  let task;
+
+  try {
+    task = await strapi.services.task.create({
+      ...omit(requestBody, [
+        "version",
+        "poolId",
+        "feeTokenName",
+        "feeTokenAmount",
+        "feeTokenAddress",
+      ]),
+      votingPool: pool.id,
+      name: requestBody.name,
+      type: "learn",
+      status: "upcoming",
+      platform,
+      priorityRatio,
+      priorityRewardAmount: `${priorityRewardAmount}`,
+      data: data,
+      metadata: metadata,
+      projectOwner: projectOwner.id,
+      optionalTokens: [],
+      managementType: "individual",
+    });
+  } catch (error) {
+    console.log("error");
+    console.log(error);
+    if (pool) await strapi.services["voting-pool"].delete({ id: pool.id });
+    return ctx.badRequest(error);
+  }
+  if (task === null) {
+    return ctx.badRequest("cannot create task");
+  }
+  return task;
+};
+
+const validateQuizData = async (quizData, questData, ctx) => {
+  if (quizData.data.length !== quizData.answer.length) {
+    return {
+      ok: false,
+      error: "Quiz data and answer must have the same length",
+    };
+  }
+
+  if (!questData.quiz && questData.quiz.length !== 1) {
+    return { ok: false, error: "Task data must have one quiz" };
+  }
+  // "type": "quiz",
+  // "quizId": "6410186738151e4fd5272744",
+  // "passingCriteria": 1,
+  // "questionsPerQuiz": 4,
+  // "canRepeat": true
+  const questQuizData = pick(questData.quiz[0], [
+    "passingCriteria",
+    "questionsPerQuiz",
+    "canRepeat",
+  ]);
+
+  if (!questQuizData.passingCriteria) {
+    questQuizData["passingCriteria"] = 1;
+  }
+
+  if (!questQuizData.questionsPerQuiz) {
+    return {
+      ok: false,
+      error: "Missing required fields: questionsPerQuiz",
+    };
+  }
+
+  if (questQuizData.questionsPerQuiz > quizData.data.length) {
+    return {
+      ok: false,
+      error: "questionsPerQuiz must be less than or equal to quiz data length",
+    };
+  }
+
+  if (!questQuizData.canRepeat) {
+    questQuizData["canRepeat"] = false;
+  } else {
+    questQuizData["canRepeat"] = true;
+  }
+
+  const quiz = await strapi.services["quiz"].createQuiz(ctx, quizData);
+
+  return {
+    ok: true,
+    quiz: quiz,
+    data: {
+      quiz: [
+        {
+          ...questQuizData,
+          type: "quiz",
+          quizId: quiz.id,
+        },
+      ],
+    },
+  };
+};
+
+const validatePoolData = async (
+  requestBody,
+  metadata,
+  poolAndFee,
+  projectOwner,
+  ctx
+) => {
+  try {
+    const platform = getPlatformFromContext(ctx);
+
+    if (size(poolAndFee) !== 5) {
+      return { ok: false, error: "Missing required fields: pool and fee" };
+    }
+    const votingPoolData = {
+      projectName: requestBody.name,
+      data: {
+        ...metadata,
+        optionalTokenAddress: get(metadata, "tokenContractAddress", ""),
+        optionalTokenName: get(metadata, "rewardToken", ""),
+        optionalTokenLogo: get(metadata, "tokenLogo", ""),
+        optionalRewardAmount: requestBody.rewardAmount,
+      },
+      type: "bounty",
+      managementType: "individual",
+      status: "approved",
+      startDate: requestBody.startTime,
+      endDate: requestBody.endTime,
+      ownerAddress: projectOwner.address,
+      unicodeName:
+        kebabCase(requestBody.name) + "-" + moment().unix().toString(),
+      totalMission: "1",
+      votingStart: requestBody.startTime,
+      votingEnd: requestBody.endTime,
+      projectOwner: projectOwner.id,
+      platform,
+      version: poolAndFee.version,
+      poolId: poolAndFee.poolId,
+      tokenName: poolAndFee.feeTokenName,
+      rewardAmount: poolAndFee.feeTokenAmount,
+      tokenAddress: poolAndFee.feeTokenAddress,
+      // tokenAddress: requestBody.tokenAddress,
+      // tokenName: requestBody.tokenName,
+      // chain: "bsc",
+      // chainId
+    };
+
+    const pool = await strapi.services["voting-pool"].createVotingPool(
+      ctx,
+      votingPoolData
+    );
+
+    if (!pool) {
+      return { ok: false, error: "Contract can not identify this record" };
+    }
+    console.log(pool);
+    return { ok: true, pool };
+  } catch (error) {
+    console.log(error);
+    return { ok: false, error: error };
+  }
+};
+
+const validateIndividualTaskTimePair = (data) => {
+  if (!data.startTime || !data.endTime) {
+    return {
+      ok: false,
+      error: "Start time and end time are required",
+    };
+  }
+  if (moment(data.startTime).isBefore(moment())) {
+    return {
+      ok: false,
+      error: "Start time must be in the future",
+    };
+  }
+  //end time must be in the future
+  if (moment(data.endTime).isBefore(moment())) {
+    return {
+      ok: false,
+      error: "End time must be in the future",
+    };
+  }
+  //start time must be before end time
+  if (moment(data.startTime).isAfter(moment(data.endTime))) {
+    return {
+      ok: false,
+      error: "Start time must be before end time",
+    };
+  }
+  return {
+    ok: true,
+  };
 };
 module.exports = {
   createIndividualSocialTask,
+  createIndividualLearnTask,
   increaseTaskTotalParticipants,
   increaseTaskTotalParticipantsById,
   updateTaskTotalParticipantsById,

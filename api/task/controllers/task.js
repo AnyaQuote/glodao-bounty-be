@@ -20,6 +20,10 @@ const createIndividualSocialTask = (ctx) => {
   return strapi.services.task.createIndividualSocialTask(ctx);
 };
 
+const createIndividualLearnTask = (ctx) => {
+  return strapi.services.task.createIndividualLearnTask(ctx);
+};
+
 module.exports = {
   exportUsers: async (ctx) => {
     const { id, type } = get(ctx, "query", {});
@@ -144,4 +148,5 @@ module.exports = {
   },
   partnerDeleteTask,
   createIndividualSocialTask,
+  createIndividualLearnTask,
 };

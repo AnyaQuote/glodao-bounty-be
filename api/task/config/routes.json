@@ -9,6 +9,14 @@
       }
     },
     {
+      "method": "POST",
+      "path": "/tasks-individual/createIndividualLearnTask",
+      "handler": "task.createIndividualLearnTask",
+      "config": {
+        "policies": ["global::is-address-owner"]
+      }
+    },
+    {
       "method": "GET",
       "path": "/tasks",
       "handler": "task.find",
