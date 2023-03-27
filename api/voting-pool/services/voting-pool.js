@@ -16,6 +16,7 @@ const createVotingPool = async (ctx, votingPoolData) => {
   const poolInfo = await getPoolInfo(votingPoolData);
 
   if (!poolInfo) {
+    console.log('should return')
     return ctx.badRequest("Contract can not identify this record");
   }
 
@@ -169,4 +170,5 @@ module.exports = {
   cancelVotingPool,
   updateVotingPoolInfo,
   updateTokenBVotingPool,
+  createVotingPool,
 };

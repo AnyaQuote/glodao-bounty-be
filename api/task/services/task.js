@@ -13,6 +13,7 @@ const {
   size,
   merge,
   toNumber,
+  omit,
 } = require("lodash");
 const moment = require("moment");
 const { FixedNumber } = require("@ethersproject/bignumber");
@@ -1095,6 +1096,12 @@ const updateInAppTrialTask = async (ctx, request, data) => {
 };
 
 const createIndividualSocialTask = async (ctx) => {
+  // TOKEN A
+  // tokenAddress: this.projectInfo.tokenAddress,
+  // rewardAmount: this.projectInfo.rewardAmount,
+  // tokenName: this.projectInfo.tokenName,
+  //version
+  //poolId
   const user = ctx.state.user;
   const projectOwner = await strapi.services["project-owner"].findOne({
     id: user.projectOwner,
@@ -1118,9 +1125,14 @@ const createIndividualSocialTask = async (ctx) => {
     "priorityRatio",
     "tokenAddress",
     "tokenName",
+    "version",
+    "poolId",
+    "feeTokenName",
+    "feeTokenAmount",
+    "feeTokenAddress",
   ]);
 
-  if (size(requestBody) < 11) {
+  if (size(requestBody) < 16) {
     return ctx.badRequest("Missing required fields");
   }
 
@@ -1178,7 +1190,7 @@ const createIndividualSocialTask = async (ctx) => {
     );
   }
 
-  const pool = await strapi.services["voting-pool"].create({
+  const votingPoolData = {
     projectName: requestBody.name,
     data: {
       ...metadata,
@@ -1199,17 +1211,38 @@ const createIndividualSocialTask = async (ctx) => {
     votingEnd: requestBody.endTime,
     projectOwner: projectOwner.id,
     platform,
+    version: requestBody.version,
+    poolId: requestBody.poolId,
+    tokenName: requestBody.feeTokenName,
+    rewardAmount: requestBody.feeTokenAmount,
+    tokenAddress: requestBody.feeTokenAddress,
     // tokenAddress: requestBody.tokenAddress,
     // tokenName: requestBody.tokenName,
     // chain: "bsc",
     // chainId
-  });
+  };
+
+  const pool = await strapi.services["voting-pool"].createVotingPool(
+    ctx,
+    votingPoolData
+  );
+
+  console.log(pool);
+  if (!pool) {
+    return ctx.badRequest("Contract can not identify this record");
+  }
 
   let task;
 
   try {
     task = await strapi.services.task.create({
-      ...requestBody,
+      ...omit(requestBody, [
+        "version",
+        "poolId",
+        "feeTokenName",
+        "feeTokenAmount",
+        "feeTokenAddress",
+      ]),
       votingPool: pool.id,
       name: requestBody.name,
       type: "bounty",
@@ -1225,7 +1258,8 @@ const createIndividualSocialTask = async (ctx) => {
     });
   } catch (error) {
     console.log("error");
-    await strapi.services["voting-pool"].delete({ id: pool.id });
+    console.log(error);
+    if (pool) await strapi.services["voting-pool"].delete({ id: pool.id });
     return ctx.badRequest(error);
   }
   if (task === null) {
