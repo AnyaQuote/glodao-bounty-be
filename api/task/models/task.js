@@ -35,15 +35,37 @@ module.exports = {
       event.missionIndex = totalTaskCount + 1;
       event.type = type;
       const poolId = event.poolId;
-      if (poolId) {
+      if (event.votingPool) {
+        let votingPoolId;
+        if (typeof event.votingPool === "string") {
+          votingPoolId = event.votingPool;
+        } else if (event.votingPool.id) {
+          votingPoolId = event.votingPool.id;
+        }
+        if (votingPoolId) {
+          const pool = await strapi.services["voting-pool"].findOne({
+            id: votingPoolId,
+          });
+          if (pool) {
+            const numberOfCreatedMissions = await strapi.services.task.count({
+              poolId,
+            });
+            if (numberOfCreatedMissions >= pool.totalMission) {
+              throw strapi.errors.conflict(EXCEEDED_MISSION_LIMIT);
+            }
+          }
+        }
+      } else if (poolId) {
         const pool = await strapi.services["voting-pool"].findOne({
-          id: poolId,
+          poolId: poolId,
         });
-        const numberOfCreatedMissions = await strapi.services.task.count({
-          poolId,
-        });
-        if (numberOfCreatedMissions >= pool.totalMission) {
-          throw strapi.errors.conflict(EXCEEDED_MISSION_LIMIT);
+        if (pool) {
+          const numberOfCreatedMissions = await strapi.services.task.count({
+            poolId,
+          });
+          if (numberOfCreatedMissions >= pool.totalMission) {
+            throw strapi.errors.conflict(EXCEEDED_MISSION_LIMIT);
+          }
         }
       }
       event.realPlatform = event.platform;

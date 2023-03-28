@@ -1245,15 +1245,14 @@ const createIndividualSocialTask = async (ctx) => {
   }
 
   let task;
-
   try {
     task = await strapi.services.task.create({
       ...omit(requestBody, [
         "version",
-        "poolId",
         "feeTokenName",
         "feeTokenAmount",
         "feeTokenAddress",
+        "poolId",
       ]),
       votingPool: pool.id,
       name: requestBody.name,
