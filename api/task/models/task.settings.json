@@ -114,6 +114,9 @@
     "managementType": {
       "type": "string"
     },
+    "version": {
+      "type": "string"
+    },
     "projectOwner": {
       "model": "project-owner"
     }

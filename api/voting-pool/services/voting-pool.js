@@ -16,7 +16,7 @@ const createVotingPool = async (ctx, votingPoolData) => {
   const poolInfo = await getPoolInfo(votingPoolData);
 
   if (!poolInfo) {
-    console.log('should return')
+    console.log("should return");
     return ctx.badRequest("Contract can not identify this record");
   }
 
@@ -55,7 +55,7 @@ const updateVotingPool = async (votingPoolData, votingPooId) => {
       rewardTokenSymbol: votingPoolData.rewardToken,
       status: votingPoolData.status,
       unicodeName: votingPoolData.unicodeName,
-      totalMission: votingPoolData.totalMissions,
+      totalMission: votingPoolData.totalMissions || votingPoolData.totalMission,
       // startDate:votingPoolData.startDate ,
       // endDate: votingPoolData.endDate,
       data: {

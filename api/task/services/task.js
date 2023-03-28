@@ -1219,6 +1219,7 @@ const createIndividualSocialTask = async (ctx) => {
     ownerAddress: projectOwner.address,
     unicodeName: kebabCase(requestBody.name) + "-" + moment().unix().toString(),
     totalMission: "1",
+    totalMissions: "1",
     votingStart: requestBody.startTime,
     votingEnd: requestBody.endTime,
     projectOwner: projectOwner.id,
@@ -1239,7 +1240,6 @@ const createIndividualSocialTask = async (ctx) => {
     votingPoolData
   );
 
-  console.log(pool);
   if (!pool) {
     return ctx.badRequest("Contract can not identify this record");
   }
@@ -1251,13 +1251,7 @@ const createIndividualSocialTask = async (ctx) => {
   let task;
   try {
     task = await strapi.services.task.create({
-      ...omit(requestBody, [
-        "version",
-        "feeTokenName",
-        "feeTokenAmount",
-        "feeTokenAddress",
-        "poolId",
-      ]),
+      ...requestBody,
       votingPool: pool.id,
       name: requestBody.name,
       type: "bounty",
@@ -1271,6 +1265,7 @@ const createIndividualSocialTask = async (ctx) => {
       optionalTokens: [],
       managementType: "individual",
       poolId: pool.poolId,
+      version: pool.version,
     });
   } catch (error) {
     console.log("error");
@@ -1413,13 +1408,7 @@ const createIndividualLearnTask = async (ctx) => {
 
   try {
     task = await strapi.services.task.create({
-      ...omit(requestBody, [
-        "version",
-        "poolId",
-        "feeTokenName",
-        "feeTokenAmount",
-        "feeTokenAddress",
-      ]),
+      ...requestBody,
       votingPool: pool.id,
       name: requestBody.name,
       type: "learn",
@@ -1433,6 +1422,7 @@ const createIndividualLearnTask = async (ctx) => {
       optionalTokens: [],
       managementType: "individual",
       poolId: pool.poolId,
+      version: pool.version,
     });
   } catch (error) {
     console.log("error");

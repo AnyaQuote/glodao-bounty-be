@@ -35,6 +35,7 @@ module.exports = {
       event.missionIndex = totalTaskCount + 1;
       event.type = type;
       const poolId = event.poolId;
+      const version = event.version;
       if (event.votingPool) {
         let votingPoolId;
         if (typeof event.votingPool === "string") {
@@ -55,9 +56,10 @@ module.exports = {
             }
           }
         }
-      } else if (poolId) {
+      } else if (poolId && version) {
         const pool = await strapi.services["voting-pool"].findOne({
           poolId: poolId,
+          version: version,
         });
         if (pool) {
           const numberOfCreatedMissions = await strapi.services.task.count({
