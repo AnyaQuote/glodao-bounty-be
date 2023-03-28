@@ -1244,6 +1244,10 @@ const createIndividualSocialTask = async (ctx) => {
     return ctx.badRequest("Contract can not identify this record");
   }
 
+  if (pool.usedMission >= pool.totalMission) {
+    return ctx.conflict(EXCEEDED_MISSION_LIMIT);
+  }
+
   let task;
   try {
     task = await strapi.services.task.create({
@@ -1558,6 +1562,13 @@ const validatePoolData = async (
 
     if (!pool) {
       return { ok: false, error: "Contract can not identify this record" };
+    }
+
+    if (pool.usedMission >= pool.totalMission) {
+      return {
+        ok: false,
+        error: EXCEEDED_MISSION_LIMIT,
+      };
     }
     console.log(pool);
     return { ok: true, pool };
