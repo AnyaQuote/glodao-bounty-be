@@ -1153,11 +1153,14 @@ const createIndividualSocialTask = async (ctx) => {
     startTime: joi.string().required(),
     endTime: joi.string().required(),
     maxPriorityParticipants: joi.number().required(),
+    //
     data: joi.object().required(),
     metadata: joi.object().required(),
     priorityRatio: joi.number().required(),
-    tokenAddress: joi.string().required(),
+    //
+    tokenAddress: joi.string().optional(),
     tokenName: joi.string().required(),
+    //
     version: joi.string().required(),
     poolId: joi.number().required(),
     feeTokenName: joi.string().required(),
@@ -1171,10 +1174,6 @@ const createIndividualSocialTask = async (ctx) => {
     console.log(error.message);
     console.log(error.details);
     return ctx.badRequest(error.message, error.details);
-  }
-
-  if (size(requestBody) < 16) {
-    return ctx.badRequest("Missing required fields");
   }
 
   if (moment(requestBody.startTime).isBefore(moment())) {
@@ -1353,7 +1352,7 @@ const createIndividualLearnTask = async (ctx) => {
     quizData: joi.object().required(),
     //
     priorityRatio: joi.number().required(),
-    tokenAddress: joi.string().required(),
+    tokenAddress: joi.string().optional(),
     tokenName: joi.string().required(),
     //
     version: joi.string().required(),
@@ -1369,10 +1368,6 @@ const createIndividualLearnTask = async (ctx) => {
     console.log(error.message);
     console.log(error.details);
     return ctx.badRequest(error.message, error.details);
-  }
-
-  if (size(requestBody) < 13) {
-    return ctx.badRequest("Missing required fields");
   }
 
   const poolAndFee = pick(ctx.request.body, [
