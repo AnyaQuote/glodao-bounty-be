@@ -33,6 +33,7 @@
     "csvtojson": "^2.0.10",
     "ethereumjs-util": "^7.1.4",
     "form-data": "^4.0.0",
+    "joi": "^17.9.1",
     "lodash": "^4.17.21",
     "mocha": "^9.2.2",
     "moment": "^2.29.1",

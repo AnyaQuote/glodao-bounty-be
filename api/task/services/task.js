@@ -27,6 +27,8 @@ const { getTweetData } = require("../../../helpers/twitter-helper-v1");
 const { getTweetIdFromLink } = require("../../../helpers/twitter-helper");
 const { getPlatformFromContext } = require("../../../helpers/origin-helper");
 const fxZero = FixedNumber.from("0");
+const joi = require("joi");
+
 /**
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-services)
  * to customize this service
@@ -1144,6 +1146,33 @@ const createIndividualSocialTask = async (ctx) => {
     "feeTokenAddress",
   ]);
 
+  const requestBodySchema = joi.object({
+    name: joi.string().required(),
+    tokenBasePrice: joi.string().required(),
+    rewardAmount: joi.string().required(),
+    startTime: joi.string().required(),
+    endTime: joi.string().required(),
+    maxPriorityParticipants: joi.number().required(),
+    data: joi.object().required(),
+    metadata: joi.object().required(),
+    priorityRatio: joi.number().required(),
+    tokenAddress: joi.string().required(),
+    tokenName: joi.string().required(),
+    version: joi.string().required(),
+    poolId: joi.number().required(),
+    feeTokenName: joi.string().required(),
+    feeTokenAmount: joi.string().required(),
+    feeTokenAddress: joi.string().required(),
+  });
+
+  try {
+    await requestBodySchema.validateAsync(requestBody);
+  } catch (error) {
+    console.log(error.message);
+    console.log(error.details);
+    return ctx.badRequest(error.message, error.details);
+  }
+
   if (size(requestBody) < 16) {
     return ctx.badRequest("Missing required fields");
   }
@@ -1309,6 +1338,38 @@ const createIndividualLearnTask = async (ctx) => {
     "tokenAddress",
     "tokenName",
   ]);
+
+  const requestBodySchema = joi.object({
+    name: joi.string().required(),
+    tokenBasePrice: joi.string().required(),
+    rewardAmount: joi.string().required(),
+    startTime: joi.string().required(),
+    endTime: joi.string().required(),
+    maxParticipants: joi.number().required(),
+    maxPriorityParticipants: joi.number().required(),
+    //data
+    data: joi.object().required(),
+    metadata: joi.object().required(),
+    quizData: joi.object().required(),
+    //
+    priorityRatio: joi.number().required(),
+    tokenAddress: joi.string().required(),
+    tokenName: joi.string().required(),
+    //
+    version: joi.string().required(),
+    poolId: joi.number().required(),
+    feeTokenName: joi.string().required(),
+    feeTokenAmount: joi.string().required(),
+    feeTokenAddress: joi.string().required(),
+  });
+
+  try {
+    await requestBodySchema.validateAsync(requestBody);
+  } catch (error) {
+    console.log(error.message);
+    console.log(error.details);
+    return ctx.badRequest(error.message, error.details);
+  }
 
   if (size(requestBody) < 13) {
     return ctx.badRequest("Missing required fields");
