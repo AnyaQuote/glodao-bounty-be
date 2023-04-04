@@ -1265,8 +1265,7 @@ const createIndividualSocialTask = async (ctx) => {
 
   const pool = await strapi.services["voting-pool"].createVotingPool(
     ctx,
-    votingPoolData,
-    true
+    votingPoolData
   );
 
   if (!pool) {
@@ -1604,8 +1603,7 @@ const validatePoolData = async (
 
     const pool = await strapi.services["voting-pool"].createVotingPool(
       ctx,
-      votingPoolData,
-      true
+      votingPoolData
     );
 
     if (!pool) {
