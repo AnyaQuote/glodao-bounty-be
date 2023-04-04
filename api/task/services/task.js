@@ -1336,6 +1336,11 @@ const createIndividualLearnTask = async (ctx) => {
     "priorityRatio",
     "tokenAddress",
     "tokenName",
+    "version",
+    "poolId",
+    "feeTokenName",
+    "feeTokenAmount",
+    "feeTokenAddress",
   ]);
 
   const requestBodySchema = joi.object({
