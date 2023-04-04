@@ -10,14 +10,20 @@ const {
  * @param {object} votingPoolData
  * @returns upserted pool data
  */
-const createVotingPool = async (ctx, votingPoolData) => {
+const createVotingPool = async (
+  ctx,
+  votingPoolData,
+  ignoreContractCheck = false
+) => {
   // 1. check contract has poolId
   let pool;
-  const poolInfo = await getPoolInfo(votingPoolData);
+  if (!ignoreContractCheck) {
+    const poolInfo = await getPoolInfo(votingPoolData);
 
-  if (!poolInfo) {
-    console.log("should return");
-    return ctx.badRequest("Contract can not identify this record");
+    if (!poolInfo) {
+      console.log("should return");
+      return ctx.badRequest("Contract can not identify this record");
+    }
   }
 
   const votingPool = await strapi.services["voting-pool"].findOne({
