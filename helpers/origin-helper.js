@@ -32,6 +32,9 @@ const getPlatformFromOrigin = (origin) => {
     case "https://dev.api-yggsea.com":
       return "ygg";
       break;
+    case "https://dev.app.yggsea.live":
+      return "ygg";
+      break;
     case "https://yggsea.io":
       return "ygg";
       break;
