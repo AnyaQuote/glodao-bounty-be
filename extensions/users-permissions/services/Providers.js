@@ -368,12 +368,12 @@ const getProfile = async (provider, query, callback) => {
             avatar: user.avatar,
           });
         })
-        .catch((err) => callback(err));
+        .catch((err) => callback(new Error("Cannot get profile from Ygg")));
       break;
     }
     case "yggdev": {
       axios
-        .get("https://dev.api-yggsea.com/api/v1/admin/account/profile", {
+        .get("https://dev.app.yggsea.live/api/v1/admin/account/profile", {
           headers: { Token: access_token },
         })
         .then((resp) => {
@@ -385,7 +385,7 @@ const getProfile = async (provider, query, callback) => {
             avatar: user.avatar,
           });
         })
-        .catch((err) => callback(err));
+        .catch((err) => callback(new Error("Cannot get profile from YggDev")));
       break;
     }
     default:
