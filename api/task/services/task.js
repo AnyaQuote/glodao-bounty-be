@@ -1327,13 +1327,13 @@ const createIndividualLearnTask = async (ctx) => {
     "startTime",
     "endTime",
     "maxParticipants",
-    "maxPriorityParticipants",
+    // "maxPriorityParticipants",
     // data
     "quizData",
     "data",
     "metadata",
     // token
-    "priorityRatio",
+    // "priorityRatio",
     "tokenAddress",
     "tokenName",
     "version",
@@ -1350,13 +1350,13 @@ const createIndividualLearnTask = async (ctx) => {
     startTime: joi.string().required(),
     endTime: joi.string().required(),
     maxParticipants: joi.number().required(),
-    maxPriorityParticipants: joi.number().required(),
+    // maxPriorityParticipants: joi.number().required(),
     //data
     data: joi.object().required(),
     metadata: joi.object().required(),
     quizData: joi.object().required(),
     //
-    priorityRatio: joi.number().required(),
+    // priorityRatio: joi.number().required(),
     tokenAddress: joi.string().optional(),
     tokenName: joi.string().required(),
     //
@@ -1452,18 +1452,18 @@ const createIndividualLearnTask = async (ctx) => {
   const quiz = quizValidation.quiz;
   // End of Create Quiz section
 
-  const priorityRatio = requestBody.priorityRatio || 0;
-  const priorityRewardAmount =
-    (toNumber(requestBody.rewardAmount) * priorityRatio) / 100;
+  const priorityRatio = 1;
+  const priorityRewardAmount = requestBody.rewardAmount;
+  const maxPriorityParticipants = requestBody.maxParticipants;
 
-  if (
-    (priorityRatio === 0 && requestBody.maxPriorityParticipants !== 0) ||
-    (priorityRatio !== 0 && requestBody.maxPriorityParticipants === 0)
-  ) {
-    return ctx.badRequest(
-      "Invalid priority ratio and max priority participants"
-    );
-  }
+  // if (
+  //   (priorityRatio === 0 && requestBody.maxPriorityParticipants !== 0) ||
+  //   (priorityRatio !== 0 && requestBody.maxPriorityParticipants === 0)
+  // ) {
+  //   return ctx.badRequest(
+  //     "Invalid priority ratio and max priority participants"
+  //   );
+  // }
 
   let task;
 
@@ -1477,6 +1477,7 @@ const createIndividualLearnTask = async (ctx) => {
       platform,
       priorityRatio,
       priorityRewardAmount: `${priorityRewardAmount}`,
+      maxPriorityParticipants,
       data: data,
       metadata: metadata,
       projectOwner: projectOwner.id,
