@@ -11,6 +11,10 @@ const {
   getChatFromLink,
 } = require("../../../helpers/telegram-bot-helpers");
 const { getPlatformFromContext } = require("../../../helpers/origin-helper");
+const {
+  validateBridge,
+  validateLiquidity,
+} = require("../../../helpers/kyber-task-helper");
 /**
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-controllers)
  * to customize this controller
@@ -421,6 +425,43 @@ module.exports = {
             return ctx.badRequest("Invalid link");
         }
         updatedTaskData[type][index].finished = true;
+      }
+    }
+
+    if (isEqual(type, "kyber")) {
+      let kyberTaskData = get(taskData, [type], []);
+      const mergedKyberTasks = merge(
+        kyberTaskData.map((step) => {
+          return {
+            ...step,
+            submitedLink: step.link,
+          };
+        }),
+        get(apply, ["task", "data", type], [])
+      );
+      console.log("kyber");
+      for (let index = 0; index < mergedKyberTasks.length; index++) {
+        const element = mergedKyberTasks[index];
+        const { submitedLink } = element;
+        if (
+          (index === mergedKyberTasks.length - 1 && element.finished) ||
+          (element.finished && !mergedKyberTasks[index + 1].finished)
+        ) {
+          if (element.type === "bridge") {
+            const isBridged = await validateBridge(submitedLink);
+            if (!isBridged)
+              return ctx.badRequest("This wallet address has not bridge yet");
+          } else if (element.type === "liquidity") {
+            const isLiquidity = await validateLiquidity(
+              submitedLink,
+              element.pairs ? element.pairs.map((e) => e.address) : []
+            );
+            if (!isLiquidity)
+              return ctx.badRequest(
+                "This wallet address does not have any liquidity yet"
+              );
+          }
+        }
       }
     }
 
