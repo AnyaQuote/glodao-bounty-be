@@ -1538,11 +1538,13 @@ const validateQuizData = async (quizData, questData, ctx) => {
     };
   }
 
-  if (!questQuizData.canRepeat) {
+  const canRepeat = get(questQuizData, "canRepeat", false);
+  if (canRepeat !== null && canRepeat !== undefined)
+    questQuizData["canRepeat"] = canRepeat;
+  else questQuizData["canRepeat"] = false;
+
+  if (questQuizData.canRepeat !== false && questQuizData.canRepeat !== true)
     questQuizData["canRepeat"] = false;
-  } else {
-    questQuizData["canRepeat"] = true;
-  }
 
   const quiz = await strapi.services["quiz"].createQuiz(ctx, quizData);
 
