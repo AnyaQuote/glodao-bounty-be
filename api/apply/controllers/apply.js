@@ -14,6 +14,7 @@ const { getPlatformFromContext } = require("../../../helpers/origin-helper");
 const {
   validateBridge,
   validateLiquidity,
+  validateSwap,
 } = require("../../../helpers/kyber-task-helper");
 /**
  * Read the documentation (https://strapi.io/documentation/developer-docs/latest/development/backend-customization.html#core-controllers)
@@ -460,6 +461,16 @@ module.exports = {
               return ctx.badRequest(
                 "This wallet address does not have any liquidity yet"
               );
+          } else if (element.type === "swap") {
+            const isSwap = await validateSwap(
+              submitedLink,
+              element.pairs ? element.pairs.map((e) => e.address) : []
+            );
+            if (!isSwap) {
+              return ctx.badRequest(
+                "This wallet address does not have any swap yet"
+              );
+            }
           }
         }
       }

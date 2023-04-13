@@ -18,7 +18,17 @@ const validateLiquidity = async (walletAddress, pairs) => {
   return data?.totalLiquidityPositions > 0;
 };
 
+const validateSwap = async (walletAddress, pairs) => {
+  console.log(walletAddress)
+  console.log(pairs)
+  const { data } = await axios.get(
+    `http://13.214.197.173/kyberswap/swaps`,
+    { params: { walletAddress, pairs: pairs.toString() } }
+  );
+  return data?.numberOfTrade > 0;
+};
+
 module.exports = {
   validateBridge,
-  validateLiquidity,
+  validateLiquidity,validateSwap
 };
