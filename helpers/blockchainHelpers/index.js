@@ -28,7 +28,7 @@ const getChainConfig = (chainId) => {
       break;
     case 97:
       name = "BSC TestNET";
-      rpc = "https://data-seed-prebsc-2-s3.binance.org:8545/";
+      rpc = "https://data-seed-prebsc-1-s1.binance.org:8545/";
       explorer = "https://testnet.bscscan.com/";
       break;
     case 103:
@@ -55,7 +55,7 @@ const getSolanaMainNetRpc = () => {
     : "https://solana-api.projectserum.com";
 };
 const getWeb3 = (chainId) => {
-  chainId = isNumber(chainId) ? +chainId : chainId;
+  chainId = +chainId;
   const { rpc } = getChainConfig(chainId);
   if (rpc) {
     const web3 = new Web3(new Web3.providers.HttpProvider(rpc));
