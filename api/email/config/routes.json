@@ -14,6 +14,12 @@
     },
     {
       "method": "POST",
+      "path": "/emails/contact-from-cyberk-v2",
+      "handler": "Email.contactCyberkV2",
+      "config": {}
+    },
+    {
+      "method": "POST",
       "path": "/emails/contact-from-g2m",
       "handler": "Email.contactG2m",
       "config": {}

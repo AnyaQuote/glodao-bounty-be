@@ -148,4 +148,37 @@ module.exports = {
       ctx.send({ error: "Error sending mail cyberk-coinseeker" });
     }
   },
+  contactCyberkV2: async (ctx) => {
+    try {
+      let requestBody = ctx.request.body;
+      if (typeof ctx.request.body === "string")
+        requestBody = JSON.parse(ctx.request.body);
+      const { name, email, service, budget, message } = requestBody;
+      await strapi.plugins["email"].services.email.send({
+        from: "hello@cyberk.io",
+        to: "anhdt.developer@gmail.com",
+        bcc: "hoangminh881997@gmail.com",
+        subject: `[Cyberk] ${email} send contact message from landing page`,
+        text: `
+        User Contact\n
+
+        Fullname: ${name}\n
+        Email: ${email}\n
+        Budget: ${budget || ""}\n
+        Message: ${message || ""}\n
+        Interested Service:${service || ""}\n
+        Time: ${moment().toISOString()}`,
+      });
+      console.log("send email finished: contact cyberk v2");
+      return {
+        status: 200,
+        message: "Email cyberk sent successfully",
+      };
+    } catch (error) {
+      console.log(error);
+      console.log(JSON.stringify(error));
+      strapi.log.debug(error);
+      ctx.send({ error: "Error sending mail cyberk" });
+    }
+  },
 };
