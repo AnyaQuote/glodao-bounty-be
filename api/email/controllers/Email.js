@@ -156,7 +156,7 @@ module.exports = {
       const { name, email, service, budget, message } = requestBody;
       await strapi.plugins["email"].services.email.send({
         from: "hello@cyberk.io",
-        to: "anhdt.developer@gmail.com",
+        to: "anderson@cyberk.io",
         bcc: "hoangminh881997@gmail.com",
         subject: `[Cyberk] ${email} send contact message from landing page`,
         text: `
