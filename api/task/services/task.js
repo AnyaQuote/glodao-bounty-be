@@ -105,6 +105,7 @@ const exportTaskHuntersWithoutReward = async (ctx, id) => {
     let total = 0;
     let completed = 0;
     const data = apply.data;
+    let result = {};
     for (const key in data) {
       if (Object.hasOwnProperty.call(data, key)) {
         const element = data[key];
@@ -113,6 +114,10 @@ const exportTaskHuntersWithoutReward = async (ctx, id) => {
           if (task.finished) {
             completed++;
           }
+          result = {
+            ...result,
+            [`${key}.${task}`]: true,
+          };
         });
       }
     }
@@ -122,6 +127,7 @@ const exportTaskHuntersWithoutReward = async (ctx, id) => {
       status: apply.status,
       completeTime: get(apply, "completeTime", null),
       completed: `${completed}/${total}`,
+      ...result,
     };
   });
 };
