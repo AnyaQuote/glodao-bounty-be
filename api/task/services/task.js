@@ -116,7 +116,7 @@ const exportTaskHuntersWithoutReward = async (ctx, id) => {
           }
           result = {
             ...result,
-            [`${key}.${task}`]: true,
+            [`${key}.${task.type}`]: true,
           };
         });
       }
