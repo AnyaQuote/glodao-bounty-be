@@ -105,7 +105,7 @@ const exportTaskHuntersWithoutReward = async (ctx, id) => {
     let total = 0;
     let completed = 0;
     const data = apply.data;
-    for (const key in ata) {
+    for (const key in data) {
       if (Object.hasOwnProperty.call(ata, key)) {
         const element = data[key];
         element.forEach((task) => {
