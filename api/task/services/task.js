@@ -101,12 +101,29 @@ const exportTaskHuntersWithoutReward = async (ctx, id) => {
     return ctx.badRequest("Task not found");
   }
   const applies = await strapi.services.apply.getAllTaskRelatedApplies(id);
-  return applies.map((apply) => ({
-    twitter: apply.hunter.name,
-    wallet: get(apply, "hunter.address", ""),
-    status: apply.status,
-    completeTime: get(apply, "completeTime", null),
-  }));
+  return applies.map((apply) => {
+    let total = 0;
+    let completed = 0;
+    const data = apply.data;
+    for (const key in ata) {
+      if (Object.hasOwnProperty.call(ata, key)) {
+        const element = data[key];
+        element.forEach((task) => {
+          total++;
+          if (task.finished) {
+            completed++;
+          }
+        });
+      }
+    }
+    return {
+      twitter: apply.hunter.name,
+      wallet: get(apply, "hunter.address", ""),
+      status: apply.status,
+      completeTime: get(apply, "completeTime", null),
+      completed: `${completed}/${total}`,
+    };
+  });
 };
 
 const exportTaskRewards = async (ctx, id) => {
