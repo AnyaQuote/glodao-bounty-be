@@ -109,14 +109,14 @@ const exportTaskHuntersWithoutReward = async (ctx, id) => {
     for (const key in data) {
       if (Object.hasOwnProperty.call(data, key)) {
         const element = data[key];
-        element.forEach((task) => {
+        element.forEach((task,index) => {
           total++;
           if (task.finished) {
             completed++;
           }
           result = {
             ...result,
-            [`${key}.${task.type}`]: true,
+            [`${key}-${index}:${task.type}`]: true,
           };
         });
       }
