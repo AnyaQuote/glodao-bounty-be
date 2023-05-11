@@ -116,7 +116,7 @@ const exportTaskHuntersWithoutReward = async (ctx, id) => {
           }
           result = {
             ...result,
-            [`${key}-${index}:${task.type}`]: task.finished ? "Yes" : "No",
+            [`${key}-${index + 1}:${task.type}`]: task.finished ? "Yes" : "No",
           };
         });
       }
