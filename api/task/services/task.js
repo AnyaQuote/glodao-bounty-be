@@ -335,7 +335,7 @@ const createTask = async (ctx, missionData) => {
 
   return await strapi.services.task.create({
     votingPool: pool.id,
-    poolId,
+    poolId: pool.poolId,
     name,
     type,
     status,
@@ -401,7 +401,7 @@ const updateTask = async (ctx, missionData) => {
       { id },
       {
         votingPool: pool.id,
-        poolId,
+        poolId: pool.poolId,
         name,
         type,
         status,
@@ -424,7 +424,7 @@ const updateTask = async (ctx, missionData) => {
       { id },
       {
         votingPool: pool.id,
-        poolId,
+        poolId: pool.poolId,
         name,
         type,
         status,
@@ -567,7 +567,7 @@ const createInAppTrialTask = async (ctx, missionData) => {
 
   const task = await strapi.services.task.create({
     votingPool: votingPool.id,
-    poolId,
+    poolId: votingPool.poolId,
     name,
     type,
     status,
@@ -642,7 +642,7 @@ const updateBaseTaskIat = async (ctx, missionData) => {
       { id },
       {
         votingPool: votingPool.id,
-        poolId,
+        poolId: votingPool.poolId,
         name,
         type,
         status,
@@ -665,7 +665,7 @@ const updateBaseTaskIat = async (ctx, missionData) => {
       { id },
       {
         votingPool: votingPool.id,
-        poolId,
+        poolId: votingPool.id,
         name,
         type,
         status,
