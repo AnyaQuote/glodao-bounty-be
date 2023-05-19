@@ -300,15 +300,17 @@ const setupBot = () => {
       } = ctx.message;
       console.log("------ New member ------");
       console.log(new_chat_member);
-      await axios.post(`${API_HOST}/telegram-invitations`, {
-        PARTNER_API_KEY: `${PARTNER_API_KEY}`,
-        from: from.id,
-        chatId: chat.id,
-        chatName: chat.title,
-        to: new_chat_member.id,
-        fullMessage: ctx.message,
-        data: moment().toISOString(),
-      });
+      await axios.post(
+        `${API_HOST}/telegram-invitations?PARTNER_API_KEY=${PARTNER_API_KEY}`,
+        {
+          from: `${from.id}`,
+          chatId: `${chat.id}`,
+          chatName: chat.title,
+          to: `${new_chat_member.id}`,
+          fullMessage: ctx.message,
+          date: moment().toISOString(),
+        }
+      );
     } catch (error) {
       console.log(error);
     }
@@ -431,18 +433,20 @@ const setupBot = () => {
       //       messageId: `${messageId}`,
       //       date: moment(date * 1000).toISOString(),
       //}
-      axios.post(
-        `${API_HOST}/telegram-messages/createMsg?PARTNER_API_KEY=${PARTNER_API_KEY}`,
-        {
-          userId: `${userId}`,
-          chatId: `${chatId}`,
-          text,
-          authorUsername,
-          chatUsername,
-          messageId: `${messageId}`,
-          date: moment(date * 1000).toISOString(),
-        }
-      );
+      axios
+        .post(
+          `${API_HOST}/telegram-messages/createMsg?PARTNER_API_KEY=${PARTNER_API_KEY}`,
+          {
+            userId: `${userId}`,
+            chatId: `${chatId}`,
+            text,
+            authorUsername,
+            chatUsername,
+            messageId: `${messageId}`,
+            date: moment(date * 1000).toISOString(),
+          }
+        )
+        .catch((err) => {});
     } catch (error) {
       console.log(error);
     }
