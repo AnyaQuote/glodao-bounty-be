@@ -288,26 +288,31 @@ const setupBot = () => {
     }
   });
 
-  // bot.on("new_chat_members", async (ctx) => {
-  //   try {
-  //     const { new_chat_participant, new_chat_member, new_chat_members } =
-  //       ctx.message;
-  //     console.log("------ New member ------");
-  //     console.log(new_chat_member);
-  //     return ctx.replyWithMarkdown(
-  //       `Hello [${
-  //         new_chat_member.username ||
-  //         new_chat_member.first_name ||
-  //         new_chat_member.last_name
-  //       }](tg://user?id=${
-  //         new_chat_member.id
-  //       })\nIf you come from our Bounty app, you can chat with me to link your account
-  //     `
-  //     );
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // });
+  bot.on("new_chat_members", async (ctx) => {
+    try {
+      console.log(ctx.message);
+      const {
+        new_chat_participant,
+        new_chat_member,
+        new_chat_members,
+        from,
+        chat,
+      } = ctx.message;
+      console.log("------ New member ------");
+      console.log(new_chat_member);
+      await axios.post(`${API_HOST}/telegram-invitations`, {
+        PARTNER_API_KEY: `${PARTNER_API_KEY}`,
+        from: from.id,
+        chatId: chat.id,
+        chatName: chat.title,
+        to: new_chat_member.id,
+        fullMessage: ctx.message,
+        data: moment().toISOString(),
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  });
 
   bot.hears(HTTP_URL_REGEX, async (ctx) => {
     try {
@@ -377,7 +382,7 @@ const setupBot = () => {
           referrerCode: hunter.referrerCode,
         }
       );
-      console.log(data)
+      console.log(data);
       if (data.status)
         return ctx.reply(MESSAGES.LINK_SUCCESS, {
           reply_to_message_id: ctx.message.message_id,
