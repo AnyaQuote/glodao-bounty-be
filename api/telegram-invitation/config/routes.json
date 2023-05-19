@@ -1,0 +1,52 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/telegram-invitations",
+      "handler": "telegram-invitation.find",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/telegram-invitations/count",
+      "handler": "telegram-invitation.count",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/telegram-invitations/:id",
+      "handler": "telegram-invitation.findOne",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/telegram-invitations",
+      "handler": "telegram-invitation.create",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/telegram-invitations/:id",
+      "handler": "telegram-invitation.update",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/telegram-invitations/:id",
+      "handler": "telegram-invitation.delete",
+      "config": {
+        "policies": []
+      }
+    }
+  ]
+}

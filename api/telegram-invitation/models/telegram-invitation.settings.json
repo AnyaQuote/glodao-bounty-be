@@ -1,0 +1,34 @@
+{
+  "kind": "collectionType",
+  "collectionName": "telegram_invitations",
+  "info": {
+    "name": "TelegramInvitation",
+    "description": ""
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true,
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "date": {
+      "type": "datetime"
+    },
+    "from": {
+      "type": "string"
+    },
+    "to": {
+      "type": "string"
+    },
+    "chatId": {
+      "type": "string"
+    },
+    "chatName": {
+      "type": "string"
+    },
+    "fullMessage": {
+      "type": "json"
+    }
+  }
+}
