@@ -283,6 +283,7 @@ const extractTweetData = async (link, user, ctx) => {
     );
   } catch (error) {
     console.log(error)
+    console.log(JSON.stringify(error))
     return { errorMsg: "Error: Can not get tweet data" };
   }
 };
