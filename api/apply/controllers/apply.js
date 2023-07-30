@@ -269,8 +269,8 @@ module.exports = {
     if (isEqual(type, "telegram")) {
       const telegramId = get(user, "telegramId", "");
       console.log(telegramId);
-      if (isEmpty(telegramId))
-        return ctx.badRequest("You had not linked your Telegram account");
+      // if (isEmpty(telegramId))
+      //   return ctx.badRequest("You had not linked your Telegram account");
 
       let telegramTaskData = get(taskData, [type], []);
       const mergedTelegramTask = merge(
