@@ -228,12 +228,13 @@ module.exports = {
         }),
         get(apply, ["task", "data", type], [])
       );
-      res = await strapi.services.apply.validateTwitterTask(
-        mergedTwitterTask,
-        apply.task.createdAt,
-        user,
-        ctx
-      );
+      res = "";
+      //  await strapi.services.apply.validateTwitterTask(
+      //   mergedTwitterTask,
+      //   apply.task.createdAt,
+      //   user,
+      //   ctx
+      // );
       if (!res) {
         let flag = 0;
         for (let index = 0; index < mergedTwitterTask.length; index++) {
@@ -314,26 +315,28 @@ module.exports = {
             console.log(element.submitedId);
             console.log(getPlatformFromContext(ctx));
             console.log(get(apply, "task.realPlatform", "gld"));
-            const isUserFollow = await isUserFollowChat(
-              getChatFromLink(element.link),
-              element.submitedId,
-              // getPlatformFromContext(ctx)
-              get(apply, "task.realPlatform", "gld")
-            );
-            if (!isUserFollow)
-              return ctx.badRequest("Can not find user in chat");
+            const isUserFollow = true;
+            // const isUserFollow = await isUserFollowChat(
+            //   getChatFromLink(element.link),
+            //   element.submitedId,
+            //   // getPlatformFromContext(ctx)
+            //   get(apply, "task.realPlatform", "gld")
+            // );
+            // if (!isUserFollow)
+            //   return ctx.badRequest("Can not find user in chat");
           } else if (
             element.finished &&
             !mergedTelegramTask[index + 1].finished
           ) {
-            const isUserFollow = await isUserFollowChat(
-              getChatFromLink(element.link),
-              element.submitedId,
-              // getPlatformFromContext(ctx)
-              get(apply, "task.realPlatform", "gld")
-            );
-            if (!isUserFollow)
-              return ctx.badRequest("Can not find user in chat");
+            const isUserFollow = true;
+            // const isUserFollow = await isUserFollowChat(
+            //   getChatFromLink(element.link),
+            //   element.submitedId,
+            //   // getPlatformFromContext(ctx)
+            //   get(apply, "task.realPlatform", "gld")
+            // );
+            // if (!isUserFollow)
+            //   return ctx.badRequest("Can not find user in chat");
           }
         }
       }
